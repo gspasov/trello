@@ -7,17 +7,36 @@
   import * as types from "./types"
   import { v4 as uuidv4 } from 'uuid';
   import { clickOutside } from './clickOutside';
-import Divider from './Divider.svelte';
+  import Divider from './Divider.svelte';
+  import { flip } from 'svelte/animate';
+  import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
 
   export let id: string;
   export let name: string;
   export let cards: types.Card[];
-  export let isMenuVisible: boolean;
+  export let isMenuOpened = false;
   
   let newCardTitle = ""
   let isAddCardSectionVisible = false;
   let inputRef: HTMLTextAreaElement
   let menuPosition = { x: 0, y: 0 };
+
+  function handleDndCards(e): void {
+    BoardStore.update((state) => {
+			return {
+				...state,
+				lists: state.lists.map((list) => {
+          if (list.id !== id) return list;
+
+          return {...list, cards: e.detail.items};
+        }),
+			}
+		});
+  }
+
+  function transformDraggedElement(e): void {
+    e.querySelector(".card").style.transform = "rotate(5deg)";
+  }
 
   function toggleAddCardSectionVisibility(): void {
     isAddCardSectionVisible = !isAddCardSectionVisible;
@@ -34,16 +53,17 @@ import Divider from './Divider.svelte';
         const newCardId = uuidv4();
         return {
           ...state,
-          lists: {
-            ...state.lists,
-            [id]: {
-              ...state.lists[id],
+          lists: state.lists.map((list) => {
+            if (list.id !== id) return list;
+
+            return {
+              ...list,
               cards: [
-                ...state.lists[id].cards,
-                types.Card(newCardId, newCardTitle, false)
-              ]
-            }
-          }
+                ...list.cards,
+                types.Card(newCardId, newCardTitle, false),
+              ],
+            };
+          }),
         }
       });
     }
@@ -53,45 +73,48 @@ import Divider from './Divider.svelte';
 
   function openListMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLSpanElement}): void {
     const rect = event.currentTarget.getBoundingClientRect();
-    console.info(rect.top, rect.right, rect.bottom, rect.left);
     menuPosition = { x: rect.left, y: rect.top };
 
     BoardStore.update((store) => {
-      const updatedLists = Object.entries(store.lists).reduce((acc, [listId, list]) => {
-        let visible = false;
-        if (listId === id) visible = true;
-
-        return {
-          ...acc,
-          [listId]: {
-            ...list,
-            isMenuVisible: visible
-          }
-        }
-      }, {});
-
       return {
         ...store,
-        lists: updatedLists
+        lists: store.lists.map((list) => {
+          if (list.id !== id) return {...list, isMenuOpened: false};
+
+          return {...list, isMenuOpened: true};
+        }),
       }
     })
-    event.stopPropagation();
   }
 
   function closeListMenu(): void {
-    isMenuVisible = false;
+    BoardStore.update((store) => {
+      return {
+        ...store,
+        lists: store.lists.map((list) => ({...list, isMenuOpened: false})),
+      }
+    })
   }
-
 </script>
 
 <div class="list">
   <div class="title-section">
     <div class="title">{name}</div>
-    <span class="list-menu-btn" on:click={openListMenu}>&#9679;&#9679;&#9679;</span>
+    <span class="list-menu-btn" on:click|stopPropagation={openListMenu}>&#9679;&#9679;&#9679;</span>
   </div>
-  <div class="cards">
-    {#each cards as {id: cardId, title} (cardId)}
-      <Card id={cardId} {title} listId={id}/>
+  <div 
+    class="cards" 
+    use:dndzone={{items: cards, flipDurationMs: 300, transformDraggedElement, dropTargetStyle: {}}}
+    on:consider={handleDndCards} 
+    on:finalize={handleDndCards}
+  >
+    {#each cards as card (card.id)}
+      <div style={"position: relative"} animate:flip={{duration: 300}}>
+        <Card id={card.id} title={card.title} listId={id}/>
+        {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+          <span class="card-shadow"></span>
+        {/if}
+      </div>
     {/each}
   </div>
   <div class:hidden={!isAddCardSectionVisible}>
@@ -109,7 +132,7 @@ import Divider from './Divider.svelte';
     on:click={toggleAddCardSectionVisibility}>
       +Add a card
   </div>
-  {#if isMenuVisible}
+  {#if isMenuOpened}
     <div transition:fade={{duration: 150}} use:clickOutside={closeListMenu}>
       <Menu x={menuPosition.x} y={menuPosition.y} on:close={closeListMenu}>
         <MenuItem lineText={"Rename"}/>
@@ -250,4 +273,18 @@ import Divider from './Divider.svelte';
   .add-btn:hover {
     background-color: #dddddd;
   }
+
+  .card-shadow {
+		position: absolute;
+		top: 0; left:0; right: 0; bottom: 0;
+		visibility: visible;
+		border: 1px dashed grey;
+		background: lightblue;
+		opacity: 0.5;
+		margin: 0;
+    border-radius: 3px;
+    font-size: 0.80rem;
+    padding-left: 4px;
+    text-align: center;
+	}
 </style>

@@ -2,7 +2,7 @@ export type List = {
   id: string;
   name: string;
   cards: Card[];
-  isMenuVisible: boolean;
+  isMenuOpened: boolean;
 };
 
 export function List(id: string, name: string, cards: Card[]): List {
@@ -10,7 +10,7 @@ export function List(id: string, name: string, cards: Card[]): List {
     id,
     name,
     cards,
-    isMenuVisible: false,
+    isMenuOpened: false,
   };
 }
 

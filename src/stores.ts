@@ -7,8 +7,8 @@ const list2Id = uuidv4();
 const list3Id = uuidv4();
 const board = {
   name: "Georgi's Board",
-  lists: {
-    [list1Id]: List(list1Id, "To Do", [
+  lists: [
+    List(list1Id, "To Do", [
       Card(uuidv4(), "Card 1", false, "This is a very important Card to do"),
       Card(
         uuidv4(),
@@ -61,16 +61,16 @@ const board = {
         false
       ),
     ]),
-    [list2Id]: List(list2Id, "In Progress", [
+    List(list2Id, "In Progress", [
       Card(uuidv4(), "Card 3", false),
       Card(uuidv4(), "Card 4", true),
     ]),
-    [list3Id]: List(list3Id, "Done", [
+    List(list3Id, "Done", [
       Card(uuidv4(), "Card 5", true),
       Card(uuidv4(), "Card 6", true),
       Card(uuidv4(), "Card 7", true),
     ]),
-  },
+  ],
 };
 
 export const BoardStore = writable(board);

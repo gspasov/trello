@@ -1,6 +1,5 @@
 <script lang="ts">
   import { BoardStore } from "./stores";
-  import type * as types from "./types"
 
   export let listId: string
   export let id: string;
@@ -12,13 +11,15 @@
     BoardStore.update((state) => {
       return {
         ...state,
-        lists: {
-          ...state.lists,
-          [listId]: {
-            ...state.lists[listId],
-            cards: state.lists[listId].cards.filter((card: types.Card) => card.id !== id),
-          },
-        }
+        lists: state.lists.map((list) => {
+          if (list.id === listId) {
+            return {
+              ...list,
+              cards: list.cards.filter((card) => card.id !== id),
+            };
+          }
+          return list;
+        }),
       }
     });
   }
@@ -29,7 +30,7 @@
 
 </script>
 
-<div class="container" on:mouseleave={() => setCloseBtnVisibility(true)} on:mouseenter={() => setCloseBtnVisibility(false)}>
+<div class="card" on:mouseleave={() => setCloseBtnVisibility(true)} on:mouseenter={() => setCloseBtnVisibility(false)}>
   <span class="title">{title}</span>
   <div class="close-parent">
     <button class="close" class:hidden={isCloseBtnHidden} on:click={deleteCard}>&#10006;</button>
@@ -37,7 +38,7 @@
 </div>
 
 <style>
-  .container {
+  .card {
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -51,7 +52,7 @@
     cursor: pointer;
 	}
   
-  .container:hover {
+  .card:hover {
     background-color: whitesmoke;
   }
   

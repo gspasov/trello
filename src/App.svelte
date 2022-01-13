@@ -1,15 +1,13 @@
 <script lang="ts">
-	import List from "./List.svelte"
 	import { BoardStore } from "./stores";
 	import { v4 as uuidv4 } from 'uuid';
 	import * as types from "./types"
 	import { slide } from 'svelte/transition';
+	import Board from "./Board.svelte";
 
 	let newListTitle = "";
 	let isNewListSectionVisible = false;
-	let inputRef: HTMLInputElement
-
-	$: lists = Object.values($BoardStore.lists);
+	let inputRef: HTMLInputElement;
 
   function toggleAddListSectionVisibility(): void {
 		isNewListSectionVisible = !isNewListSectionVisible;
@@ -22,10 +20,10 @@
 			
 			return {
 				...state,
-				lists: {
+				lists: [
 					...state.lists,
-					[newListId]: types.List(newListId, newListTitle, [])
-				}
+					types.List(newListId, newListTitle, [])
+				]
 			}
 		});
 		
@@ -35,38 +33,33 @@
 </script>
 
 <main>
-		<table>
-			<tbody> 
-				<tr>
-					{#each lists as {id, name, cards, isMenuVisible} (id)}
-						<td>
-							<List {id} {name} {cards} {isMenuVisible}/>
-						</td>
-					{/each}
-					<td>
-						{#if isNewListSectionVisible}
-							<div class="new-list-form" transition:slide={{ duration: 300 }}>
-								<input type="text" name="card" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
-								<button class="add-list" on:click={createList}>Add Card</button>
-								<button class="close" on:click={toggleAddListSectionVisibility}>&#10006;</button>
-							</div>
-						{/if}
-						<div
-							class="add-list-btn"
-							class:hidden={isNewListSectionVisible} 
-							on:click={toggleAddListSectionVisibility}><span>+</span>Add another list</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+	<Board />
+	<div>
+		{#if isNewListSectionVisible}
+			<div class="new-list-form" transition:slide={{ duration: 300 }}>
+				<input type="text" name="card" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
+				<button class="add-list" on:click={createList}>Add Card</button>
+				<button class="close" on:click={toggleAddListSectionVisibility}>&#10006;</button>
+			</div>
+		{:else}
+			<div
+			class="add-list-btn"
+			class:hidden={isNewListSectionVisible} 
+			on:click={toggleAddListSectionVisibility}
+			>
+				<span class="plus">+</span>Add another list
+			</div>
+		{/if}
+	</div>
 </main>
 
 <style>
-	table td {
-    vertical-align: top;
-  }
+	main {
+		display: flex;
+		gap: .25rem;
+	}
 
-	span {
+	.plus {
 		font-size: 1.5em;
 		line-height: 17px;
 	}
@@ -156,5 +149,4 @@
 	.close:hover {
     color: #555;
   }
-
 </style>
