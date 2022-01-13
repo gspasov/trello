@@ -109,7 +109,7 @@
     on:finalize={handleDndCards}
   >
     {#each cards as card (card.id)}
-      <div style={"position: relative"} animate:flip={{duration: 300}}>
+      <div style={"position: relative;"} animate:flip={{duration: 300}}>
         <Card id={card.id} title={card.title} listId={id}/>
         {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
           <span class="card-shadow"></span>
@@ -155,7 +155,6 @@
   .title-section {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
     padding: 0px 4px;
   }
   
@@ -164,6 +163,7 @@
     font-size: 14px;
     font-weight: 600;
     align-self: center;
+    padding-left: 6px;
 	}
 
   .list-menu-btn {
@@ -181,7 +181,9 @@
   }
   
   .cards {
-    padding: 0px 4px;
+    display: grid;
+    gap: 0.5rem;
+    padding: 4px;
     max-height: 85vh;
     overflow: auto;
 	}
@@ -261,11 +263,10 @@
     height: 30px;
     background-color: #ebecf0;
     border-radius: 3px;
-    padding: 4px 4px;
     font-size: 14px;
     color: #666666;
     cursor: pointer;
-    padding: 0px 4px;
+    padding: 0px 4px 0px 6px;
     display: flex;
     align-items: center;
   }

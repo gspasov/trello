@@ -46,7 +46,6 @@
     min-height: 20px;
 		border-radius: 2px;
 		padding: 5px 0px 5px 8px;
-		margin-bottom: 8px;
 		box-shadow: 0 1px 0 #091e4240;
     font-size: 14px;
     cursor: pointer;
