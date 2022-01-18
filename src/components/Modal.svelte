@@ -8,6 +8,7 @@
   }
   export function hide(): void {
     shown = false;
+    clickedAmountsOutside = 0;
   }
 
   function handleKeyDown(e: KeyboardEvent): void {
@@ -18,17 +19,14 @@
 
   function handleOutsideClick(): void {
     clickedAmountsOutside++;
-    if (clickedAmountsOutside >= 2) {
-      hide();
-      clickedAmountsOutside = 0;
-    }
+    if (clickedAmountsOutside >= 2) hide();
   }
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
 
 {#if shown}
-  <div class="modal-wrapper" use:clickOutside={() => console.info("wrapper")}>
+  <div class="modal-wrapper">
     <div class="modal" use:clickOutside={handleOutsideClick}>
       <span class="close" on:click={() => hide()}>&times;</span>
       <slot />
