@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BoardStore } from "./stores";
+  import { BoardStore } from "../stores";
 
   export let listId: string
   export let id: string;
@@ -33,7 +33,7 @@
 <div class="card" on:mouseleave={() => setCloseBtnVisibility(true)} on:mouseenter={() => setCloseBtnVisibility(false)}>
   <span class="title">{title}</span>
   <div class="close-parent">
-    <button class="close" class:hidden={isCloseBtnHidden} on:click={deleteCard}>&#10006;</button>
+    <button class="close" class:hidden={isCloseBtnHidden} on:click={deleteCard}>&times;</button>
   </div>
 </div>
 

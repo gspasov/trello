@@ -3,7 +3,7 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import * as types from "./types"
 	import { slide } from 'svelte/transition';
-	import Board from "./Board.svelte";
+	import Board from "./components/Board.svelte";
 
 	let newListTitle = "";
 	let isNewListSectionVisible = false;
@@ -39,7 +39,7 @@
 			<div class="new-list-form" transition:slide={{ duration: 300 }}>
 				<input type="text" name="card" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
 				<button class="add-list" on:click={createList}>Add Card</button>
-				<button class="close" on:click={toggleAddListSectionVisibility}>&#10006;</button>
+				<button class="close" on:click={toggleAddListSectionVisibility}>&times;</button>
 			</div>
 		{:else}
 			<div

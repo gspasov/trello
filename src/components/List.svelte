@@ -1,12 +1,13 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte"
   import { fade } from 'svelte/transition';
-  import Card from "./Card.svelte"
-  import { BoardStore } from "./stores";
+  import Card from "./components/Card.svelte"
+  import { BoardStore } from "../stores";
   import Menu from "./Menu.svelte"
   import MenuItem from "./MenuItem.svelte"
-  import * as types from "./types"
+  import * as types from "../types"
   import { v4 as uuidv4 } from 'uuid';
-  import { clickOutside } from './clickOutside';
+  import { clickOutside } from '../clickOutside';
   import Divider from './Divider.svelte';
   import { flip } from 'svelte/animate';
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
@@ -16,10 +17,14 @@
   export let cards: types.Card[];
   export let isMenuOpened = false;
   
+  let newTitleText = name
   let newCardTitle = ""
   let isAddCardSectionVisible = false;
-  let inputRef: HTMLTextAreaElement
+  let isEditingListTitle = false;
+  let newTitleInputRef: HTMLInputElement;
+  let newCardInputRef: HTMLTextAreaElement
   let menuPosition = { x: 0, y: 0 };
+  const dispatch = createEventDispatcher();
 
   function handleDndCards(e): void {
     BoardStore.update((state) => {
@@ -40,7 +45,7 @@
 
   function toggleAddCardSectionVisibility(): void {
     isAddCardSectionVisible = !isAddCardSectionVisible;
-    setTimeout(() => inputRef.focus(), 1);
+    setTimeout(() => newCardInputRef.focus(), 1);
   }
 
   function hideAddCardSection(): void {
@@ -95,11 +100,68 @@
       }
     })
   }
+
+  function deleteList(): void {
+    isMenuOpened = false;
+    BoardStore.update((store) => {
+      return {
+        ...store,
+        lists: store.lists.filter((list) => list.id !== id),
+      }
+    })
+  }
+
+  function deleteAllCardsFromList(): void {
+    BoardStore.update((store) => {
+      return {
+        ...store,
+        lists: store.lists.map((list) => {
+          if (list.id !== id) return list;
+
+          return {...list, cards: [], isMenuOpened: false};
+        }),
+      }
+    })
+  }
+
+  function startEditingListTitle(): void {
+    isEditingListTitle = true;
+    closeListMenu();
+    setTimeout(() => newTitleInputRef.focus(), 1);
+  }
+
+  function handleTitleInputSubmit(e: KeyboardEvent): void {
+    console.info(e.key)
+    if (e.key === "Enter") {
+      BoardStore.update((store) => {
+        return {
+          ...store,
+          lists: store.lists.map((list) => {
+            if (list.id !== id) return list;
+
+            return {...list, name: newTitleText};
+          }),
+        }
+      })
+      isEditingListTitle = false;
+    } 
+    if (e.key === "Escape") {
+      console.info("escape")
+      isEditingListTitle = false;
+    }
+  }
+
+  function handleCardClick(cardId: string): void {
+    dispatch("cardOpened", {listId: id, cardId})
+  }
+
+  $: console.info(isEditingListTitle)
 </script>
 
 <div class="list">
   <div class="title-section">
-    <div class="title">{name}</div>
+    <div class:hidden={isEditingListTitle} class="title" on:click={() => isEditingListTitle = true}>{name}</div>
+    <input class:hidden={!isEditingListTitle} class="title-input" bind:value={newTitleText} bind:this={newTitleInputRef} on:keydown={handleTitleInputSubmit}/>
     <span class="list-menu-btn" on:click|stopPropagation={openListMenu}>&#9679;&#9679;&#9679;</span>
   </div>
   <div 
@@ -109,8 +171,8 @@
     on:finalize={handleDndCards}
   >
     {#each cards as card (card.id)}
-      <div style={"position: relative;"} animate:flip={{duration: 300}}>
-        <Card id={card.id} title={card.title} listId={id}/>
+      <div style={"position: relative;"} animate:flip={{duration: 300}} on:click={() => handleCardClick(card.id)}>
+        <Card id={card.id} title={card.title} listId={id} />
         {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
           <span class="card-shadow"></span>
         {/if}
@@ -119,11 +181,11 @@
   </div>
   <div class:hidden={!isAddCardSectionVisible}>
     <div class="textarea-parent">
-      <textarea type="text" name="card" placeholder="Enter a title for this card..." bind:value={newCardTitle} bind:this={inputRef}/>
+      <textarea type="text" name="card" placeholder="Enter a title for this card..." bind:value={newCardTitle} bind:this={newCardInputRef}/>
     </div>
     <div class="add-card-parent">
       <button class="add-card-btn" on:click={createCard}>Add Card</button>
-      <span class="close" on:click={toggleAddCardSectionVisibility}>&#10006;</span>
+      <span class="close" on:click={toggleAddCardSectionVisibility}>&times;</span>
     </div>
   </div>
   <div 
@@ -134,11 +196,11 @@
   </div>
   {#if isMenuOpened}
     <div transition:fade={{duration: 150}} use:clickOutside={closeListMenu}>
-      <Menu x={menuPosition.x} y={menuPosition.y} on:close={closeListMenu}>
-        <MenuItem lineText={"Rename"}/>
-        <MenuItem lineText={"Delete All Cards from List"}/>
+      <Menu x={menuPosition.x} y={menuPosition.y + 30} on:close={closeListMenu}>
+        <MenuItem lineText={"Rename"} on:click={startEditingListTitle}/>
+        <MenuItem lineText={"Delete All Cards from List"} on:click={deleteAllCardsFromList}/>
         <Divider/>
-        <MenuItem lineText={"Delete"}/>
+        <MenuItem lineText={"Delete"} on:click={deleteList}/>
       </Menu>
     </div>
   {/if}
@@ -159,12 +221,26 @@
   }
   
 	.title {
-    height: 20px;
     font-size: 14px;
     font-weight: 600;
     align-self: center;
     padding-left: 6px;
 	}
+
+  .title-input {
+    width: 100%;
+    align-self: center; 
+    margin: 0; 
+    box-shadow: inset 0 0 0 2px #0079bf;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 3px;
+  }
+
+  .title-input:focus {
+    outline: none;
+  }
 
   .list-menu-btn {
     font-size: 8px; 
@@ -277,7 +353,10 @@
 
   .card-shadow {
 		position: absolute;
-		top: 0; left:0; right: 0; bottom: 0;
+		top: 0; 
+    left:0; 
+    right: 0; 
+    bottom: 0;
 		visibility: visible;
 		border: 1px dashed grey;
 		background: lightblue;

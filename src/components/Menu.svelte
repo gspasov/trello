@@ -8,14 +8,14 @@ export let y = 0;
 const dispatch = createEventDispatcher();
 </script>
 
-<div class="list-context-menu" style="top: {y}px; left: {x}px;">
-    <div class="title-section">
-        <span></span>
-        <span class="title">List actions</span>
-        <span class="close-btn" on:click={() => dispatch("close")}>&#10006;</span>
-    </div>
-    <Divider />
-    <slot/>
+<div class="list-context-menu" style="top: {y}px; left: {x}px;" draggable={false}>
+  <div class="title-section">
+    <span></span>
+    <span class="title">List actions</span>
+    <span class="close-btn" on:click={() => dispatch("close")}>&times;</span>
+  </div>
+  <Divider />
+  <slot/>
 </div>
 
 <style>
