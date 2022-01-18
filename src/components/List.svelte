@@ -196,7 +196,7 @@
   </div>
   {#if isMenuOpened}
     <div transition:fade={{duration: 150}} use:clickOutside={closeListMenu}>
-      <Menu x={menuPosition.x} y={menuPosition.y + 30} on:close={closeListMenu}>
+      <Menu title={"List actions"} x={menuPosition.x} y={menuPosition.y + 30} on:close={closeListMenu}>
         <MenuItem lineText={"Rename"} on:click={startEditingListTitle}/>
         <MenuItem lineText={"Delete All Cards from List"} on:click={deleteAllCardsFromList}/>
         <Divider/>

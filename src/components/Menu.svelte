@@ -1,17 +1,18 @@
 <script lang="ts">
-import { createEventDispatcher } from "svelte"
-import Divider from "./Divider.svelte";
+  import { createEventDispatcher } from "svelte"
+  import Divider from "./Divider.svelte";
 
-export let x = 0;
-export let y = 0;
+  export let title: string;
+  export let x = 0;
+  export let y = 0;
 
-const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 </script>
 
 <div class="list-context-menu" style="top: {y}px; left: {x}px;" draggable={false}>
   <div class="title-section">
     <span></span>
-    <span class="title">List actions</span>
+    <span class="title">{title}</span>
     <span class="close-btn" on:click={() => dispatch("close")}>&times;</span>
   </div>
   <Divider />
