@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
   import { fade } from 'svelte/transition';
-  import Card from "./components/Card.svelte"
+  import Card from "./Card.svelte"
   import { BoardStore } from "../stores";
   import Menu from "./Menu.svelte"
   import MenuItem from "./MenuItem.svelte"
