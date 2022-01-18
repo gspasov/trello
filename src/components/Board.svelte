@@ -2,10 +2,10 @@
   import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
   import { BoardStore } from "../stores";
-  import List from "../List.svelte"
-  import Modal from "../Modal.svelte"
+  import List from "./List.svelte"
+  import Modal from "./Modal.svelte"
   import type * as types from "../types"
-  import CardModal from '../CardModal.svelte';
+  import CardModal from './CardModal.svelte';
 
   let modalRef;
   let selectedCard: types.Card;
