@@ -9,6 +9,7 @@
 
   let modalRef;
   let selectedCard: types.Card;
+  let selectedList: types.List;
   $: columns = $BoardStore.lists;
   $: isListMenuOpened = $BoardStore.lists.filter((list) => list.isMenuOpened).length > 0;
 
@@ -22,9 +23,8 @@
 	}
 
   function handleCardOpen(e: CustomEvent): void {
-    selectedCard = columns.find((list) => list.id === e.detail.listId).cards.find((card) => card.id === e.detail.cardId);
-    console.info(selectedCard)
-    console.info(modalRef)
+    selectedList = columns.find((list) => list.id === e.detail.listId)
+    selectedCard = selectedList.cards.find((card) => card.id === e.detail.cardId);
     modalRef.show();
   }
 </script>
@@ -41,9 +41,7 @@
 	{/each}
 </section>
 <Modal bind:this={modalRef}>
-  {#if selectedCard !== undefined}
-    <CardModal card={selectedCard}/>
-  {/if}
+  <CardModal card={selectedCard} list={selectedList}/>
 </Modal>
 
 
