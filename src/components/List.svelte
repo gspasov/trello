@@ -11,6 +11,7 @@
   import Divider from './Divider.svelte';
   import { flip } from 'svelte/animate';
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+import ActionClose from "./ActionClose.svelte";
 
   export let id: string;
   export let name: string;
@@ -184,8 +185,7 @@
       <textarea type="text" name="card" placeholder="Enter a title for this card..." bind:value={newCardTitle} bind:this={newCardInputRef}/>
     </div>
     <div class="add-card-parent">
-      <button class="add-card-btn" on:click={createCard}>Add Card</button>
-      <span class="close" on:click={toggleAddCardSectionVisibility}>&times;</span>
+      <ActionClose title={"Add Card"} on:click={createCard} on:close={toggleAddCardSectionVisibility} />
     </div>
   </div>
   <div 
@@ -292,47 +292,6 @@
 
   .add-card-parent {
     margin-left: 4px;
-  }
-
-  .add-card-btn {
-    background-color: #0079bf;
-    border: none;
-    color: #fff;
-    font-size: 14px;
-    padding: 5px 10px;
-    margin: 0px 0px 0px 4px;
-    cursor: pointer;
-    border: 2px solid #0079bf;
-    border-spacing: 20px;
-    margin: 0;
-  }
-
-  .add-card-btn:hover {
-    background-color: #026aa7;
-    border: 2px solid #026aa7;
-    color: #fff;
-  }
-  
-  .add-card-btn:focus {
-    border: 2px solid #333;
-  }
-
-  .add-card-btn:active {
-    background-color: #055a8c;
-  }
-
-  .close {
-    padding: 8px;
-    color: #999;
-    cursor: pointer;
-  }
-
-  .close:hover {
-    color: #555;
-  }
-
-  button:hover {
-    color: #555;
   }
 
   .add-btn {

@@ -4,6 +4,7 @@
 	import * as types from "./types"
 	import { slide } from 'svelte/transition';
 	import Board from "./components/Board.svelte";
+	import ActionClose from "./components/ActionClose.svelte";
 
 	let newListTitle = "";
 	let isNewListSectionVisible = false;
@@ -38,8 +39,7 @@
 		{#if isNewListSectionVisible}
 			<div class="new-list-form" transition:slide={{ duration: 300 }}>
 				<input type="text" name="card" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
-				<button class="add-list" on:click={createList}>Add Card</button>
-				<button class="close" on:click={toggleAddListSectionVisibility}>&times;</button>
+				<ActionClose title={"Add Card"} on:click={createList} on:close={toggleAddListSectionVisibility}/>
 			</div>
 		{:else}
 			<div
@@ -109,44 +109,5 @@
 
   input:focus {
     outline: none;
-  }
-
-	.add-list {
-    background-color: #0079bf;
-    border: none;
-    color: #fff;
-    font-size: 14px;
-    padding: 5px 10px;
-    cursor: pointer;
-    border: 2px solid #0079bf;
-    border-spacing: 20px;
-		margin: 0px;
-  }
-
-  .add-list:hover {
-    background-color: #026aa7;
-    border: 2px solid #026aa7;
-    color: #fff;
-  }
-  
-  .add-list:focus {
-    border: 2px solid #333;
-  }
-
-  .add-list:active {
-    background-color: #055a8c;
-  }
-
-  .close {
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: #999;
-    cursor: pointer;
-    margin: 0;
-  }
-
-	.close:hover {
-    color: #555;
   }
 </style>
