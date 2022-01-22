@@ -44,7 +44,7 @@
     color: #999;
     cursor: pointer;
     padding: 0px 0px 5px 0px;
-    line-height: 100%;
+    line-height: 90%;
   }
 
   span:hover {
