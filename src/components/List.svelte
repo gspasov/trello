@@ -65,7 +65,7 @@
               ...list,
               cards: [
                 ...list.cards,
-                types.Card(newCardId, newCardTitle, false),
+                types.Card(newCardId, newCardTitle),
               ],
             };
           }),

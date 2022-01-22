@@ -17,7 +17,6 @@ export function List(id: string, name: string, cards: Card[]): List {
 export type Card = {
   id: string;
   title: string;
-  done: boolean;
   description?: string;
   assignedTo?: string;
   dueDate?: Date;
@@ -26,7 +25,6 @@ export type Card = {
 export function Card(
   id: string,
   title: string,
-  done: boolean,
   description?: string,
   assignedTo?: string,
   dueDate?: Date
@@ -34,7 +32,6 @@ export function Card(
   return {
     id,
     title,
-    done,
     description,
     assignedTo,
     dueDate,
