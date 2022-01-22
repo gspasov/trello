@@ -185,7 +185,7 @@ import ActionClose from "./ActionClose.svelte";
       <textarea type="text" name="card" placeholder="Enter a title for this card..." bind:value={newCardTitle} bind:this={newCardInputRef}/>
     </div>
     <div class="add-card-parent">
-      <ActionClose title={"Add Card"} on:click={createCard} on:close={toggleAddCardSectionVisibility} />
+      <ActionClose title={"Add card"} on:click={createCard} on:close={toggleAddCardSectionVisibility} />
     </div>
   </div>
   <div 

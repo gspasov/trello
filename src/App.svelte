@@ -39,7 +39,7 @@
 		{#if isNewListSectionVisible}
 			<div class="new-list-form" transition:slide={{ duration: 300 }}>
 				<input type="text" name="card" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
-				<ActionClose title={"Add Card"} on:click={createList} on:close={toggleAddListSectionVisibility}/>
+				<ActionClose title={"Add list"} on:click={createList} on:close={toggleAddListSectionVisibility}/>
 			</div>
 		{:else}
 			<div
