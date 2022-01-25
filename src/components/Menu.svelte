@@ -1,18 +1,24 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
+  import BackArrowButton from "./BackArrowButton.svelte";
   import CloseButton from "./CloseButton.svelte";
   import Divider from "./Divider.svelte";
 
   export let title: string;
   export let x = 0;
   export let y = 0;
+  export let isSubMenu = false;
 
   const dispatch = createEventDispatcher();
 </script>
 
 <div class="list-context-menu" style="top: {y}px; left: {x}px;" draggable={false}>
   <div class="title-section">
-    <span></span>
+    {#if isSubMenu} 
+      <BackArrowButton on:click={() => dispatch("back")} />
+    {:else}
+      <span></span>
+    {/if}
     <span class="title">{title}</span>
     <CloseButton small={true} on:click={() => dispatch("close")} />
   </div>

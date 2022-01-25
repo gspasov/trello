@@ -1,11 +1,12 @@
 <script lang="ts">
   import type * as types from "../types"
+  import { BoardStore } from "../stores";
+  import { clickOutside } from "../clickOutside";
   import ActionClose from "./ActionClose.svelte";
   import ModalAction from "./ModalAction.svelte";
-  import { BoardStore } from "../stores";
-  import Menu from "./Menu.svelte"
-  import MenuItem from "./MenuItem.svelte"
-  import Divider from "./Divider.svelte"
+  import LabelsMenu from "./LabelsMenu.svelte";
+  import MoveCardMenu from "./MoveCardMenu.svelte";
+import CreateLabelMenu from "./CreateLabelMenu.svelte";
   
   export let card: types.Card;
   export let list: types.List;
@@ -15,6 +16,7 @@
   let inputRef: HTMLTextAreaElement;
   let menuPosition = { x: 0, y: 0 };
   let isLabelsMenuVisible = false;
+  let isLabelEditMenuVisible = false;
   let isMoveMenuVisible = false;
 
   function toggleDescriptionEditSection():void {
@@ -36,6 +38,12 @@
     toggleDescriptionEditSection();
   }
 
+  function openLabelEditSubmenu(): void {
+    console.info("open submenu")
+    isLabelEditMenuVisible = true;
+    isLabelsMenuVisible = false;
+  }
+
   function openLabelsMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLSpanElement}): void {
     menuPosition = { x: event.currentTarget.offsetLeft, y: event.currentTarget.offsetTop };
     isLabelsMenuVisible = true;
@@ -53,6 +61,14 @@
   function closeMoveMenu(): void {
     isMoveMenuVisible = false;
   }
+
+  function closeLabelEditMenu(): void {
+    console.info("close submenu")
+    isLabelEditMenuVisible = false;
+    isLabelsMenuVisible = true;
+  }
+
+  $: console.info(isLabelsMenuVisible)
 </script>
 
 <div>
@@ -63,6 +79,9 @@
   <div class="container">
     <div class="window-main">
       <h4>Description</h4>
+      {#if card.description !== undefined && !isDescriptionEditVisible}
+        <div class="edit-button" on:click={toggleDescriptionEditSection}>Edit</div>
+      {/if}
       <div class="description-section">
         {#if isDescriptionEditVisible}
           <div class="description-edit">
@@ -98,13 +117,17 @@
   </div>
 </div>
 {#if isLabelsMenuVisible}
-  <Menu title={"Labels"} x={menuPosition.x} y={menuPosition.y + 40} on:close={closeLabelsMenu} >
-  </Menu>
+  <div use:clickOutside={closeLabelsMenu}>
+    <LabelsMenu x={menuPosition.x} y={menuPosition.y + 40} on:close={closeLabelsMenu} on:show-edit-submenu={openLabelEditSubmenu}/>
+  </div>
 {/if}
-
+{#if isLabelEditMenuVisible} 
+  <CreateLabelMenu x={menuPosition.x} y={menuPosition.y + 40} on:close={closeLabelEditMenu} />
+{/if}
 {#if isMoveMenuVisible}
-  <Menu title={"Move card"} x={menuPosition.x} y={menuPosition.y + 40} on:close={closeMoveMenu} >
-  </Menu>
+  <div use:clickOutside={closeMoveMenu}>
+    <MoveCardMenu x={menuPosition.x} y={menuPosition.y + 40} on:close={closeMoveMenu} />
+  </div>
 {/if}
 
 <style>
@@ -113,9 +136,16 @@
     font-weight: 600;
   }
 
+  p {
+    margin: 0;
+  }
+
   h4 {
     color: #172b4d;
+    padding: 6px 6px 6px 0px;
     margin-bottom: 0.5rem;
+    display: inline-block;
+    margin-bottom: 6px;
   }
 
   textarea {
@@ -180,5 +210,19 @@
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 1rem;
-  }  
+  }
+  .edit-button {
+    display: inline-block;
+    background: #091e420a;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 3px;
+    line-height: 20px;
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .edit-button:hover {
+    background: #091e4221;
+  }
 </style>
