@@ -40,7 +40,7 @@
     </div>
 	{/each}
 </section>
-<Modal bind:this={modalRef}>
+<Modal bind:this={modalRef} backgroundColor={"#eeeeee"}>
   <CardModal card={selectedCard} list={selectedList}/>
 </Modal>
 

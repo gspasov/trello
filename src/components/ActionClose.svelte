@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
+  import CloseButton from "./CloseButton.svelte";
   const dispatch = createEventDispatcher();
   export let title: string = "";
 
@@ -7,7 +8,9 @@
 
 <div>
   <button on:click={() => dispatch("click")}>{title}</button>
-  <span on:click={() => dispatch("close")}>&times;</span>
+  <span>
+    <CloseButton on:click={() => dispatch("close")} />
+  </span>
 </div>
 
 <style>
@@ -18,8 +21,9 @@
   button {
     background-color: #0079bf;
     color: #fff;
-    font-size: 0.9rem;
-    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 4px 10px;
     cursor: pointer;
     border: 2px solid #0079bf;
     margin: 0;
@@ -40,14 +44,6 @@
   }
 
   span {
-    font-size: 2rem;
-    color: #999;
-    cursor: pointer;
-    padding: 0px 0px 5px 0px;
-    line-height: 90%;
-  }
-
-  span:hover {
-    color: #555;
+    align-self: center;
   }
 </style>

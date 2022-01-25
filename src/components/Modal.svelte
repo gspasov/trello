@@ -1,8 +1,8 @@
 <script lang="ts">
   import { clickOutside } from "../clickOutside"
+  import CloseButton from "./CloseButton.svelte";
 
-  let shown = false;
-  let clickedAmountsOutside = 0;
+  export let backgroundColor: string;
   export function show(): void {
     shown = true;
   }
@@ -10,6 +10,9 @@
     shown = false;
     clickedAmountsOutside = 0;
   }
+  
+  let shown = false;
+  let clickedAmountsOutside = 0;
 
   function handleKeyDown(e: KeyboardEvent): void {
     if (e.key == 'Escape') {
@@ -18,8 +21,9 @@
   }
 
   function handleOutsideClick(): void {
-    clickedAmountsOutside++;
-    if (clickedAmountsOutside >= 2) hide();
+    // console.info("clicked outside")
+    // clickedAmountsOutside++;
+    // if (clickedAmountsOutside >= 2) hide();
   }
 </script>
 
@@ -27,8 +31,10 @@
 
 {#if shown}
   <div class="modal-wrapper">
-    <div class="modal" use:clickOutside={handleOutsideClick}>
-      <span class="close" on:click={() => hide()}>&times;</span>
+    <div class="modal" style={`background-color: ${backgroundColor}`} use:clickOutside={handleOutsideClick}>
+      <span class="close" >
+        <CloseButton on:click={() => hide()} />
+      </span>
       <slot />
     </div>
   </div>
@@ -50,20 +56,16 @@
   .modal {
     align-self: center;
     background-color: white;
-    width: 55ch;
-    min-height: 65vh;
+    position: relative;
+    width: 70ch;
     max-height: 80vh;
     padding: 1rem;
     border-radius: 2px;
   }
   .close {
-    color: #444;
-    float: right;
-    cursor: pointer;
-    font-size: 1.50rem;
+    position: absolute;
+    top: 1vh;
+    right: 1vh;
     line-height: 1rem;
-  }
-  .close:hover {
-    color: grey
   }
 </style>
