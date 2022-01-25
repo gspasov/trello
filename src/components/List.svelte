@@ -132,7 +132,6 @@ import ActionClose from "./ActionClose.svelte";
   }
 
   function handleTitleInputSubmit(e: KeyboardEvent): void {
-    console.info(e.key)
     if (e.key === "Enter") {
       BoardStore.update((store) => {
         return {
@@ -147,7 +146,6 @@ import ActionClose from "./ActionClose.svelte";
       isEditingListTitle = false;
     } 
     if (e.key === "Escape") {
-      console.info("escape")
       isEditingListTitle = false;
     }
   }
@@ -155,8 +153,6 @@ import ActionClose from "./ActionClose.svelte";
   function handleCardClick(cardId: string): void {
     dispatch("cardOpened", {listId: id, cardId})
   }
-
-  $: console.info(isEditingListTitle)
 </script>
 
 <div class="list">
