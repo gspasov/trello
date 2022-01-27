@@ -25,6 +25,7 @@
     line-height: 20px;
     padding: 4px 10px;
     cursor: pointer;
+    border-radius: 3px;
     border: 2px solid #0079bf;
     margin: 0;
   }
