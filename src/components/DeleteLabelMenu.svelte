@@ -20,7 +20,7 @@
 
 <Menu title={"Delete label?"} {x} {y} isSubMenu={true} on:close on:back>
   <div class="container">
-    <span>There is no undo. This will remove this label from all cards and sestroy its history.</span>
+    <span>There is no undo. This will remove this label from all cards and destroy its history.</span>
     <button on:click={handleDelete}>Delete</button>
   </div>
 </Menu>
