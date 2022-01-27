@@ -1,25 +1,24 @@
 <script lang="ts">
-  import { BoardStore } from "../stores";
+  import { BoardStore, LabelStore } from "../stores";
   import CloseButton from "./CloseButton.svelte";
+  import type * as types from "../types";
 
+  export let card: types.Card; 
   export let listId: string
-  export let id: string;
-  export let title: string;
 
   let isCloseBtnHidden: boolean = true;
+  $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
 
   function deleteCard(): void {
     BoardStore.update((state) => {
       return {
         ...state,
         lists: state.lists.map((list) => {
-          if (list.id === listId) {
-            return {
-              ...list,
-              cards: list.cards.filter((card) => card.id !== id),
-            };
-          }
-          return list;
+          if (list.id !== listId) return list;
+          return {
+            ...list,
+            cards: list.cards.filter((c) => c.id !== card.id),
+          };
         }),
       }
     });
@@ -32,7 +31,6 @@
 </script>
 
 <div class="card" on:mouseleave={() => setCloseBtnVisibility(true)} on:mouseenter={() => setCloseBtnVisibility(false)}>
-  <span class="title">{title}</span>
   {#if !isCloseBtnHidden}
     <div class="close-parent">
       <span class="close" on:click={deleteCard} >
@@ -40,13 +38,18 @@
       </span>
     </div>
   {/if}
+  {#if cardLabels.length > 0}
+    <div class="label-wrapper">
+      {#each cardLabels as label (label.id)}
+        <div class="label" style="--color: {label.color}"></div>
+      {/each}
+    </div>
+  {/if}
+  <div class="title">{card.title}</div>
 </div>
 
 <style>
   .card {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
 		background-color: white;
     min-height: 20px;
 		border-radius: 2px;
@@ -61,9 +64,21 @@
   }
   
   .title {
-    display: flex;
-    align-self: center;
     line-height: 20px;
+  }
+
+  .label-wrapper {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    max-width: 90%;
+    margin-bottom: 4px;
+  }
+  .label {
+    background-color: var(--color);
+    height: 8px;
+    width: 30px;
+    border-radius: 3px;
   }
 
   .close-parent {

@@ -1,5 +1,16 @@
 import { writable } from "svelte/store";
-import { List, Card } from "./types";
+import {
+  List,
+  Card,
+  BlueLabel,
+  GrayLabel,
+  GreenLabel,
+  LightBlueLabel,
+  OrangeLabel,
+  PurpleLabel,
+  RedLabel,
+  YellowLabel,
+} from "./types";
 import { v4 as uuidv4 } from "uuid";
 
 const board = {
@@ -28,4 +39,28 @@ const board = {
   ],
 };
 
+const labels = [
+  GreenLabel(uuidv4(), "test this is green"),
+  YellowLabel(uuidv4()),
+  OrangeLabel(uuidv4()),
+  RedLabel(uuidv4()),
+  PurpleLabel(uuidv4()),
+  BlueLabel(uuidv4()),
+  LightBlueLabel(uuidv4()),
+  GrayLabel(uuidv4()),
+];
+
+const defaultLabels = [
+  GreenLabel(uuidv4()),
+  YellowLabel(uuidv4()),
+  OrangeLabel(uuidv4()),
+  RedLabel(uuidv4()),
+  PurpleLabel(uuidv4()),
+  BlueLabel(uuidv4()),
+  LightBlueLabel(uuidv4()),
+  GrayLabel(uuidv4()),
+];
+
 export const BoardStore = writable(board);
+export const LabelStore = writable(labels);
+export const DefaultLabelStore = writable(defaultLabels);

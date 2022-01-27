@@ -1,12 +1,13 @@
 <script lang="ts">
   import type * as types from "../types"
-  import { BoardStore } from "../stores";
+  import { BoardStore, LabelStore } from "../stores";
   import { clickOutside } from "../clickOutside";
   import ActionClose from "./ActionClose.svelte";
   import ModalAction from "./ModalAction.svelte";
   import LabelsMenu from "./LabelsMenu.svelte";
   import MoveCardMenu from "./MoveCardMenu.svelte";
-import CreateLabelMenu from "./CreateLabelMenu.svelte";
+  import CreateLabelMenu from "./CreateLabelMenu.svelte";
+  import DeleteLabelMenu from "./DeleteLabelMenu.svelte";
   
   export let card: types.Card;
   export let list: types.List;
@@ -16,8 +17,13 @@ import CreateLabelMenu from "./CreateLabelMenu.svelte";
   let inputRef: HTMLTextAreaElement;
   let menuPosition = { x: 0, y: 0 };
   let isLabelsMenuVisible = false;
+  let isLabelCreateMenuVisible = false;
   let isLabelEditMenuVisible = false;
+  let isLabelDeleteMenuVisible = false;
   let isMoveMenuVisible = false;
+  let editingLabel: types.Label;
+
+  $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
 
   function toggleDescriptionEditSection():void {
     isDescriptionEditVisible = !isDescriptionEditVisible;
@@ -38,10 +44,44 @@ import CreateLabelMenu from "./CreateLabelMenu.svelte";
     toggleDescriptionEditSection();
   }
 
-  function openLabelEditSubmenu(): void {
-    console.info("open submenu")
+  function attachLabelToCard(e: CustomEvent): void {
+    let label: types.Label = e.detail.label;
+    BoardStore.update((state) => {
+      return {...state, lists: state.lists.map((l) => {
+        if (list.id !== l.id) return l;
+        return {...l, cards: l.cards.map((c) => {
+          if (card.id !== c.id) return c
+          return updateCardLabel(c, label)
+        })};
+      })};
+    });
+    card = updateCardLabel(card, label)
+  }
+
+  function updateCardLabel(card: types.Card, label: types.Label): types.Card {
+    return {
+      ...card, 
+      labelIds: 
+        card.labelIds.includes(label.id) 
+          ? card.labelIds.filter((id) => id !== label.id) 
+          : [...card.labelIds, label.id]
+    };
+  }
+
+  function openLabelCreateSubmenu(): void {
+    isLabelCreateMenuVisible = true;
+    isLabelsMenuVisible = false;
+  }
+
+  function openLabelEditSubmenu(e: CustomEvent): void {
+    editingLabel = e.detail.label;
     isLabelEditMenuVisible = true;
     isLabelsMenuVisible = false;
+  }
+
+  function openLabelDeleteSubmenu(): void {
+    isLabelDeleteMenuVisible = true;
+    isLabelEditMenuVisible = false;
   }
 
   function openLabelsMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLSpanElement}): void {
@@ -62,13 +102,37 @@ import CreateLabelMenu from "./CreateLabelMenu.svelte";
     isMoveMenuVisible = false;
   }
 
+  function closeLabelCreateMenu(): void {
+    isLabelCreateMenuVisible = false;
+  }
+
   function closeLabelEditMenu(): void {
-    console.info("close submenu")
+    isLabelEditMenuVisible = false;
+  }
+  
+  function closeLabelDeleteMenu(): void {
+    isLabelDeleteMenuVisible = false;
+  }
+
+  function navigateBackFromLabelCreateMenu(): void {
+    isLabelCreateMenuVisible = false;
+    isLabelsMenuVisible = true;
+  }
+
+  function navigateBackFromLabelEditMenu(): void {
     isLabelEditMenuVisible = false;
     isLabelsMenuVisible = true;
   }
 
-  $: console.info(isLabelsMenuVisible)
+  function navigateBackFromLabelDeleteMenu(): void {
+    isLabelDeleteMenuVisible = false;
+    isLabelEditMenuVisible = true;
+  }
+
+  function moveBackToLabelsMenu(): void {
+    isLabelDeleteMenuVisible = false;
+    isLabelsMenuVisible = true;
+  }
 </script>
 
 <div>
@@ -78,6 +142,11 @@ import CreateLabelMenu from "./CreateLabelMenu.svelte";
   </div>
   <div class="container">
     <div class="window-main">
+      <div class="labels-section">
+        {#each cardLabels as label (label.id)}
+          <div class="label" style="background-color: {label.color};">{label.name ?? ""}</div>
+        {/each}
+      </div>
       <h4>Description</h4>
       {#if card.description !== undefined && !isDescriptionEditVisible}
         <div class="edit-button" on:click={toggleDescriptionEditSection}>Edit</div>
@@ -117,12 +186,44 @@ import CreateLabelMenu from "./CreateLabelMenu.svelte";
   </div>
 </div>
 {#if isLabelsMenuVisible}
-  <div use:clickOutside={closeLabelsMenu}>
-    <LabelsMenu x={menuPosition.x} y={menuPosition.y + 40} on:close={closeLabelsMenu} on:show-edit-submenu={openLabelEditSubmenu}/>
-  </div>
+  <LabelsMenu 
+    {card}
+    x={menuPosition.x} 
+    y={menuPosition.y + 40} 
+    on:close={closeLabelsMenu} 
+    on:select={attachLabelToCard}
+    on:create={openLabelCreateSubmenu}
+    on:edit={openLabelEditSubmenu}
+  />
+{/if}
+{#if isLabelCreateMenuVisible} 
+  <CreateLabelMenu  
+    x={menuPosition.x} 
+    y={menuPosition.y + 40} 
+    on:close={closeLabelCreateMenu} 
+    on:back={navigateBackFromLabelCreateMenu}
+  />
 {/if}
 {#if isLabelEditMenuVisible} 
-  <CreateLabelMenu x={menuPosition.x} y={menuPosition.y + 40} on:close={closeLabelEditMenu} />
+  <CreateLabelMenu 
+    label={editingLabel} 
+    isEditMode={true}
+    x={menuPosition.x} 
+    y={menuPosition.y + 40} 
+    on:close={closeLabelEditMenu} 
+    on:back={navigateBackFromLabelEditMenu} 
+    on:delete={openLabelDeleteSubmenu}
+  />
+{/if}
+{#if isLabelDeleteMenuVisible}
+  <DeleteLabelMenu 
+    label={editingLabel} 
+    x={menuPosition.x} 
+    y={menuPosition.y + 40} 
+    on:close={closeLabelDeleteMenu} 
+    on:back={navigateBackFromLabelDeleteMenu} 
+    on:delete={moveBackToLabelsMenu}
+  />
 {/if}
 {#if isMoveMenuVisible}
   <div use:clickOutside={closeMoveMenu}>
@@ -168,6 +269,27 @@ import CreateLabelMenu from "./CreateLabelMenu.svelte";
 
   .title-section {
     margin-bottom: 10px;
+  }
+
+  .labels-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .label {
+    min-height: 20px;
+    min-width: 25px;
+    max-width: 100%;
+    border-radius: 3px; 
+    padding: 6px 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .description-text {

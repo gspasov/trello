@@ -11,7 +11,7 @@
   import Divider from './Divider.svelte';
   import { flip } from 'svelte/animate';
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
-import ActionClose from "./ActionClose.svelte";
+  import ActionClose from "./ActionClose.svelte";
 
   export let id: string;
   export let name: string;
@@ -168,8 +168,8 @@ import ActionClose from "./ActionClose.svelte";
     on:finalize={handleDndCards}
   >
     {#each cards as card (card.id)}
-      <div style={"position: relative;"} animate:flip={{duration: 300}} on:click={() => handleCardClick(card.id)}>
-        <Card id={card.id} title={card.title} listId={id} />
+      <div style="position: relative;" animate:flip={{duration: 300}} on:click={() => handleCardClick(card.id)}>
+        <Card {card} listId={id} />
         {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
           <span class="card-shadow"></span>
         {/if}

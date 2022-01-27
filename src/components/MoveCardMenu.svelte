@@ -8,7 +8,7 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<Menu title={"Move card"} {x} {y} on:close={() => dispatch("close")} >
+<Menu title={"Move card"} {x} {y} on:close>
 </Menu>
 
 <style>

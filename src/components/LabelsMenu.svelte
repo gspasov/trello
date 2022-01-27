@@ -2,27 +2,29 @@
   import Menu from "./Menu.svelte"
   import MenuItem from "./MenuItem.svelte"
   import LabelButton from "./LabelButton.svelte";
-  import {createEventDispatcher} from "svelte"
+  import { createEventDispatcher } from "svelte"
+  import { LabelStore } from "../stores"
+  import type * as types from "../types"
 
   export let x: number;
   export let y: number;
+  export let card: types.Card
 
   const dispatch = createEventDispatcher();
 
+  $: labels = $LabelStore;
+
 </script>
 
-<Menu title={"Labels"} {x} {y} on:close={() => dispatch("close")} >
+<Menu title={"Labels"} {x} {y} on:close>
   <MenuItem>
     <h4>Labels</h4>
-    <LabelButton color={"#61bd4f"} on:click={() => dispatch("show-edit-submenu")} />
-    <LabelButton color={"#f2d600"} on:click={() => dispatch("show-edit-submenu")} />
-    <LabelButton color={"#ff9f1a"} on:click={() => dispatch("show-edit-submenu")} />
-    <LabelButton color={"#eb5a46"} on:click={() => dispatch("show-edit-submenu")} />
-    <LabelButton color={"#c377e0"} on:click={() => dispatch("show-edit-submenu")} />
-    <LabelButton color={"#0079bf"} on:click={() => dispatch("show-edit-submenu")} />
-    <LabelButton color={"#00c2e0"} on:click={() => dispatch("show-edit-submenu")} />
-    <LabelButton color={"#b3bac5"} on:click={() => dispatch("show-edit-submenu")} />
-    <div class="gray-button">Create a new label</div>
+    <div class="labels-wrapper">
+      {#each labels as label (label.id)}
+        <LabelButton {card} {label} on:select on:edit />
+      {/each}
+    </div>
+    <div class="gray-button" on:click={() => dispatch("create")}>Create a new label</div>
   </MenuItem>
 </Menu>
 
@@ -32,6 +34,11 @@
     font-size: 12px;
     color: #5e6c84;
     font-weight: 600;
+  }
+
+  .labels-wrapper {
+    overflow: auto;
+    max-height: 30vh
   }
 
   .gray-button {

@@ -1,14 +1,24 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte"
+  import type * as types from "../types"
 
-  export let color: string = "#0079bf";
+  export let label: types.Label;
+  export let card: types.Card;
+
   const dispatch = createEventDispatcher();
 </script>
 
 <div class="container">
-  <div class="color" style="--color: {color}; --color-shadow: {color}99"></div>
+  <div class="color" style="--color: {label.color}; --color-shadow: {label.color}99;" on:click={() => dispatch("select", { label })}>
+    <div class="color-content">
+      <span>{label.name ?? ""}</span>
+      {#if card.labelIds.includes(label.id)}
+        <span>&#10004;</span>
+      {/if}
+    </div>
+  </div>
   <div>
-    <div class="pen" on:click={() => dispatch("click")}>
+    <div class="pen" on:click={() => dispatch("edit", { label })}>
       <div>
         <span>&#x270F;</span>
       </div>
@@ -25,8 +35,10 @@
   }
 
   .color {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
     min-height: 20px;
-    /* background: #0079bf;  */
     background: var(--color);
     border-radius: 3px;
     flex-grow: 9;
@@ -40,6 +52,10 @@
     margin-left: 8px;
   }
 
+  .color-content {
+    display: flex;
+    justify-content: space-between;
+  }
   .pen {
     display: inline-block;
     margin-right: 20px;
