@@ -1,25 +1,33 @@
 <script lang="ts">
-  import * as types from "../types"
-  import { BoardStore, LabelStore } from "../stores";
-  import ActionClose from "./ActionClose.svelte";
+  import { 
+    Card, 
+    List, 
+    Label, 
+    Coordinates, 
+    CardModalMenusVisibility, 
+    DispatchCompletedPayload, 
+    DefaultMouseEvent, 
+    CardModalMenus } from "../../types"
+  import { BoardStore, LabelStore } from "../../stores";
+  import ActionClose from "../general/ActionClose.svelte";
   import ModalAction from "./ModalAction.svelte";
-  import LabelsMenu from "./LabelsMenu.svelte";
-  import MoveCardMenu from "./MoveCardMenu.svelte";
-  import CreateLabelMenu from "./CreateLabelMenu.svelte";
-  import DeleteLabelMenu from "./DeleteLabelMenu.svelte";
-  import DatePickerMenu from "./DatePickerMenu.svelte"
+  import LabelsMenu from "./menus/LabelsMenu.svelte";
+  import MoveCardMenu from "./menus/MoveCardMenu.svelte";
+  import CreateLabelMenu from "./menus/CreateLabelMenu.svelte";
+  import DeleteLabelMenu from "./menus/DeleteLabelMenu.svelte";
+  import DatePickerMenu from "./menus/DatePickerMenu.svelte"
   import DueDate from "./DueDate.svelte"
   import LabelsSection from "./LabelsSection.svelte"
   
-  export let card: types.Card;
-  export let list: types.List;
+  export let card: Card;
+  export let list: List;
 
   let cardDescription: string = card.description;
   let isDescriptionEditVisible = false;
   let inputRef: HTMLTextAreaElement;
-  let menuPosition: types.Coordinates = { x: 0, y: 0 };
+  let menuPosition: Coordinates = { x: 0, y: 0 };
   let menusVisibility = initialMenusState();
-  let editingLabel: types.Label;
+  let editingLabel: Label;
 
   $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
 
@@ -27,7 +35,7 @@
     menusVisibility = initialMenusState();
   }
 
-  function initialMenusState(): types.CardModalMenusVisibility {
+  function initialMenusState(): CardModalMenusVisibility {
     return {
       labels: false,
       labelCreate: false,
@@ -58,7 +66,7 @@
   }
 
   function attachLabelToCard(e: CustomEvent): void {
-    let label: types.Label = e.detail.label;
+    let label: Label = e.detail.label;
     BoardStore.update((state) => {
       return {...state, lists: state.lists.map((l) => {
         if (list.id !== l.id) return l;
@@ -71,7 +79,7 @@
     card = updateCardLabel(card, label)
   }
 
-  function updateCardLabel(card: types.Card, label: types.Label): types.Card {
+  function updateCardLabel(card: Card, label: Label): Card {
     return {
       ...card, 
       labelIds: 
@@ -81,7 +89,7 @@
     };
   }
 
-  function handleDueDateCompleted(e: CustomEvent<types.DispatchCompletedPayload>): void {
+  function handleDueDateCompleted(e: CustomEvent<DispatchCompletedPayload>): void {
     let completed = e.detail.completed;
     BoardStore.update((state) => {
       return {...state, lists: state.lists.map((l) => {
@@ -101,19 +109,19 @@
     menusVisibility = { ...menusVisibility, labelEdit: true };
   }
 
-  function openMenu(menu: types.CardModalMenus, event?: types.DefaultMouseEvent): void {
+  function openMenu(menu: CardModalMenus, event?: DefaultMouseEvent): void {
     if (event !== undefined) {
       menuPosition = { x: event.currentTarget.offsetLeft, y: event.currentTarget.offsetTop };
     }
     showMenu(menu);
   }
 
-  function openMenuCustom(menu: types.CardModalMenus, event: CustomEvent<types.Coordinates>): void {
+  function openMenuCustom(menu: CardModalMenus, event: CustomEvent<Coordinates>): void {
     menuPosition = { x: event.detail.x, y: event.detail.y };
     showMenu(menu);
   }
 
-  function showMenu(menu: types.CardModalMenus): void {
+  function showMenu(menu: CardModalMenus): void {
     closeAllMenus();
     menusVisibility = { ...menusVisibility, [menu]: true };
   }
@@ -162,7 +170,7 @@
           dueDate={card.dueDate} 
           completed={card.completed} 
           on:toggleCompleted={handleDueDateCompleted} 
-          on:openDueDate={(e) => openMenuCustom(types.CardModalMenus.DUE_DATE, e)}/>
+          on:openDueDate={(e) => openMenuCustom(CardModalMenus.DUE_DATE, e)}/>
       {/if}
       <h4>Description</h4>
       {#if card.description !== undefined && !isDescriptionEditVisible}
@@ -188,16 +196,16 @@
     <div class="window-sidebar">
       <div class="sidebar-flex" style="margin-bottom: 1rem;">
         <span class="title">Add to card</span>
-        <span on:click|stopPropagation={(e) => openMenu(types.CardModalMenus.LABELS, e)}>
+        <span on:click|stopPropagation={(e) => openMenu(CardModalMenus.LABELS, e)}>
           <ModalAction text={"Labels"} />
         </span>
-        <span on:click|stopPropagation={(e) => openMenu(types.CardModalMenus.DUE_DATE, e)}>
+        <span on:click|stopPropagation={(e) => openMenu(CardModalMenus.DUE_DATE, e)}>
           <ModalAction text={"Due Date"} />
         </span>
       </div>
       <div class="sidebar-flex">
         <span class="title">Actions</span>
-        <span on:click|stopPropagation={(e) => openMenu(types.CardModalMenus.MOVE, e)}>
+        <span on:click|stopPropagation={(e) => openMenu(CardModalMenus.MOVE, e)}>
           <ModalAction text={"Move"} />
         </span>
         <ModalAction text={"Delete"} />
@@ -211,7 +219,7 @@
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
     on:select={attachLabelToCard}
-    on:create={() => openMenu(types.CardModalMenus.LABEL_CREATE)}
+    on:create={() => openMenu(CardModalMenus.LABEL_CREATE)}
     on:edit={(openLabelEditMenu)} 
     on:close={closeAllMenus} />
 {/if}
@@ -219,7 +227,7 @@
   <CreateLabelMenu  
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
-    on:back={() => showMenu(types.CardModalMenus.LABELS)} 
+    on:back={() => showMenu(CardModalMenus.LABELS)} 
     on:close={closeAllMenus} />
 {/if}
 {#if menusVisibility.labelEdit} 
@@ -228,8 +236,8 @@
     isEditMode={true}
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
-    on:back={() => showMenu(types.CardModalMenus.LABELS)} 
-    on:delete={() => openMenu(types.CardModalMenus.LABEL_DELETE)} 
+    on:back={() => showMenu(CardModalMenus.LABELS)} 
+    on:delete={() => openMenu(CardModalMenus.LABEL_DELETE)} 
     on:close={closeAllMenus} />
 {/if}
 {#if menusVisibility.labelDelete}
@@ -237,8 +245,8 @@
     label={editingLabel} 
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
-    on:back={() => showMenu(types.CardModalMenus.LABEL_EDIT)} 
-    on:delete={() => showMenu(types.CardModalMenus.LABELS)} 
+    on:back={() => showMenu(CardModalMenus.LABEL_EDIT)} 
+    on:delete={() => showMenu(CardModalMenus.LABELS)} 
     on:close={closeAllMenus} />
 {/if}
 {#if menusVisibility.dueDate}

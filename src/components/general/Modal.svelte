@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { clickOutside } from "../clickOutside"
+  import { clickOutside } from "../../clickOutside"
   import CloseButton from "./CloseButton.svelte";
 
   export let backgroundColor: string;

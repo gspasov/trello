@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { BoardStore } from "./stores";
 	import { v4 as uuidv4 } from 'uuid';
-	import * as types from "./types"
+	import { List } from "./types"
 	import { slide } from 'svelte/transition';
 	import Board from "./components/Board.svelte";
-	import ActionClose from "./components/ActionClose.svelte";
+	import ActionClose from "./components/general/ActionClose.svelte";
 
 	let newListTitle = "";
 	let isNewListSectionVisible = false;
@@ -23,7 +23,7 @@
 				...state,
 				lists: [
 					...state.lists,
-					types.List(newListId, newListTitle, [])
+					List(newListId, newListTitle, [])
 				]
 			}
 		});

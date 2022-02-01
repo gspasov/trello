@@ -1,14 +1,14 @@
 <script lang="ts">
-  import Menu from "./Menu.svelte"
-  import MenuItem from "./MenuItem.svelte"
-  import LabelButton from "./LabelButton.svelte";
+  import Menu from "../../general/Menu.svelte"
+  import MenuItem from "../../general/MenuItem.svelte"
+  import LabelButton from "../LabelButton.svelte";
   import { createEventDispatcher } from "svelte"
-  import { LabelStore } from "../stores"
-  import type * as types from "../types"
+  import { LabelStore } from "../../../stores"
+  import type { Card } from "../../../types"
 
   export let x: number;
   export let y: number;
-  export let card: types.Card
+  export let card: Card
 
   const dispatch = createEventDispatcher();
 

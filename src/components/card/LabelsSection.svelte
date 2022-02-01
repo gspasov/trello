@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type * as types from "../types"
+  import type { Label } from "../../types"
 
-  export let labels: types.Label[]
+  export let labels: Label[]
 
 </script>
 

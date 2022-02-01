@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Menu from "./Menu.svelte"
+  import Menu from "../../general/Menu.svelte"
   import { createEventDispatcher } from "svelte"
-  import * as types from "../types"
-  import { LabelStore, DefaultLabelStore } from "../stores"
+  import * as types from "../../../types"
+  import { LabelStore, DefaultLabelStore } from "../../../stores"
   import { onMount } from 'svelte';
   import { v4 as uuidv4 } from "uuid"
 

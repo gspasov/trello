@@ -1,6 +1,6 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte"
-  import Menu from "./Menu.svelte"
+  import Menu from "../../general/Menu.svelte"
 
   export let x: number;
   export let y: number;

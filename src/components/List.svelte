@@ -3,15 +3,15 @@
   import { fade } from 'svelte/transition';
   import Card from "./Card.svelte"
   import { BoardStore } from "../stores";
-  import Menu from "./Menu.svelte"
-  import MenuItem from "./MenuItem.svelte"
+  import Menu from "./general/Menu.svelte"
+  import MenuItem from "./general/MenuItem.svelte"
   import * as types from "../types"
   import { v4 as uuidv4 } from 'uuid';
   import { clickOutside } from '../clickOutside';
-  import Divider from './Divider.svelte';
+  import Divider from './general/Divider.svelte';
   import { flip } from 'svelte/animate';
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
-  import ActionClose from "./ActionClose.svelte";
+  import ActionClose from "./general/ActionClose.svelte";
 
   export let id: string;
   export let name: string;

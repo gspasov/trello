@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
-  import type { Coordinates, DispatchCompleted, DispatchDueDatePosition } from "../types"
+  import type { Coordinates, DispatchCompleted, DispatchDueDatePosition } from "../../types"
 
   export let dueDate: Date;
   export let completed = false;
@@ -32,7 +32,7 @@
     <div class="due-date" on:click={toggleOpenDueDateMenu}>
       <span>{displayDate}</span>
       {#if completed}
-        <div class="completed">completed</div>
+        <div class="completed">complete</div>
       {/if}
       <span class="arrow">&#x2771;</span>
     </div>

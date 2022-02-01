@@ -1,9 +1,9 @@
 <script lang="ts">
   import { BoardStore, LabelStore } from "../stores";
-  import CloseButton from "./CloseButton.svelte";
-  import type * as types from "../types";
+  import CloseButton from "./general/CloseButton.svelte";
+  import type { Card } from "../types";
 
-  export let card: types.Card; 
+  export let card: Card; 
   export let listId: string
 
   let isCloseBtnHidden: boolean = true;

@@ -1,6 +1,6 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte"
-  import type * as types from "../types"
+  import type * as types from "../../types"
 
   export let label: types.Label;
   export let card: types.Card;
