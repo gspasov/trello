@@ -1,13 +1,15 @@
 <script lang="ts">
-  import type * as types from "../types"
+  import * as types from "../types"
   import { BoardStore, LabelStore } from "../stores";
-  import { clickOutside } from "../clickOutside";
   import ActionClose from "./ActionClose.svelte";
   import ModalAction from "./ModalAction.svelte";
   import LabelsMenu from "./LabelsMenu.svelte";
   import MoveCardMenu from "./MoveCardMenu.svelte";
   import CreateLabelMenu from "./CreateLabelMenu.svelte";
   import DeleteLabelMenu from "./DeleteLabelMenu.svelte";
+  import DatePickerMenu from "./DatePickerMenu.svelte"
+  import DueDate from "./DueDate.svelte"
+  import LabelsSection from "./LabelsSection.svelte"
   
   export let card: types.Card;
   export let list: types.List;
@@ -15,15 +17,26 @@
   let cardDescription: string = card.description;
   let isDescriptionEditVisible = false;
   let inputRef: HTMLTextAreaElement;
-  let menuPosition = { x: 0, y: 0 };
-  let isLabelsMenuVisible = false;
-  let isLabelCreateMenuVisible = false;
-  let isLabelEditMenuVisible = false;
-  let isLabelDeleteMenuVisible = false;
-  let isMoveMenuVisible = false;
+  let menuPosition: types.Coordinates = { x: 0, y: 0 };
+  let menusVisibility = initialMenusState();
   let editingLabel: types.Label;
 
   $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
+
+  function closeAllMenus(): void {
+    menusVisibility = initialMenusState();
+  }
+
+  function initialMenusState(): types.CardModalMenusVisibility {
+    return {
+      labels: false,
+      labelCreate: false,
+      labelEdit: false,
+      labelDelete: false,
+      dueDate: false,
+      move: false,
+    };
+  }
 
   function toggleDescriptionEditSection():void {
     isDescriptionEditVisible = !isDescriptionEditVisible;
@@ -68,85 +81,89 @@
     };
   }
 
-  function openLabelCreateSubmenu(): void {
-    isLabelCreateMenuVisible = true;
-    isLabelsMenuVisible = false;
+  function handleDueDateCompleted(e: CustomEvent<types.DispatchCompletedPayload>): void {
+    let completed = e.detail.completed;
+    BoardStore.update((state) => {
+      return {...state, lists: state.lists.map((l) => {
+        if (list.id !== l.id) return l;
+        return {...l, cards: l.cards.map((c) => {
+          if (card.id !== c.id) return c
+          return {...c, completed};
+        })};
+      })};
+    });
+    card = {...card, completed};
   }
 
-  function openLabelEditSubmenu(e: CustomEvent): void {
+  function openLabelEditMenu(e: CustomEvent): void {
     editingLabel = e.detail.label;
-    isLabelEditMenuVisible = true;
-    isLabelsMenuVisible = false;
+    closeAllMenus();
+    menusVisibility = { ...menusVisibility, labelEdit: true };
   }
 
-  function openLabelDeleteSubmenu(): void {
-    isLabelDeleteMenuVisible = true;
-    isLabelEditMenuVisible = false;
+  function openMenu(menu: types.CardModalMenus, event?: types.DefaultMouseEvent): void {
+    if (event !== undefined) {
+      menuPosition = { x: event.currentTarget.offsetLeft, y: event.currentTarget.offsetTop };
+    }
+    showMenu(menu);
   }
 
-  function openLabelsMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLSpanElement}): void {
-    menuPosition = { x: event.currentTarget.offsetLeft, y: event.currentTarget.offsetTop };
-    isLabelsMenuVisible = true;
+  function openMenuCustom(menu: types.CardModalMenus, event: CustomEvent<types.Coordinates>): void {
+    menuPosition = { x: event.detail.x, y: event.detail.y };
+    showMenu(menu);
   }
 
-  function openMoveMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLSpanElement}): void {
-    menuPosition = { x: event.currentTarget.offsetLeft, y: event.currentTarget.offsetTop };
-    isMoveMenuVisible = true;
+  function showMenu(menu: types.CardModalMenus): void {
+    closeAllMenus();
+    menusVisibility = { ...menusVisibility, [menu]: true };
   }
 
-  function closeLabelsMenu(): void {
-    isLabelsMenuVisible = false;
+  function handleSelectedDueDate(e: CustomEvent<Date>): void {
+    BoardStore.update((state) => {
+      return {...state, lists: state.lists.map((l) => {
+        if (list.id !== l.id) return l;
+        return {...l, cards: l.cards.map((c) => {
+          if (card.id !== c.id) return c
+          return {...c, dueDate: e.detail};
+        })};
+      })};
+    });
+    card = {...card, dueDate: e.detail};
+    closeAllMenus();
   }
 
-  function closeMoveMenu(): void {
-    isMoveMenuVisible = false;
-  }
-
-  function closeLabelCreateMenu(): void {
-    isLabelCreateMenuVisible = false;
-  }
-
-  function closeLabelEditMenu(): void {
-    isLabelEditMenuVisible = false;
-  }
-  
-  function closeLabelDeleteMenu(): void {
-    isLabelDeleteMenuVisible = false;
-  }
-
-  function navigateBackFromLabelCreateMenu(): void {
-    isLabelCreateMenuVisible = false;
-    isLabelsMenuVisible = true;
-  }
-
-  function navigateBackFromLabelEditMenu(): void {
-    isLabelEditMenuVisible = false;
-    isLabelsMenuVisible = true;
-  }
-
-  function navigateBackFromLabelDeleteMenu(): void {
-    isLabelDeleteMenuVisible = false;
-    isLabelEditMenuVisible = true;
-  }
-
-  function moveBackToLabelsMenu(): void {
-    isLabelDeleteMenuVisible = false;
-    isLabelsMenuVisible = true;
+  function handleRemoveDueDate(): void {
+    BoardStore.update((state) => {
+      return {...state, lists: state.lists.map((l) => {
+        if (list.id !== l.id) return l;
+        return {...l, cards: l.cards.map((c) => {
+          if (card.id !== c.id) return c
+          return {...c, dueDate: undefined};
+        })};
+      })};
+    });
+    card = {...card, dueDate: undefined};
+    closeAllMenus();
   }
 </script>
 
 <div>
-  <div class="title-section">
+  <div>
     <h3>{card.title}</h3>
     <span>in list {list.name}</span>
   </div>
   <div class="container">
     <div class="window-main">
-      <div class="labels-section">
-        {#each cardLabels as label (label.id)}
-          <div class="label" style="background-color: {label.color};">{label.name ?? ""}</div>
-        {/each}
-      </div>
+      {#if cardLabels.length > 0}
+        <LabelsSection labels={cardLabels} />
+      {/if}
+      {#if card.dueDate !== undefined}
+        <DueDate 
+          dueDate={card.dueDate} 
+          completed={card.completed} 
+          on:toggleCompleted={handleDueDateCompleted} 
+          on:openDueDate={(e) => openMenuCustom(types.CardModalMenus.DUE_DATE, e)}/>
+      {/if}
       <h4>Description</h4>
       {#if card.description !== undefined && !isDescriptionEditVisible}
         <div class="edit-button" on:click={toggleDescriptionEditSection}>Edit</div>
@@ -169,15 +186,18 @@
       </div>
     </div>
     <div class="window-sidebar">
-      <div class="sidebar-flex">
+      <div class="sidebar-flex" style="margin-bottom: 1rem;">
         <span class="title">Add to card</span>
-        <span on:click|stopPropagation={openLabelsMenu}>
+        <span on:click|stopPropagation={(e) => openMenu(types.CardModalMenus.LABELS, e)}>
           <ModalAction text={"Labels"} />
+        </span>
+        <span on:click|stopPropagation={(e) => openMenu(types.CardModalMenus.DUE_DATE, e)}>
+          <ModalAction text={"Due Date"} />
         </span>
       </div>
       <div class="sidebar-flex">
         <span class="title">Actions</span>
-        <span on:click|stopPropagation={openMoveMenu}>
+        <span on:click|stopPropagation={(e) => openMenu(types.CardModalMenus.MOVE, e)}>
           <ModalAction text={"Move"} />
         </span>
         <ModalAction text={"Delete"} />
@@ -185,50 +205,55 @@
     </div>
   </div>
 </div>
-{#if isLabelsMenuVisible}
+{#if menusVisibility.labels}
   <LabelsMenu 
     {card}
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
-    on:close={closeLabelsMenu} 
     on:select={attachLabelToCard}
-    on:create={openLabelCreateSubmenu}
-    on:edit={openLabelEditSubmenu}
-  />
+    on:create={() => openMenu(types.CardModalMenus.LABEL_CREATE)}
+    on:edit={(openLabelEditMenu)} 
+    on:close={closeAllMenus} />
 {/if}
-{#if isLabelCreateMenuVisible} 
+{#if menusVisibility.labelCreate} 
   <CreateLabelMenu  
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
-    on:close={closeLabelCreateMenu} 
-    on:back={navigateBackFromLabelCreateMenu}
-  />
+    on:back={() => showMenu(types.CardModalMenus.LABELS)} 
+    on:close={closeAllMenus} />
 {/if}
-{#if isLabelEditMenuVisible} 
+{#if menusVisibility.labelEdit} 
   <CreateLabelMenu 
     label={editingLabel} 
     isEditMode={true}
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
-    on:close={closeLabelEditMenu} 
-    on:back={navigateBackFromLabelEditMenu} 
-    on:delete={openLabelDeleteSubmenu}
-  />
+    on:back={() => showMenu(types.CardModalMenus.LABELS)} 
+    on:delete={() => openMenu(types.CardModalMenus.LABEL_DELETE)} 
+    on:close={closeAllMenus} />
 {/if}
-{#if isLabelDeleteMenuVisible}
+{#if menusVisibility.labelDelete}
   <DeleteLabelMenu 
     label={editingLabel} 
     x={menuPosition.x} 
     y={menuPosition.y + 40} 
-    on:close={closeLabelDeleteMenu} 
-    on:back={navigateBackFromLabelDeleteMenu} 
-    on:delete={moveBackToLabelsMenu}
-  />
+    on:back={() => showMenu(types.CardModalMenus.LABEL_EDIT)} 
+    on:delete={() => showMenu(types.CardModalMenus.LABELS)} 
+    on:close={closeAllMenus} />
 {/if}
-{#if isMoveMenuVisible}
-  <div use:clickOutside={closeMoveMenu}>
-    <MoveCardMenu x={menuPosition.x} y={menuPosition.y + 40} on:close={closeMoveMenu} />
-  </div>
+{#if menusVisibility.dueDate}
+  <DatePickerMenu 
+    x={menuPosition.x} 
+    y={menuPosition.y + 40} 
+    on:select={handleSelectedDueDate} 
+    on:remove={handleRemoveDueDate} 
+    on:close={closeAllMenus} />
+{/if}
+{#if menusVisibility.move}
+  <MoveCardMenu 
+    x={menuPosition.x} 
+    y={menuPosition.y + 40} 
+    on:close={closeAllMenus} />
 {/if}
 
 <style>
@@ -267,44 +292,19 @@
     outline: none;
   }
 
-  .title-section {
-    margin-bottom: 10px;
-  }
-
-  .labels-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .label {
-    min-height: 20px;
-    min-width: 25px;
-    max-width: 100%;
-    border-radius: 3px; 
-    padding: 6px 12px;
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
   .description-text {
     cursor: pointer;
     font-size: 0.85rem;
   }
   .missing-description {
-    background-color: #dddddd;
+    background-color: #091e420a;
     padding: 8px 12px;
     min-height: 40px;
     border-radius: 3px;
   }
 
   .missing-description:hover {
-    background-color: #cccccc;
+    background-color: #091e4211;
   }
   
   .container {
@@ -331,7 +331,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 1rem;
   }
   .edit-button {
     display: inline-block;

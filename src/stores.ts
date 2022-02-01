@@ -28,7 +28,7 @@ const board = {
       ),
     ]),
     List(uuidv4(), "In Progress", [
-      Card(uuidv4(), "Card 3"),
+      Card(uuidv4(), "Card 3", "Here is some description to be read"),
       Card(uuidv4(), "Card 4"),
     ]),
     List(uuidv4(), "Done", [
