@@ -2,7 +2,7 @@
   import Menu from "../../general/Menu.svelte"
   import { createEventDispatcher } from "svelte"
   import { LabelStore } from "../../../stores"
-  import type { Label } from "../../../types"
+  import type { Label } from "../../../models/label"
 
   export let x: number;
   export let y: number;

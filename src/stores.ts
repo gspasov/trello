@@ -1,7 +1,5 @@
 import { writable } from "svelte/store";
 import {
-  List,
-  Card,
   BlueLabel,
   GrayLabel,
   GreenLabel,
@@ -10,8 +8,10 @@ import {
   PurpleLabel,
   RedLabel,
   YellowLabel,
-} from "./types";
+} from "./models/label";
 import { v4 as uuidv4 } from "uuid";
+import { List } from "./models/list";
+import { Card } from "./models/card";
 
 const board = {
   name: "Georgi's Board",

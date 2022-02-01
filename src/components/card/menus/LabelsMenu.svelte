@@ -4,7 +4,7 @@
   import LabelButton from "../LabelButton.svelte";
   import { createEventDispatcher } from "svelte"
   import { LabelStore } from "../../../stores"
-  import type { Card } from "../../../types"
+  import type { Card } from "../../../models/card";
 
   export let x: number;
   export let y: number;

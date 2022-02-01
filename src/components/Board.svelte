@@ -4,12 +4,15 @@
   import { BoardStore } from "../stores";
   import List from "./List.svelte"
   import Modal from "./general/Modal.svelte"
-  import type * as types from "../types"
   import CardModal from './card/CardModal.svelte';
+  import type { Card } from '../models/card';
+  import type { List as ListType } from '../models/list';
+  
 
-  let modalRef;
-  let selectedCard: types.Card;
-  let selectedList: types.List;
+  let modalRef: Modal;
+  let selectedCard: Card;
+  let selectedList: ListType;
+  
   $: columns = $BoardStore.lists;
   $: isListMenuOpened = $BoardStore.lists.filter((list) => list.isMenuOpened).length > 0;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BoardStore } from "./stores";
 	import { v4 as uuidv4 } from 'uuid';
-	import { List } from "./types"
+	import { List } from "./models/list"
 	import { slide } from 'svelte/transition';
 	import Board from "./components/Board.svelte";
 	import ActionClose from "./components/general/ActionClose.svelte";

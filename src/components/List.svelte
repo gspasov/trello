@@ -5,17 +5,17 @@
   import { BoardStore } from "../stores";
   import Menu from "./general/Menu.svelte"
   import MenuItem from "./general/MenuItem.svelte"
-  import * as types from "../types"
   import { v4 as uuidv4 } from 'uuid';
   import { clickOutside } from '../clickOutside';
   import Divider from './general/Divider.svelte';
   import { flip } from 'svelte/animate';
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import ActionClose from "./general/ActionClose.svelte";
+  import { Card as CardType } from "../models/card"
 
   export let id: string;
   export let name: string;
-  export let cards: types.Card[];
+  export let cards: CardType[];
   export let isMenuOpened = false;
   
   let newTitleText = name
@@ -66,7 +66,7 @@
               ...list,
               cards: [
                 ...list.cards,
-                types.Card(newCardId, newCardTitle),
+                CardType(newCardId, newCardTitle),
               ],
             };
           }),

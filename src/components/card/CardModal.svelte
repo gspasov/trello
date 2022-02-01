@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { 
-    Card, 
-    List, 
-    Label, 
+  import {
     Coordinates, 
     CardModalMenusVisibility, 
     DispatchCompletedPayload, 
     DefaultMouseEvent, 
-    CardModalMenus } from "../../types"
+    CardModalMenus } from "../../supportTypes"
+  import type { Card } from "../../models/card";
+  import type { List } from "../../models/list";
+  import type { Label } from "../../models/label";
   import { BoardStore, LabelStore } from "../../stores";
   import ActionClose from "../general/ActionClose.svelte";
   import ModalAction from "./ModalAction.svelte";

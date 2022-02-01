@@ -1,31 +1,31 @@
 <script lang="ts">
   import Menu from "../../general/Menu.svelte"
   import { createEventDispatcher } from "svelte"
-  import * as types from "../../../types"
+  import { Label, LabelColorType, orderLabelsByColor, labelColorTypeMapping } from "../../../models/label"
   import { LabelStore, DefaultLabelStore } from "../../../stores"
   import { onMount } from 'svelte';
   import { v4 as uuidv4 } from "uuid"
 
   export let x: number;
   export let y: number;
-  export let label: types.Label = undefined;
+  export let label: Label = undefined;
   export let isEditMode = false;
 
   const dispatch = createEventDispatcher();
   let inputRef: HTMLInputElement;
   let labelName: string = label?.name ?? "";
-  let selectedColorType: types.LabelColorType = label?.type ?? types.LabelColorType.Green
+  let selectedColorType: LabelColorType = label?.type ?? LabelColorType.Green
   
   onMount(() => inputRef.focus());
 
   function handleCreate(): void {
     LabelStore.update((labels) => {
-      return types.orderLabelsByColor([
+      return orderLabelsByColor([
         ...labels,
         {
           id: uuidv4(),
           type: selectedColorType,
-          color: types.labelColorTypeMapping(selectedColorType),
+          color: labelColorTypeMapping(selectedColorType),
           name: labelName,
         }
       ]);
@@ -35,12 +35,12 @@
 
   function handleEdit(): void {
     LabelStore.update((labels) => {
-      return types.orderLabelsByColor(labels.map((l) => {
+      return orderLabelsByColor(labels.map((l) => {
           if (label.id !== l.id) return l;
           return {
             ...l,
             type: selectedColorType,
-            color: types.labelColorTypeMapping(selectedColorType),
+            color: labelColorTypeMapping(selectedColorType),
             name: labelName,
           };
         }))
@@ -48,7 +48,7 @@
     dispatch("back");
   }
 
-  function handleColorSelection(colorType: types.LabelColorType): void {
+  function handleColorSelection(colorType: LabelColorType): void {
     selectedColorType = colorType;
   }
 </script>

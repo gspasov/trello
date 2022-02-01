@@ -1,85 +1,4 @@
-export type DefaultMouseEvent = MouseEvent & {
-  currentTarget: EventTarget & HTMLElement;
-};
-
-export interface DispatchDueDatePosition {
-  openDueDate: Coordinates;
-}
-
-export interface Coordinates {
-  x: number;
-  y: number;
-}
-
-export enum CardModalMenus {
-  DUE_DATE = "dueDate",
-  LABELS = "labels",
-  LABEL_CREATE = "labelCreate",
-  LABEL_EDIT = "labelEdit",
-  LABEL_DELETE = "labelDelete",
-  MOVE = "move",
-}
-
-export interface CardModalMenusVisibility {
-  dueDate: boolean;
-  labels: boolean;
-  labelCreate: boolean;
-  labelEdit: boolean;
-  labelDelete: boolean;
-  move: boolean;
-}
-
-export interface DispatchCompleted {
-  toggleCompleted: DispatchCompletedPayload;
-}
-
-export interface DispatchCompletedPayload {
-  completed: boolean;
-}
-
-export type List = {
-  id: string;
-  name: string;
-  cards: Card[];
-  isMenuOpened: boolean;
-};
-
-export function List(id: string, name: string, cards: Card[]): List {
-  return {
-    id,
-    name,
-    cards,
-    isMenuOpened: false,
-  };
-}
-
-export type Card = {
-  id: string;
-  title: string;
-  labelIds: string[];
-  completed: boolean;
-  description?: string;
-  assignedTo?: string;
-  dueDate?: Date;
-};
-
-export function Card(
-  id: string,
-  title: string,
-  description?: string,
-  assignedTo?: string,
-  dueDate?: Date
-): Card {
-  return {
-    id,
-    title,
-    labelIds: [],
-    completed: false,
-    description,
-    assignedTo,
-    dueDate,
-  };
-}
+import { assertUnreachable } from "../supportTypes";
 
 export enum LabelColorType {
   Green = "green",
@@ -356,10 +275,4 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
         assertUnreachable(a.type);
     }
   });
-}
-
-export function assertUnreachable(value: never): never {
-  throw new Error(
-    `Unreachable value reached: ${JSON.stringify(value, null, 2)}`
-  );
 }

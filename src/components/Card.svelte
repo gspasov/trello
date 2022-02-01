@@ -1,7 +1,7 @@
 <script lang="ts">
   import { BoardStore, LabelStore } from "../stores";
   import CloseButton from "./general/CloseButton.svelte";
-  import type { Card } from "../types";
+  import type { Card } from "../models/card";
 
   export let card: Card; 
   export let listId: string

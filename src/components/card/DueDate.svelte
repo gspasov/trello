@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
-  import type { Coordinates, DispatchCompleted, DispatchDueDatePosition } from "../../types"
+  import type { Coordinates, DispatchCompleted, DispatchDueDatePosition } from "../../supportTypes"
 
   export let dueDate: Date;
   export let completed = false;
@@ -17,11 +17,11 @@
 
   function toggleOpenDueDateMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLDivElement}): void {
     isDueDateMenuOpen = !isDueDateMenuOpen;
-    const position: Coordinates = { 
+    const coordinates: Coordinates = { 
         x: event.currentTarget.offsetLeft, 
         y: event.currentTarget.offsetTop, 
       };
-    dipatchDueDateOpen("openDueDate", position)
+    dipatchDueDateOpen("openDueDate", coordinates)
   }
 </script>
 
