@@ -1,10 +1,9 @@
 <script lang="ts">
   import Menu from "../../general/Menu.svelte"
   import { createEventDispatcher } from "svelte"
-  import { Label, LabelColorType, orderLabelsByColor, labelColorTypeMapping } from "../../../models/label"
-  import { LabelStore, DefaultLabelStore } from "../../../stores"
+  import { Label, LabelColorType, createLabel, updateLabel, labelColorTypeMapping } from "../../../models/label"
+  import { DefaultLabelStore } from "../../../stores"
   import { onMount } from 'svelte';
-  import { v4 as uuidv4 } from "uuid"
 
   export let x: number;
   export let y: number;
@@ -19,32 +18,18 @@
   onMount(() => inputRef.focus());
 
   function handleCreate(): void {
-    LabelStore.update((labels) => {
-      return orderLabelsByColor([
-        ...labels,
-        {
-          id: uuidv4(),
-          type: selectedColorType,
-          color: labelColorTypeMapping(selectedColorType),
-          name: labelName,
-        }
-      ]);
-    });
+    createLabel(selectedColorType, labelName);
     dispatch("back");
   }
 
   function handleEdit(): void {
-    LabelStore.update((labels) => {
-      return orderLabelsByColor(labels.map((l) => {
-          if (label.id !== l.id) return l;
-          return {
-            ...l,
-            type: selectedColorType,
-            color: labelColorTypeMapping(selectedColorType),
-            name: labelName,
-          };
-        }))
-      });
+    label = {
+      ...label, 
+      type: selectedColorType, 
+      color: labelColorTypeMapping(selectedColorType), 
+      name: labelName };
+      
+    updateLabel(label.id, label);
     dispatch("back");
   }
 

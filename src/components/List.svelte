@@ -2,23 +2,19 @@
   import { createEventDispatcher } from "svelte"
   import { fade } from 'svelte/transition';
   import Card from "./Card.svelte"
-  import { BoardStore } from "../stores";
   import Menu from "./general/Menu.svelte"
   import MenuItem from "./general/MenuItem.svelte"
-  import { v4 as uuidv4 } from 'uuid';
   import { clickOutside } from '../clickOutside';
   import Divider from './general/Divider.svelte';
   import { flip } from 'svelte/animate';
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import ActionClose from "./general/ActionClose.svelte";
-  import { Card as CardType } from "../models/card"
+  import { Card as CardType, createCard } from "../models/card"
+  import { List, updateList, deleteList, closeListMenu } from "../models/list"
 
-  export let id: string;
-  export let name: string;
-  export let cards: CardType[];
-  export let isMenuOpened = false;
+  export let list: List;
   
-  let newTitleText = name
+  let newTitleText = list.name;
   let newCardTitle = ""
   let isAddCardSectionVisible = false;
   let isEditingListTitle = false;
@@ -28,16 +24,8 @@
   const dispatch = createEventDispatcher();
 
   function handleDndCards(e): void {
-    BoardStore.update((state) => {
-			return {
-				...state,
-				lists: state.lists.map((list) => {
-          if (list.id !== id) return list;
-
-          return {...list, cards: e.detail.items};
-        }),
-			}
-		});
+    const cards: CardType[] = e.detail.items;
+    updateList(list.id, {...list, cards});
   }
 
   function transformDraggedElement(e): void {
@@ -53,25 +41,9 @@
     isAddCardSectionVisible = false;
   }
 
-  function createCard(): void {
+  function handleCreateCard(): void {
     if (newCardTitle.trim() !== "") {
-      BoardStore.update((state) => {
-        const newCardId = uuidv4();
-        return {
-          ...state,
-          lists: state.lists.map((list) => {
-            if (list.id !== id) return list;
-
-            return {
-              ...list,
-              cards: [
-                ...list.cards,
-                CardType(newCardId, newCardTitle),
-              ],
-            };
-          }),
-        }
-      });
+      createCard(list.id, newCardTitle);
     }
     newCardTitle = "";
     hideAddCardSection();
@@ -80,49 +52,16 @@
   function openListMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLSpanElement}): void {
     const rect = event.currentTarget.getBoundingClientRect();
     menuPosition = { x: rect.left, y: rect.top };
-
-    BoardStore.update((store) => {
-      return {
-        ...store,
-        lists: store.lists.map((list) => {
-          if (list.id !== id) return {...list, isMenuOpened: false};
-
-          return {...list, isMenuOpened: true};
-        }),
-      }
-    })
+    updateList(list.id, {...list, isMenuOpened: true});
   }
 
-  function closeListMenu(): void {
-    BoardStore.update((store) => {
-      return {
-        ...store,
-        lists: store.lists.map((list) => ({...list, isMenuOpened: false})),
-      }
-    })
-  }
-
-  function deleteList(): void {
-    isMenuOpened = false;
-    BoardStore.update((store) => {
-      return {
-        ...store,
-        lists: store.lists.filter((list) => list.id !== id),
-      }
-    })
+  function handleDeleteList(): void {
+    list.isMenuOpened = false;
+    deleteList(list.id);
   }
 
   function deleteAllCardsFromList(): void {
-    BoardStore.update((store) => {
-      return {
-        ...store,
-        lists: store.lists.map((list) => {
-          if (list.id !== id) return list;
-
-          return {...list, cards: [], isMenuOpened: false};
-        }),
-      }
-    })
+    updateList(list.id, {...list, cards: [], isMenuOpened: false});
   }
 
   function startEditingListTitle(): void {
@@ -133,16 +72,7 @@
 
   function handleTitleInputSubmit(e: KeyboardEvent): void {
     if (e.key === "Enter") {
-      BoardStore.update((store) => {
-        return {
-          ...store,
-          lists: store.lists.map((list) => {
-            if (list.id !== id) return list;
-
-            return {...list, name: newTitleText};
-          }),
-        }
-      })
+      updateList(list.id, {...list, name: newTitleText});
       isEditingListTitle = false;
     } 
     if (e.key === "Escape") {
@@ -151,25 +81,25 @@
   }
 
   function handleCardClick(cardId: string): void {
-    dispatch("cardOpened", {listId: id, cardId})
+    dispatch("cardOpened", {listId: list.id, cardId})
   }
 </script>
 
 <div class="list">
   <div class="title-section">
-    <div class:hidden={isEditingListTitle} class="title" on:click={() => isEditingListTitle = true}>{name}</div>
+    <div class:hidden={isEditingListTitle} class="title" on:click={() => isEditingListTitle = true}>{list.name}</div>
     <input class:hidden={!isEditingListTitle} class="title-input" bind:value={newTitleText} bind:this={newTitleInputRef} on:keydown={handleTitleInputSubmit}/>
     <span class="list-menu-btn" on:click|stopPropagation={openListMenu}>&#9679;&#9679;&#9679;</span>
   </div>
   <div 
     class="cards" 
-    use:dndzone={{items: cards, flipDurationMs: 300, transformDraggedElement, dropTargetStyle: {}}}
+    use:dndzone={{items: list.cards, flipDurationMs: 300, transformDraggedElement, dropTargetStyle: {}}}
     on:consider={handleDndCards} 
     on:finalize={handleDndCards}
   >
-    {#each cards as card (card.id)}
+    {#each list.cards as card (card.id)}
       <div style="position: relative;" animate:flip={{duration: 300}} on:click={() => handleCardClick(card.id)}>
-        <Card {card} listId={id} />
+        <Card {card} listId={list.id} />
         {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
           <span class="card-shadow"></span>
         {/if}
@@ -181,7 +111,7 @@
       <textarea type="text" name="card" placeholder="Enter a title for this card..." bind:value={newCardTitle} bind:this={newCardInputRef}/>
     </div>
     <div class="add-card-parent">
-      <ActionClose title={"Add card"} on:click={createCard} on:close={toggleAddCardSectionVisibility} />
+      <ActionClose title={"Add card"} on:click={handleCreateCard} on:close={toggleAddCardSectionVisibility} />
     </div>
   </div>
   <div 
@@ -190,13 +120,13 @@
     on:click={toggleAddCardSectionVisibility}>
       +Add a card
   </div>
-  {#if isMenuOpened}
+  {#if list.isMenuOpened}
     <div transition:fade={{duration: 150}} use:clickOutside={closeListMenu}>
       <Menu title={"List actions"} x={menuPosition.x} y={menuPosition.y + 30} on:close={closeListMenu}>
         <MenuItem lineText={"Rename"} on:click={startEditingListTitle}/>
         <MenuItem lineText={"Delete All Cards from List"} on:click={deleteAllCardsFromList}/>
         <Divider/>
-        <MenuItem lineText={"Delete"} on:click={deleteList}/>
+        <MenuItem lineText={"Delete"} on:click={handleDeleteList}/>
       </Menu>
     </div>
   {/if}

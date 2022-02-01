@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+import { LabelStore } from "../stores";
 import { assertUnreachable } from "../supportTypes";
 
 export enum LabelColorType {
@@ -37,80 +39,43 @@ export function labelColorTypeMapping(labelColorType: LabelColorType): string {
 export type Label = {
   type: LabelColorType;
   id: string;
-  name?: string;
   color: string;
+  name?: string;
 };
 
-export function GreenLabel(id: string, name?: string): Label {
+export function Label(id: string, type: LabelColorType, name?: string): Label {
   return {
-    type: LabelColorType.Green,
+    type,
     id,
+    color: labelColorTypeMapping(type),
     name,
-    color: "#61bd4f",
   };
 }
 
-export function YellowLabel(id: string, name?: string): Label {
-  return {
-    type: LabelColorType.Yellow,
-    id,
-    name,
-    color: "#f2d600",
-  };
+export function createLabel(type: LabelColorType, name?: string): void {
+  LabelStore.update((labels) => {
+    return orderLabelsByColor([
+      ...labels,
+      {
+        id: uuidv4(),
+        type: type,
+        color: labelColorTypeMapping(type),
+        name,
+      },
+    ]);
+  });
 }
 
-export function OrangeLabel(id: string, name?: string): Label {
-  return {
-    type: LabelColorType.Orange,
-    id,
-    name,
-    color: "#ff9f1a",
-  };
-}
+export function updateLabel(id: string, newLabel: Label): void {
+  LabelStore.update((labels) => {
+    return orderLabelsByColor(
+      labels.map((label) => {
+        if (id !== label.id) return label;
 
-export function RedLabel(id: string, name?: string): Label {
-  return {
-    type: LabelColorType.Red,
-    id,
-    name,
-    color: "#eb5a46",
-  };
-}
-
-export function PurpleLabel(id: string, name?: string): Label {
-  return {
-    type: LabelColorType.Purple,
-    id,
-    name,
-    color: "#c377e0",
-  };
-}
-
-export function BlueLabel(id: string, name?: string): Label {
-  return {
-    type: LabelColorType.Blue,
-    id,
-    name,
-    color: "#0079bf",
-  };
-}
-
-export function LightBlueLabel(id: string, name?: string): Label {
-  return {
-    type: LabelColorType.LightBlue,
-    id,
-    name,
-    color: "#00c2e0",
-  };
-}
-
-export function GrayLabel(id: string, name?: string): Label {
-  return {
-    type: LabelColorType.Gray,
-    id,
-    name,
-    color: "#b3bac5",
-  };
+        return newLabel;
+      })
+    );
+  });
 }
 
 export function orderLabelsByColor(labels: Label[]): Label[] {

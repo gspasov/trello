@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { BoardStore, LabelStore } from "../stores";
+  import { LabelStore } from "../stores";
   import CloseButton from "./general/CloseButton.svelte";
-  import type { Card } from "../models/card";
+  import { Card, deleteCard } from "../models/card";
 
   export let card: Card; 
   export let listId: string
@@ -9,19 +9,8 @@
   let isCloseBtnHidden: boolean = true;
   $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
 
-  function deleteCard(): void {
-    BoardStore.update((state) => {
-      return {
-        ...state,
-        lists: state.lists.map((list) => {
-          if (list.id !== listId) return list;
-          return {
-            ...list,
-            cards: list.cards.filter((c) => c.id !== card.id),
-          };
-        }),
-      }
-    });
+  function handleDeleteCard(): void {
+    deleteCard(card.id, listId);
   }
 
   function setCloseBtnVisibility(isVisible: boolean): void {
@@ -33,7 +22,7 @@
 <div class="card" on:mouseleave={() => setCloseBtnVisibility(true)} on:mouseenter={() => setCloseBtnVisibility(false)}>
   {#if !isCloseBtnHidden}
     <div class="close-parent">
-      <span class="close" on:click={deleteCard} >
+      <span class="close" on:click={handleDeleteCard} >
         <CloseButton small={true} />
       </span>
     </div>

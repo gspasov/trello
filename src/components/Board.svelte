@@ -6,7 +6,7 @@
   import Modal from "./general/Modal.svelte"
   import CardModal from './card/CardModal.svelte';
   import type { Card } from '../models/card';
-  import type { List as ListType } from '../models/list';
+  import { List as ListType, updateLists } from '../models/list';
   
 
   let modalRef: Modal;
@@ -17,12 +17,8 @@
   $: isListMenuOpened = $BoardStore.lists.filter((list) => list.isMenuOpened).length > 0;
 
   function handleDndColumns(e): void {
-    BoardStore.update((state) => {
-			return {
-				...state,
-				lists: e.detail.items
-			}
-		});
+    const lists: ListType[] = e.detail.items
+    updateLists(lists);
 	}
 
   function handleCardOpen(e: CustomEvent): void {
@@ -37,9 +33,9 @@
 	on:consider={handleDndColumns} 
 	on:finalize={handleDndColumns}
 >
-	{#each columns as {id, name, cards, isMenuOpened} (id)}    
+	{#each columns as list (list.id)}    
     <div class="column" animate:flip="{{duration: 300}}">
-      <List {id} {name} {cards} {isMenuOpened} on:cardOpened={handleCardOpen}/>
+      <List {list} on:cardOpened={handleCardOpen}/>
     </div>
 	{/each}
 </section>

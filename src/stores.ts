@@ -1,14 +1,5 @@
 import { writable } from "svelte/store";
-import {
-  BlueLabel,
-  GrayLabel,
-  GreenLabel,
-  LightBlueLabel,
-  OrangeLabel,
-  PurpleLabel,
-  RedLabel,
-  YellowLabel,
-} from "./models/label";
+import { Label, LabelColorType } from "./models/label";
 import { v4 as uuidv4 } from "uuid";
 import { List } from "./models/list";
 import { Card } from "./models/card";
@@ -40,25 +31,25 @@ const board = {
 };
 
 const labels = [
-  GreenLabel(uuidv4(), "test this is green"),
-  YellowLabel(uuidv4()),
-  OrangeLabel(uuidv4()),
-  RedLabel(uuidv4()),
-  PurpleLabel(uuidv4()),
-  BlueLabel(uuidv4()),
-  LightBlueLabel(uuidv4()),
-  GrayLabel(uuidv4()),
+  Label(uuidv4(), LabelColorType.Green, "test this is green"),
+  Label(uuidv4(), LabelColorType.Yellow),
+  Label(uuidv4(), LabelColorType.Orange),
+  Label(uuidv4(), LabelColorType.Red),
+  Label(uuidv4(), LabelColorType.Purple),
+  Label(uuidv4(), LabelColorType.Blue),
+  Label(uuidv4(), LabelColorType.LightBlue),
+  Label(uuidv4(), LabelColorType.Gray),
 ];
 
 const defaultLabels = [
-  GreenLabel(uuidv4()),
-  YellowLabel(uuidv4()),
-  OrangeLabel(uuidv4()),
-  RedLabel(uuidv4()),
-  PurpleLabel(uuidv4()),
-  BlueLabel(uuidv4()),
-  LightBlueLabel(uuidv4()),
-  GrayLabel(uuidv4()),
+  Label(uuidv4(), LabelColorType.Green),
+  Label(uuidv4(), LabelColorType.Yellow),
+  Label(uuidv4(), LabelColorType.Orange),
+  Label(uuidv4(), LabelColorType.Red),
+  Label(uuidv4(), LabelColorType.Purple),
+  Label(uuidv4(), LabelColorType.Blue),
+  Label(uuidv4(), LabelColorType.LightBlue),
+  Label(uuidv4(), LabelColorType.Gray),
 ];
 
 export const BoardStore = writable(board);

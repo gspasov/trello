@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { BoardStore } from "./stores";
-	import { v4 as uuidv4 } from 'uuid';
-	import { List } from "./models/list"
 	import { slide } from 'svelte/transition';
 	import Board from "./components/Board.svelte";
 	import ActionClose from "./components/general/ActionClose.svelte";
+	import { createList } from './models/list';
 
 	let newListTitle = "";
 	let isNewListSectionVisible = false;
@@ -15,18 +13,8 @@
 		setTimeout(() => inputRef.focus(), 1);
   }	
 	
-	function createList():void {
-		BoardStore.update((state) => {
-			const newListId = uuidv4();
-			
-			return {
-				...state,
-				lists: [
-					...state.lists,
-					List(newListId, newListTitle, [])
-				]
-			}
-		});
+	function handleCreateList():void {
+		createList(newListTitle);
 		
 		newListTitle = "";
 		isNewListSectionVisible = false;
@@ -39,7 +27,7 @@
 		{#if isNewListSectionVisible}
 			<div class="new-list-form" transition:slide={{ duration: 300 }}>
 				<input type="text" name="card" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
-				<ActionClose title={"Add list"} on:click={createList} on:close={toggleAddListSectionVisibility}/>
+				<ActionClose title={"Add list"} on:click={handleCreateList} on:close={toggleAddListSectionVisibility}/>
 			</div>
 		{:else}
 			<div

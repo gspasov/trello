@@ -5,10 +5,10 @@
     DispatchCompletedPayload, 
     DefaultMouseEvent, 
     CardModalMenus } from "../../supportTypes"
-  import type { Card } from "../../models/card";
+  import { Card, updateCard, updateCardLabel } from "../../models/card";
   import type { List } from "../../models/list";
   import type { Label } from "../../models/label";
-  import { BoardStore, LabelStore } from "../../stores";
+  import { LabelStore } from "../../stores";
   import ActionClose from "../general/ActionClose.svelte";
   import ModalAction from "./ModalAction.svelte";
   import LabelsMenu from "./menus/LabelsMenu.svelte";
@@ -52,55 +52,22 @@
   }
 
   function editCardDescription(): void {
-    BoardStore.update((state) => {
-      return {...state, lists: state.lists.map((l) => {
-        if (list.id !== l.id) return l;
-        return {...l, cards: l.cards.map((c) => {
-          if (card.id !== c.id) return c
-          return {...c, description: cardDescription};
-        })};
-      })};
-    });
     card = {...card, description: cardDescription};
+    updateCard(card.id, list.id, card);
     toggleDescriptionEditSection();
   }
 
   function attachLabelToCard(e: CustomEvent): void {
     let label: Label = e.detail.label;
-    BoardStore.update((state) => {
-      return {...state, lists: state.lists.map((l) => {
-        if (list.id !== l.id) return l;
-        return {...l, cards: l.cards.map((c) => {
-          if (card.id !== c.id) return c
-          return updateCardLabel(c, label)
-        })};
-      })};
-    });
-    card = updateCardLabel(card, label)
-  }
-
-  function updateCardLabel(card: Card, label: Label): Card {
-    return {
-      ...card, 
-      labelIds: 
-        card.labelIds.includes(label.id) 
-          ? card.labelIds.filter((id) => id !== label.id) 
-          : [...card.labelIds, label.id]
-    };
+    card = updateCardLabel(card, label);
+    updateCard(card.id, list.id, card);
   }
 
   function handleDueDateCompleted(e: CustomEvent<DispatchCompletedPayload>): void {
     let completed = e.detail.completed;
-    BoardStore.update((state) => {
-      return {...state, lists: state.lists.map((l) => {
-        if (list.id !== l.id) return l;
-        return {...l, cards: l.cards.map((c) => {
-          if (card.id !== c.id) return c
-          return {...c, completed};
-        })};
-      })};
-    });
-    card = {...card, completed};
+    card = { ...card, completed };
+    updateCard(card.id, list.id, card);
+
   }
 
   function openLabelEditMenu(e: CustomEvent): void {
@@ -127,30 +94,14 @@
   }
 
   function handleSelectedDueDate(e: CustomEvent<Date>): void {
-    BoardStore.update((state) => {
-      return {...state, lists: state.lists.map((l) => {
-        if (list.id !== l.id) return l;
-        return {...l, cards: l.cards.map((c) => {
-          if (card.id !== c.id) return c
-          return {...c, dueDate: e.detail};
-        })};
-      })};
-    });
     card = {...card, dueDate: e.detail};
+    updateCard(card.id, list.id, card);
     closeAllMenus();
   }
 
   function handleRemoveDueDate(): void {
-    BoardStore.update((state) => {
-      return {...state, lists: state.lists.map((l) => {
-        if (list.id !== l.id) return l;
-        return {...l, cards: l.cards.map((c) => {
-          if (card.id !== c.id) return c
-          return {...c, dueDate: undefined};
-        })};
-      })};
-    });
     card = {...card, dueDate: undefined};
+    updateCard(card.id, list.id, card);
     closeAllMenus();
   }
 </script>
