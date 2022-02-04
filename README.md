@@ -1,7 +1,7 @@
 # Purpose
 The main goal of this project is to showcase how Svelte works by implementing a Trello 'clone'. Of course it's related to actually learning Svelte at the same time. Of course this project won't cover all features of Trello, yet the goal is to get as far as we want to take it.
 
-*You could learn more about what is Svelte [here](https://svelte.dev/)*
+*You could learn more about what is Svelte [here](https://svelte.dev/)*.
 
 ## Setup
 This project has been setup by following the Svelte guidelines using the following commands:
