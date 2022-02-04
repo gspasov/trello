@@ -1,13 +1,13 @@
 # Purpose
-The main goal of this project is to showcase how Svelte works by implementing a Trello 'clone'. Of course it's related to actually learning Svelte at the same time. Of course this project won't cover all features of Trello, yet the goal is to get as far as we want to take it.
+The main goal of this project is to showcase how Svelte works by implementing a Trello "clone". Of course it's related to actually learning Svelte at the same time. This project is not supposed to cover all features of Trello, yet it can get as far as we want to take it.
 
 *You could learn more about what is Svelte [here](https://svelte.dev/)*.
 
 ## Setup
-This project has been setup by following the Svelte guidelines using the following commands:
+This project has been setup by following the [Svelte guidelines](https://svelte.dev/blog/the-easiest-way-to-get-started) using the following commands:
 ```bash
 npx degit sveltejs/template trello
-cd my-svelte-project
+cd trello
 node scripts/setupTypeScript.js
 ```
 *Another way you could setup a Svelte project is by using [Vite](https://vitejs.dev/).*
