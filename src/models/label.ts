@@ -1,6 +1,7 @@
+import { Just, Maybe, Nothing } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
 import { LabelStore } from "../stores";
-import { assertUnreachable } from "../supportTypes";
+import { assertUnreachable } from "../utilities";
 
 export enum LabelColorType {
   Green = "green",
@@ -40,10 +41,14 @@ export type Label = {
   type: LabelColorType;
   id: string;
   color: string;
-  name?: string;
+  name: Maybe<string>;
 };
 
-export function Label(id: string, type: LabelColorType, name?: string): Label {
+export function Label(
+  id: string,
+  type: LabelColorType,
+  name: Maybe<string> = Nothing()
+): Label {
   return {
     type,
     id,
@@ -52,7 +57,10 @@ export function Label(id: string, type: LabelColorType, name?: string): Label {
   };
 }
 
-export function createLabel(type: LabelColorType, name?: string): void {
+export function createLabel(
+  type: LabelColorType,
+  name: Maybe<string> = Nothing()
+): void {
   LabelStore.update((labels) => {
     return orderLabelsByColor([
       ...labels,

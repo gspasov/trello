@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Label } from "../../types"
+  import type { Label } from "../../models/label";
 
   export let labels: Label[]
 
@@ -9,7 +9,7 @@
   <h5>Labels</h5>
   <div class="wrapper">
     {#each labels as label (label.id)}
-      <div class="label" style="background-color: {label.color};">{label.name ?? ""}</div>
+      <div class="label" style="background-color: {label.color};">{label.name.otherwise("")}</div>
     {/each}
     <div class="label add"><span>&#x2715;</span></div>
   </div>

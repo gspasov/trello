@@ -49,6 +49,11 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
+"@quanterall/lich@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@quanterall/lich/-/lich-1.0.7.tgz#363f23f8490994c8796b21cd484bfc70ec6d20c6"
+  integrity sha512-IaWoo16Adp8HaSgqqJNdOQkpgTBmFg2yFEgH+Ez4ASmfni1ug7Q0HRnTh+SgnskVFqRMmkTCuVHNu4tGCni7gA==
+
 "@rollup/plugin-commonjs@^17.0.0":
   version "17.1.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-17.1.0.tgz#757ec88737dffa8aa913eb392fade2e45aef2a2d"

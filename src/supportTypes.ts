@@ -36,9 +36,3 @@ export interface CardModalMenusVisibility {
   labelDelete: boolean;
   move: boolean;
 }
-
-export function assertUnreachable(value: never): never {
-  throw new Error(
-    `Unreachable value reached: ${JSON.stringify(value, null, 2)}`
-  );
-}

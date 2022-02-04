@@ -18,11 +18,13 @@
   import DatePickerMenu from "./menus/DatePickerMenu.svelte"
   import DueDate from "./DueDate.svelte"
   import LabelsSection from "./LabelsSection.svelte"
+  import { Just } from "@quanterall/lich";
+  import { stringToMaybe } from "../../utilities"
   
   export let card: Card;
   export let list: List;
 
-  let cardDescription: string = card.description;
+  let cardDescription: string = card.description.otherwise("");
   let isDescriptionEditVisible = false;
   let inputRef: HTMLTextAreaElement;
   let menuPosition: Coordinates = { x: 0, y: 0 };
@@ -52,7 +54,7 @@
   }
 
   function editCardDescription(): void {
-    card = {...card, description: cardDescription};
+    card = {...card, description: stringToMaybe(cardDescription)};
     updateCard(card.id, list.id, card);
     toggleDescriptionEditSection();
   }
@@ -94,7 +96,7 @@
   }
 
   function handleSelectedDueDate(e: CustomEvent<Date>): void {
-    card = {...card, dueDate: e.detail};
+    card = {...card, dueDate: Just(e.detail)};
     updateCard(card.id, list.id, card);
     closeAllMenus();
   }
@@ -116,15 +118,15 @@
       {#if cardLabels.length > 0}
         <LabelsSection labels={cardLabels} />
       {/if}
-      {#if card.dueDate !== undefined}
+      {#if card.dueDate.isJust()}
         <DueDate 
-          dueDate={card.dueDate} 
+          dueDate={card.dueDate.value}
           completed={card.completed} 
           on:toggleCompleted={handleDueDateCompleted} 
           on:openDueDate={(e) => openMenuCustom(CardModalMenus.DUE_DATE, e)}/>
       {/if}
       <h4>Description</h4>
-      {#if card.description !== undefined && !isDescriptionEditVisible}
+      {#if card.description.isJust() && !isDescriptionEditVisible}
         <div class="edit-button" on:click={toggleDescriptionEditSection}>Edit</div>
       {/if}
       <div class="description-section">
@@ -135,8 +137,8 @@
           </div>
         {:else}
           <div class="description-text" on:click={toggleDescriptionEditSection}>
-            {#if card.description !== undefined}
-              <p>{card.description}</p>
+            {#if card.description.isJust()}
+              <p>{card.description.value}</p>
             {:else}
               <p class="missing-description">Add a more detailed description...</p>
             {/if}
@@ -183,7 +185,7 @@
 {/if}
 {#if menusVisibility.labelEdit} 
   <CreateLabelMenu 
-    label={editingLabel} 
+    label={Just(editingLabel)} 
     isEditMode={true}
     x={menuPosition.x} 
     y={menuPosition.y + 40} 

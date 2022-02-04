@@ -1,3 +1,4 @@
+import { Maybe, Nothing } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
 import { BoardStore } from "../stores";
 import type { Label } from "./label";
@@ -7,17 +8,17 @@ export type Card = {
   title: string;
   labelIds: string[];
   completed: boolean;
-  description?: string;
-  assignedTo?: string;
-  dueDate?: Date;
+  description: Maybe<string>;
+  assignedTo: Maybe<string>;
+  dueDate: Maybe<Date>;
 };
 
 export function Card(
   id: string,
   title: string,
-  description?: string,
-  assignedTo?: string,
-  dueDate?: Date
+  description: Maybe<string> = Nothing(),
+  assignedTo: Maybe<string> = Nothing(),
+  dueDate: Maybe<Date> = Nothing()
 ): Card {
   return {
     id,

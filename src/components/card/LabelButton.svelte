@@ -1,9 +1,10 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte"
-  import type * as types from "../../types"
+  import type { Label } from "../../models/label"
+  import type { Card } from "../../models/card"
 
-  export let label: types.Label;
-  export let card: types.Card;
+  export let label: Label;
+  export let card: Card;
 
   const dispatch = createEventDispatcher();
 </script>
@@ -11,7 +12,7 @@
 <div class="container">
   <div class="color" style="--color: {label.color}; --color-shadow: {label.color}99;" on:click={() => dispatch("select", { label })}>
     <div class="color-content">
-      <span>{label.name ?? ""}</span>
+      <span>{label.name.otherwise("")}</span>
       {#if card.labelIds.includes(label.id)}
         <span>&#10004;</span>
       {/if}

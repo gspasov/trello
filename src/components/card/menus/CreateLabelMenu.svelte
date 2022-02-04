@@ -4,32 +4,36 @@
   import { Label, LabelColorType, createLabel, updateLabel, labelColorTypeMapping } from "../../../models/label"
   import { DefaultLabelStore } from "../../../stores"
   import { onMount } from 'svelte';
+  import { Maybe, Nothing } from "@quanterall/lich";
+  import { stringToMaybe } from "../../../utilities"
 
   export let x: number;
   export let y: number;
-  export let label: Label = undefined;
+  export let label: Maybe<Label> = Nothing();
   export let isEditMode = false;
 
   const dispatch = createEventDispatcher();
   let inputRef: HTMLInputElement;
-  let labelName: string = label?.name ?? "";
-  let selectedColorType: LabelColorType = label?.type ?? LabelColorType.Green
+  let labelName: string = label.fold("", (label) => label.name.fold("", (x) => x));
+  let selectedColorType: LabelColorType = label.map((label) => label.type).otherwise(LabelColorType.Green);
   
   onMount(() => inputRef.focus());
 
   function handleCreate(): void {
-    createLabel(selectedColorType, labelName);
+    createLabel(selectedColorType, stringToMaybe(labelName));
     dispatch("back");
   }
 
   function handleEdit(): void {
-    label = {
-      ...label, 
-      type: selectedColorType, 
-      color: labelColorTypeMapping(selectedColorType), 
-      name: labelName };
+    label = 
+      label
+      .map((label) => ({
+        ...label, 
+        type: selectedColorType, 
+        color: labelColorTypeMapping(selectedColorType), 
+        name: stringToMaybe(labelName)})
+      ).onJust((l) => updateLabel(l.id, l));
       
-    updateLabel(label.id, label);
     dispatch("back");
   }
 
