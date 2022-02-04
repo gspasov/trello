@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher } from "svelte";
   import CloseButton from "./CloseButton.svelte";
   const dispatch = createEventDispatcher();
   export let title: string = "";
-
 </script>
 
 <div>
@@ -35,7 +34,7 @@
     border: 2px solid #026aa7;
     color: #fff;
   }
-  
+
   button:focus {
     border: 2px solid #333;
   }

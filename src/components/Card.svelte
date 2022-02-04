@@ -3,8 +3,8 @@
   import CloseButton from "./general/CloseButton.svelte";
   import { Card, deleteCard } from "../models/card";
 
-  export let card: Card; 
-  export let listId: string
+  export let card: Card;
+  export let listId: string;
 
   let isCloseBtnHidden: boolean = true;
   $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
@@ -16,13 +16,16 @@
   function setCloseBtnVisibility(isVisible: boolean): void {
     isCloseBtnHidden = isVisible;
   }
-
 </script>
 
-<div class="card" on:mouseleave={() => setCloseBtnVisibility(true)} on:mouseenter={() => setCloseBtnVisibility(false)}>
+<div
+  class="card"
+  on:mouseleave={() => setCloseBtnVisibility(true)}
+  on:mouseenter={() => setCloseBtnVisibility(false)}
+>
   {#if !isCloseBtnHidden}
     <div class="close-parent">
-      <span class="close" on:click={handleDeleteCard} >
+      <span class="close" on:click={handleDeleteCard}>
         <CloseButton small={true} />
       </span>
     </div>
@@ -30,7 +33,7 @@
   {#if cardLabels.length > 0}
     <div class="label-wrapper">
       {#each cardLabels as label (label.id)}
-        <div class="label" style="--color: {label.color}"></div>
+        <div class="label" style="--color: {label.color}" />
       {/each}
     </div>
   {/if}
@@ -39,19 +42,19 @@
 
 <style>
   .card {
-		background-color: white;
+    background-color: white;
     min-height: 20px;
-		border-radius: 2px;
-		padding: 5px 0px 5px 8px;
-		box-shadow: 0 1px 0 #091e4240;
+    border-radius: 2px;
+    padding: 5px 0px 5px 8px;
+    box-shadow: 0 1px 0 #091e4240;
     font-size: 14px;
     cursor: pointer;
-	}
-  
+  }
+
   .card:hover {
     background-color: whitesmoke;
   }
-  
+
   .title {
     line-height: 20px;
   }

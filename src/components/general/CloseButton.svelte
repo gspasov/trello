@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
   export let small: boolean = false;
 </script>
 
-<span class:small={small} on:click={() => dispatch("click")}>&#x2715;</span>
+<span class:small on:click={() => dispatch("click")}>&#x2715;</span>
 
 <style>
   span {

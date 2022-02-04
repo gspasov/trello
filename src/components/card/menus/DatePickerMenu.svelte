@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
-  import { DatePicker } from "date-picker-svelte"
-  import Menu from "../../general/Menu.svelte"
+  import { createEventDispatcher } from "svelte";
+  import { DatePicker } from "date-picker-svelte";
+  import Menu from "../../general/Menu.svelte";
 
   export let x: number;
   export let y: number;
   let date = new Date();
 
-  const dispatchDate = createEventDispatcher<{select: Date}>();
+  const dispatchDate = createEventDispatcher<{ select: Date }>();
   const dispatch = createEventDispatcher();
 </script>
 
@@ -34,12 +34,12 @@
     cursor: pointer;
     border: 2px solid #0079bf;
     border-radius: 3px;
-    margin: 0px 12px 6px 12px
+    margin: 0px 12px 6px 12px;
   }
 
   .remove {
     background-color: gray;
     border: 2px solid gray;
-    margin: 0px 12px 8px 12px
+    margin: 0px 12px 8px 12px;
   }
 </style>

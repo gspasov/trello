@@ -1,5 +1,5 @@
 <div>
-  <span></span>
+  <span />
 </div>
 
 <style>

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-  export let text: string = ""
+  export let text: string = "";
 </script>
 
 <div on:click={() => dispatch("click")}>

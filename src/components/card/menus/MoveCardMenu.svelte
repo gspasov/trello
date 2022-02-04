@@ -1,6 +1,6 @@
 <script lang="ts">
-  import {createEventDispatcher} from "svelte"
-  import Menu from "../../general/Menu.svelte"
+  import { createEventDispatcher } from "svelte";
+  import Menu from "../../general/Menu.svelte";
 
   export let x: number;
   export let y: number;
@@ -8,9 +8,7 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<Menu title={"Move card"} {x} {y} on:close>
-</Menu>
+<Menu title={"Move card"} {x} {y} on:close />
 
 <style>
-
 </style>

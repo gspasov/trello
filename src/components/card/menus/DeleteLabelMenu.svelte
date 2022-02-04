@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Menu from "../../general/Menu.svelte"
-  import { createEventDispatcher } from "svelte"
-  import { LabelStore } from "../../../stores"
-  import type { Label } from "../../../models/label"
+  import Menu from "../../general/Menu.svelte";
+  import { createEventDispatcher } from "svelte";
+  import { LabelStore } from "../../../stores";
+  import type { Label } from "../../../models/label";
 
   export let x: number;
   export let y: number;
@@ -13,20 +13,22 @@
   function handleDelete(): void {
     LabelStore.update((labels) => {
       return labels.filter((l) => l.id !== label.id);
-    })
+    });
     dispatch("delete");
   }
 </script>
 
 <Menu title={"Delete label?"} {x} {y} isSubMenu={true} on:close on:back>
   <div class="container">
-    <span>There is no undo. This will remove this label from all cards and destroy its history.</span>
+    <span
+      >There is no undo. This will remove this label from all cards and destroy
+      its history.</span
+    >
     <button on:click={handleDelete}>Delete</button>
   </div>
 </Menu>
 
 <style>
-
   .container {
     padding: 0px 12px 8px 12px;
   }

@@ -1,11 +1,17 @@
 <script lang="ts">
-  import Menu from "../../general/Menu.svelte"
-  import { createEventDispatcher } from "svelte"
-  import { Label, LabelColorType, createLabel, updateLabel, labelColorTypeMapping } from "../../../models/label"
-  import { DefaultLabelStore } from "../../../stores"
-  import { onMount } from 'svelte';
+  import Menu from "../../general/Menu.svelte";
+  import { createEventDispatcher } from "svelte";
+  import {
+    Label,
+    LabelColorType,
+    createLabel,
+    updateLabel,
+    labelColorTypeMapping,
+  } from "../../../models/label";
+  import { DefaultLabelStore } from "../../../stores";
+  import { onMount } from "svelte";
   import { Maybe, Nothing } from "@quanterall/lich";
-  import { stringToMaybe } from "../../../utilities"
+  import { stringToMaybe } from "../../../utilities";
 
   export let x: number;
   export let y: number;
@@ -14,9 +20,13 @@
 
   const dispatch = createEventDispatcher();
   let inputRef: HTMLInputElement;
-  let labelName: string = label.fold("", (label) => label.name.fold("", (x) => x));
-  let selectedColorType: LabelColorType = label.map((label) => label.type).otherwise(LabelColorType.Green);
-  
+  let labelName: string = label.fold("", (label) =>
+    label.name.fold("", (x) => x)
+  );
+  let selectedColorType: LabelColorType = label
+    .map((label) => label.type)
+    .otherwise(LabelColorType.Green);
+
   onMount(() => inputRef.focus());
 
   function handleCreate(): void {
@@ -25,15 +35,15 @@
   }
 
   function handleEdit(): void {
-    label = 
-      label
+    label = label
       .map((label) => ({
-        ...label, 
-        type: selectedColorType, 
-        color: labelColorTypeMapping(selectedColorType), 
-        name: stringToMaybe(labelName)})
-      ).onJust((l) => updateLabel(l.id, l));
-      
+        ...label,
+        type: selectedColorType,
+        color: labelColorTypeMapping(selectedColorType),
+        name: stringToMaybe(labelName),
+      }))
+      .onJust((l) => updateLabel(l.id, l));
+
     dispatch("back");
   }
 
@@ -42,14 +52,25 @@
   }
 </script>
 
-<Menu title={isEditMode ? "Change label" : "Create label"} {x} {y} isSubMenu={true} on:close on:back>
+<Menu
+  title={isEditMode ? "Change label" : "Create label"}
+  {x}
+  {y}
+  isSubMenu={true}
+  on:close
+  on:back
+>
   <div class="content">
     <span class="title">Name</span>
     <input name="label" bind:this={inputRef} bind:value={labelName} />
     <span class="title">Select color</span>
     <div class="color-box-wrapper">
-      {#each $DefaultLabelStore as {id, color, type} (id)}
-        <span class="color-box" style="--color: {color}; --color-hover: {color}99;" on:click={() => handleColorSelection(type)}>
+      {#each $DefaultLabelStore as { id, color, type } (id)}
+        <span
+          class="color-box"
+          style="--color: {color}; --color-hover: {color}99;"
+          on:click={() => handleColorSelection(type)}
+        >
           {#if selectedColorType === type}
             &#10004;
           {/if}
@@ -57,18 +78,19 @@
       {/each}
     </div>
     <div class="actions-wrapper">
-      {#if isEditMode} 
+      {#if isEditMode}
         <button class="save" on:click={handleEdit}>Save</button>
-        <button class="delete" on:click={() => dispatch("delete")}>Delete</button>
+        <button class="delete" on:click={() => dispatch("delete")}
+          >Delete</button
+        >
       {:else}
         <button class="save" on:click={handleCreate}>Create</button>
       {/if}
-    </div> 
+    </div>
   </div>
 </Menu>
 
 <style>
-
   .content {
     padding: 0px 12px 6px 12px;
   }

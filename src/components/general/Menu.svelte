@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher } from "svelte";
   import BackArrowButton from "./BackArrowButton.svelte";
   import CloseButton from "./CloseButton.svelte";
   import Divider from "./Divider.svelte";
@@ -12,18 +12,22 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<div class="list-context-menu" style="top: {y}px; left: {x}px;" draggable={false}>
+<div
+  class="list-context-menu"
+  style="top: {y}px; left: {x}px;"
+  draggable={false}
+>
   <div class="title-section">
-    {#if isSubMenu} 
+    {#if isSubMenu}
       <BackArrowButton on:click={() => dispatch("back")} />
     {:else}
-      <span></span>
+      <span />
     {/if}
     <span class="title">{title}</span>
     <CloseButton small={true} on:click={() => dispatch("close")} />
   </div>
   <Divider />
-  <slot/>
+  <slot />
 </div>
 
 <style>

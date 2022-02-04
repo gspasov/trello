@@ -6,9 +6,9 @@
   {#if lineText}
     <span>{lineText}</span>
   {:else}
-  <div class="slot">
-    <slot/>
-  </div>
+    <div class="slot">
+      <slot />
+    </div>
   {/if}
 </div>
 
@@ -23,7 +23,7 @@
     cursor: pointer;
     position: relative;
   }
-  
+
   span:hover {
     background-color: #eee;
   }

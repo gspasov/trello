@@ -1,10 +1,11 @@
 <script lang="ts">
   import {
-    Coordinates, 
-    CardModalMenusVisibility, 
-    DispatchCompletedPayload, 
-    DefaultMouseEvent, 
-    CardModalMenus } from "../../supportTypes"
+    Coordinates,
+    CardModalMenusVisibility,
+    DispatchCompletedPayload,
+    DefaultMouseEvent,
+    CardModalMenus,
+  } from "../../supportTypes";
   import { Card, updateCard, updateCardLabel } from "../../models/card";
   import type { List } from "../../models/list";
   import type { Label } from "../../models/label";
@@ -15,12 +16,12 @@
   import MoveCardMenu from "./menus/MoveCardMenu.svelte";
   import CreateLabelMenu from "./menus/CreateLabelMenu.svelte";
   import DeleteLabelMenu from "./menus/DeleteLabelMenu.svelte";
-  import DatePickerMenu from "./menus/DatePickerMenu.svelte"
-  import DueDate from "./DueDate.svelte"
-  import LabelsSection from "./LabelsSection.svelte"
+  import DatePickerMenu from "./menus/DatePickerMenu.svelte";
+  import DueDate from "./DueDate.svelte";
+  import LabelsSection from "./LabelsSection.svelte";
   import { Just } from "@quanterall/lich";
-  import { stringToMaybe } from "../../utilities"
-  
+  import { stringToMaybe } from "../../utilities";
+
   export let card: Card;
   export let list: List;
 
@@ -48,13 +49,13 @@
     };
   }
 
-  function toggleDescriptionEditSection():void {
+  function toggleDescriptionEditSection(): void {
     isDescriptionEditVisible = !isDescriptionEditVisible;
     setTimeout(() => inputRef.focus(), 1);
   }
 
   function editCardDescription(): void {
-    card = {...card, description: stringToMaybe(cardDescription)};
+    card = { ...card, description: stringToMaybe(cardDescription) };
     updateCard(card.id, list.id, card);
     toggleDescriptionEditSection();
   }
@@ -65,11 +66,12 @@
     updateCard(card.id, list.id, card);
   }
 
-  function handleDueDateCompleted(e: CustomEvent<DispatchCompletedPayload>): void {
+  function handleDueDateCompleted(
+    e: CustomEvent<DispatchCompletedPayload>
+  ): void {
     let completed = e.detail.completed;
     card = { ...card, completed };
     updateCard(card.id, list.id, card);
-
   }
 
   function openLabelEditMenu(e: CustomEvent): void {
@@ -80,12 +82,18 @@
 
   function openMenu(menu: CardModalMenus, event?: DefaultMouseEvent): void {
     if (event !== undefined) {
-      menuPosition = { x: event.currentTarget.offsetLeft, y: event.currentTarget.offsetTop };
+      menuPosition = {
+        x: event.currentTarget.offsetLeft,
+        y: event.currentTarget.offsetTop,
+      };
     }
     showMenu(menu);
   }
 
-  function openMenuCustom(menu: CardModalMenus, event: CustomEvent<Coordinates>): void {
+  function openMenuCustom(
+    menu: CardModalMenus,
+    event: CustomEvent<Coordinates>
+  ): void {
     menuPosition = { x: event.detail.x, y: event.detail.y };
     showMenu(menu);
   }
@@ -96,13 +104,13 @@
   }
 
   function handleSelectedDueDate(e: CustomEvent<Date>): void {
-    card = {...card, dueDate: Just(e.detail)};
+    card = { ...card, dueDate: Just(e.detail) };
     updateCard(card.id, list.id, card);
     closeAllMenus();
   }
 
   function handleRemoveDueDate(): void {
-    card = {...card, dueDate: undefined};
+    card = { ...card, dueDate: undefined };
     updateCard(card.id, list.id, card);
     closeAllMenus();
   }
@@ -119,28 +127,41 @@
         <LabelsSection labels={cardLabels} />
       {/if}
       {#if card.dueDate.isJust()}
-        <DueDate 
+        <DueDate
           dueDate={card.dueDate.value}
-          completed={card.completed} 
-          on:toggleCompleted={handleDueDateCompleted} 
-          on:openDueDate={(e) => openMenuCustom(CardModalMenus.DUE_DATE, e)}/>
+          completed={card.completed}
+          on:toggleCompleted={handleDueDateCompleted}
+          on:openDueDate={(e) => openMenuCustom(CardModalMenus.DUE_DATE, e)}
+        />
       {/if}
       <h4>Description</h4>
       {#if card.description.isJust() && !isDescriptionEditVisible}
-        <div class="edit-button" on:click={toggleDescriptionEditSection}>Edit</div>
+        <div class="edit-button" on:click={toggleDescriptionEditSection}>
+          Edit
+        </div>
       {/if}
       <div class="description-section">
         {#if isDescriptionEditVisible}
           <div class="description-edit">
-            <textarea placeholder="Add a more detailed description..." bind:value={cardDescription} bind:this={inputRef}></textarea>
-            <ActionClose title={"Save"} on:click={editCardDescription} on:close={toggleDescriptionEditSection} />
+            <textarea
+              placeholder="Add a more detailed description..."
+              bind:value={cardDescription}
+              bind:this={inputRef}
+            />
+            <ActionClose
+              title={"Save"}
+              on:click={editCardDescription}
+              on:close={toggleDescriptionEditSection}
+            />
           </div>
         {:else}
           <div class="description-text" on:click={toggleDescriptionEditSection}>
             {#if card.description.isJust()}
               <p>{card.description.value}</p>
             {:else}
-              <p class="missing-description">Add a more detailed description...</p>
+              <p class="missing-description">
+                Add a more detailed description...
+              </p>
             {/if}
           </div>
         {/if}
@@ -149,16 +170,22 @@
     <div class="window-sidebar">
       <div class="sidebar-flex" style="margin-bottom: 1rem;">
         <span class="title">Add to card</span>
-        <span on:click|stopPropagation={(e) => openMenu(CardModalMenus.LABELS, e)}>
+        <span
+          on:click|stopPropagation={(e) => openMenu(CardModalMenus.LABELS, e)}
+        >
           <ModalAction text={"Labels"} />
         </span>
-        <span on:click|stopPropagation={(e) => openMenu(CardModalMenus.DUE_DATE, e)}>
+        <span
+          on:click|stopPropagation={(e) => openMenu(CardModalMenus.DUE_DATE, e)}
+        >
           <ModalAction text={"Due Date"} />
         </span>
       </div>
       <div class="sidebar-flex">
         <span class="title">Actions</span>
-        <span on:click|stopPropagation={(e) => openMenu(CardModalMenus.MOVE, e)}>
+        <span
+          on:click|stopPropagation={(e) => openMenu(CardModalMenus.MOVE, e)}
+        >
           <ModalAction text={"Move"} />
         </span>
         <ModalAction text={"Delete"} />
@@ -167,58 +194,65 @@
   </div>
 </div>
 {#if menusVisibility.labels}
-  <LabelsMenu 
+  <LabelsMenu
     {card}
-    x={menuPosition.x} 
-    y={menuPosition.y + 40} 
+    x={menuPosition.x}
+    y={menuPosition.y + 40}
     on:select={attachLabelToCard}
     on:create={() => openMenu(CardModalMenus.LABEL_CREATE)}
-    on:edit={(openLabelEditMenu)} 
-    on:close={closeAllMenus} />
+    on:edit={openLabelEditMenu}
+    on:close={closeAllMenus}
+  />
 {/if}
-{#if menusVisibility.labelCreate} 
-  <CreateLabelMenu  
-    x={menuPosition.x} 
-    y={menuPosition.y + 40} 
-    on:back={() => showMenu(CardModalMenus.LABELS)} 
-    on:close={closeAllMenus} />
+{#if menusVisibility.labelCreate}
+  <CreateLabelMenu
+    x={menuPosition.x}
+    y={menuPosition.y + 40}
+    on:back={() => showMenu(CardModalMenus.LABELS)}
+    on:close={closeAllMenus}
+  />
 {/if}
-{#if menusVisibility.labelEdit} 
-  <CreateLabelMenu 
-    label={Just(editingLabel)} 
+{#if menusVisibility.labelEdit}
+  <CreateLabelMenu
+    label={Just(editingLabel)}
     isEditMode={true}
-    x={menuPosition.x} 
-    y={menuPosition.y + 40} 
-    on:back={() => showMenu(CardModalMenus.LABELS)} 
-    on:delete={() => openMenu(CardModalMenus.LABEL_DELETE)} 
-    on:close={closeAllMenus} />
+    x={menuPosition.x}
+    y={menuPosition.y + 40}
+    on:back={() => showMenu(CardModalMenus.LABELS)}
+    on:delete={() => openMenu(CardModalMenus.LABEL_DELETE)}
+    on:close={closeAllMenus}
+  />
 {/if}
 {#if menusVisibility.labelDelete}
-  <DeleteLabelMenu 
-    label={editingLabel} 
-    x={menuPosition.x} 
-    y={menuPosition.y + 40} 
-    on:back={() => showMenu(CardModalMenus.LABEL_EDIT)} 
-    on:delete={() => showMenu(CardModalMenus.LABELS)} 
-    on:close={closeAllMenus} />
+  <DeleteLabelMenu
+    label={editingLabel}
+    x={menuPosition.x}
+    y={menuPosition.y + 40}
+    on:back={() => showMenu(CardModalMenus.LABEL_EDIT)}
+    on:delete={() => showMenu(CardModalMenus.LABELS)}
+    on:close={closeAllMenus}
+  />
 {/if}
 {#if menusVisibility.dueDate}
-  <DatePickerMenu 
-    x={menuPosition.x} 
-    y={menuPosition.y + 40} 
-    on:select={handleSelectedDueDate} 
-    on:remove={handleRemoveDueDate} 
-    on:close={closeAllMenus} />
+  <DatePickerMenu
+    x={menuPosition.x}
+    y={menuPosition.y + 40}
+    on:select={handleSelectedDueDate}
+    on:remove={handleRemoveDueDate}
+    on:close={closeAllMenus}
+  />
 {/if}
 {#if menusVisibility.move}
-  <MoveCardMenu 
-    x={menuPosition.x} 
-    y={menuPosition.y + 40} 
-    on:close={closeAllMenus} />
+  <MoveCardMenu
+    x={menuPosition.x}
+    y={menuPosition.y + 40}
+    on:close={closeAllMenus}
+  />
 {/if}
 
 <style>
-  h3, h4 {
+  h3,
+  h4 {
     margin: 0;
     font-weight: 600;
   }
@@ -267,7 +301,7 @@
   .missing-description:hover {
     background-color: #091e4211;
   }
-  
+
   .container {
     display: flex;
     gap: 0.8rem;
@@ -282,7 +316,7 @@
     flex-grow: 1;
   }
 
-  .window-sidebar span[class*='title'] {
+  .window-sidebar span[class*="title"] {
     color: #5e6c84;
     font-size: 12px;
     line-height: 20px;

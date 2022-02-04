@@ -1,31 +1,31 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
-  import { fade } from 'svelte/transition';
-  import Card from "./Card.svelte"
-  import Menu from "./general/Menu.svelte"
-  import MenuItem from "./general/MenuItem.svelte"
-  import { clickOutside } from '../clickOutside';
-  import Divider from './general/Divider.svelte';
-  import { flip } from 'svelte/animate';
-  import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+  import { createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
+  import Card from "./Card.svelte";
+  import Menu from "./general/Menu.svelte";
+  import MenuItem from "./general/MenuItem.svelte";
+  import { clickOutside } from "../clickOutside";
+  import Divider from "./general/Divider.svelte";
+  import { flip } from "svelte/animate";
+  import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from "svelte-dnd-action";
   import ActionClose from "./general/ActionClose.svelte";
-  import { Card as CardType, createCard } from "../models/card"
-  import { List, updateList, deleteList, closeListMenu } from "../models/list"
+  import { Card as CardType, createCard } from "../models/card";
+  import { List, updateList, deleteList, closeListMenu } from "../models/list";
 
   export let list: List;
-  
+
   let newTitleText = list.name;
-  let newCardTitle = ""
+  let newCardTitle = "";
   let isAddCardSectionVisible = false;
   let isEditingListTitle = false;
   let newTitleInputRef: HTMLInputElement;
-  let newCardInputRef: HTMLTextAreaElement
+  let newCardInputRef: HTMLTextAreaElement;
   let menuPosition = { x: 0, y: 0 };
   const dispatch = createEventDispatcher();
 
   function handleDndCards(e): void {
     const cards: CardType[] = e.detail.items;
-    updateList(list.id, {...list, cards});
+    updateList(list.id, { ...list, cards });
   }
 
   function transformDraggedElement(e): void {
@@ -49,10 +49,12 @@
     hideAddCardSection();
   }
 
-  function openListMenu(event: MouseEvent & {currentTarget: EventTarget & HTMLSpanElement}): void {
+  function openListMenu(
+    event: MouseEvent & { currentTarget: EventTarget & HTMLSpanElement }
+  ): void {
     const rect = event.currentTarget.getBoundingClientRect();
     menuPosition = { x: rect.left, y: rect.top };
-    updateList(list.id, {...list, isMenuOpened: true});
+    updateList(list.id, { ...list, isMenuOpened: true });
   }
 
   function handleDeleteList(): void {
@@ -61,7 +63,7 @@
   }
 
   function deleteAllCardsFromList(): void {
-    updateList(list.id, {...list, cards: [], isMenuOpened: false});
+    updateList(list.id, { ...list, cards: [], isMenuOpened: false });
   }
 
   function startEditingListTitle(): void {
@@ -72,61 +74,103 @@
 
   function handleTitleInputSubmit(e: KeyboardEvent): void {
     if (e.key === "Enter") {
-      updateList(list.id, {...list, name: newTitleText});
+      updateList(list.id, { ...list, name: newTitleText });
       isEditingListTitle = false;
-    } 
+    }
     if (e.key === "Escape") {
       isEditingListTitle = false;
     }
   }
 
   function handleCardClick(cardId: string): void {
-    dispatch("cardOpened", {listId: list.id, cardId})
+    dispatch("cardOpened", { listId: list.id, cardId });
   }
 </script>
 
 <div class="list">
   <div class="title-section">
-    <div class:hidden={isEditingListTitle} class="title" on:click={() => isEditingListTitle = true}>{list.name}</div>
-    <input class:hidden={!isEditingListTitle} class="title-input" bind:value={newTitleText} bind:this={newTitleInputRef} on:keydown={handleTitleInputSubmit}/>
-    <span class="list-menu-btn" on:click|stopPropagation={openListMenu}>&#9679;&#9679;&#9679;</span>
+    <div
+      class:hidden={isEditingListTitle}
+      class="title"
+      on:click={() => (isEditingListTitle = true)}
+    >
+      {list.name}
+    </div>
+    <input
+      class:hidden={!isEditingListTitle}
+      class="title-input"
+      bind:value={newTitleText}
+      bind:this={newTitleInputRef}
+      on:keydown={handleTitleInputSubmit}
+    />
+    <span class="list-menu-btn" on:click|stopPropagation={openListMenu}
+      >&#9679;&#9679;&#9679;</span
+    >
   </div>
-  <div 
-    class="cards" 
-    use:dndzone={{items: list.cards, flipDurationMs: 300, transformDraggedElement, dropTargetStyle: {}}}
-    on:consider={handleDndCards} 
+  <div
+    class="cards"
+    use:dndzone={{
+      items: list.cards,
+      flipDurationMs: 300,
+      transformDraggedElement,
+      dropTargetStyle: {},
+    }}
+    on:consider={handleDndCards}
     on:finalize={handleDndCards}
   >
     {#each list.cards as card (card.id)}
-      <div style="position: relative;" animate:flip={{duration: 300}} on:click={() => handleCardClick(card.id)}>
+      <div
+        style="position: relative;"
+        animate:flip={{ duration: 300 }}
+        on:click={() => handleCardClick(card.id)}
+      >
         <Card {card} listId={list.id} />
         {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-          <span class="card-shadow"></span>
+          <span class="card-shadow" />
         {/if}
       </div>
     {/each}
   </div>
   <div class:hidden={!isAddCardSectionVisible}>
     <div class="textarea-parent">
-      <textarea type="text" name="card" placeholder="Enter a title for this card..." bind:value={newCardTitle} bind:this={newCardInputRef}/>
+      <textarea
+        type="text"
+        name="card"
+        placeholder="Enter a title for this card..."
+        bind:value={newCardTitle}
+        bind:this={newCardInputRef}
+      />
     </div>
     <div class="add-card-parent">
-      <ActionClose title={"Add card"} on:click={handleCreateCard} on:close={toggleAddCardSectionVisibility} />
+      <ActionClose
+        title={"Add card"}
+        on:click={handleCreateCard}
+        on:close={toggleAddCardSectionVisibility}
+      />
     </div>
   </div>
-  <div 
-    class="add-btn" 
-    class:hidden={isAddCardSectionVisible} 
-    on:click={toggleAddCardSectionVisibility}>
-      +Add a card
+  <div
+    class="add-btn"
+    class:hidden={isAddCardSectionVisible}
+    on:click={toggleAddCardSectionVisibility}
+  >
+    +Add a card
   </div>
   {#if list.isMenuOpened}
-    <div transition:fade={{duration: 150}} use:clickOutside={closeListMenu}>
-      <Menu title={"List actions"} x={menuPosition.x} y={menuPosition.y + 30} on:close={closeListMenu}>
-        <MenuItem lineText={"Rename"} on:click={startEditingListTitle}/>
-        <MenuItem lineText={"Delete All Cards from List"} on:click={deleteAllCardsFromList}/>
-        <Divider/>
-        <MenuItem lineText={"Delete"} on:click={handleDeleteList}/>
+    <div transition:fade={{ duration: 150 }} use:clickOutside={closeListMenu}>
+      <Menu
+        title={"List actions"}
+        x={menuPosition.x}
+        y={menuPosition.y + 30}
+        on:close={closeListMenu}
+      >
+        <MenuItem lineText={"Rename"} on:click={startEditingListTitle} />
+        <MenuItem
+          lineText={"Delete All Cards from List"}
+          on:click={deleteAllCardsFromList}
+        />
+        <Divider />
+        <MenuItem lineText={"Delete"} on:click={handleDeleteList} />
       </Menu>
     </div>
   {/if}
@@ -134,29 +178,29 @@
 
 <style>
   .list {
-		background-color: #ebecf0;
-		width: 250px;
-		padding: 10px 4px;
-		border-radius: 3px;
-	}
+    background-color: #ebecf0;
+    width: 250px;
+    padding: 10px 4px;
+    border-radius: 3px;
+  }
 
   .title-section {
     display: flex;
     justify-content: space-between;
     padding: 0px 4px;
   }
-  
-	.title {
+
+  .title {
     font-size: 14px;
     font-weight: 600;
     align-self: center;
     padding-left: 6px;
-	}
+  }
 
   .title-input {
     width: 100%;
-    align-self: center; 
-    margin: 0; 
+    align-self: center;
+    margin: 0;
     box-shadow: inset 0 0 0 2px #0079bf;
     font-size: 14px;
     font-weight: 600;
@@ -169,9 +213,9 @@
   }
 
   .list-menu-btn {
-    font-size: 8px; 
+    font-size: 8px;
     padding: 8px 7px;
-    color: #999; 
+    color: #999;
     align-self: center;
     border-radius: 2px;
     cursor: pointer;
@@ -181,14 +225,14 @@
     background-color: #d2d2d2;
     color: #444;
   }
-  
+
   .cards {
     display: grid;
     gap: 0.5rem;
     padding: 4px;
     max-height: 85vh;
     overflow: auto;
-	}
+  }
 
   .hidden {
     display: none !important;
@@ -201,8 +245,8 @@
   textarea {
     display: block;
     background-color: white;
-		border-radius: 2px;
-		box-shadow: 0 1px 0 #091e4240;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 #091e4240;
     border-color: white;
     font-size: 14px;
     width: 100%;
@@ -237,19 +281,19 @@
   }
 
   .card-shadow {
-		position: absolute;
-		top: 0; 
-    left:0; 
-    right: 0; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
-		visibility: visible;
-		border: 1px dashed grey;
-		background: lightblue;
-		opacity: 0.5;
-		margin: 0;
+    visibility: visible;
+    border: 1px dashed grey;
+    background: lightblue;
+    opacity: 0.5;
+    margin: 0;
     border-radius: 3px;
-    font-size: 0.80rem;
+    font-size: 0.8rem;
     padding-left: 4px;
     text-align: center;
-	}
+  }
 </style>

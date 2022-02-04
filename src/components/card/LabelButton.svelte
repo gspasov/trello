@@ -1,7 +1,7 @@
 <script lang="ts">
-  import {createEventDispatcher} from "svelte"
-  import type { Label } from "../../models/label"
-  import type { Card } from "../../models/card"
+  import { createEventDispatcher } from "svelte";
+  import type { Label } from "../../models/label";
+  import type { Card } from "../../models/card";
 
   export let label: Label;
   export let card: Card;
@@ -10,7 +10,11 @@
 </script>
 
 <div class="container">
-  <div class="color" style="--color: {label.color}; --color-shadow: {label.color}99;" on:click={() => dispatch("select", { label })}>
+  <div
+    class="color"
+    style="--color: {label.color}; --color-shadow: {label.color}99;"
+    on:click={() => dispatch("select", { label })}
+  >
     <div class="color-content">
       <span>{label.name.otherwise("")}</span>
       {#if card.labelIds.includes(label.id)}
@@ -45,7 +49,7 @@
     flex-grow: 9;
     padding: 6px 12px;
     cursor: pointer;
-    transition: padding 85ms,margin 85ms,box-shadow 85ms;
+    transition: padding 85ms, margin 85ms, box-shadow 85ms;
   }
 
   .color:hover {
@@ -70,9 +74,8 @@
   .pen:hover {
     background: #eee;
   }
-  
+
   .pen > div {
     transform: rotate(130deg);
   }
 </style>
-

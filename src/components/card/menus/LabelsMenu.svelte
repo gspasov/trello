@@ -1,19 +1,18 @@
 <script lang="ts">
-  import Menu from "../../general/Menu.svelte"
-  import MenuItem from "../../general/MenuItem.svelte"
+  import Menu from "../../general/Menu.svelte";
+  import MenuItem from "../../general/MenuItem.svelte";
   import LabelButton from "../LabelButton.svelte";
-  import { createEventDispatcher } from "svelte"
-  import { LabelStore } from "../../../stores"
+  import { createEventDispatcher } from "svelte";
+  import { LabelStore } from "../../../stores";
   import type { Card } from "../../../models/card";
 
   export let x: number;
   export let y: number;
-  export let card: Card
+  export let card: Card;
 
   const dispatch = createEventDispatcher();
 
   $: labels = $LabelStore;
-
 </script>
 
 <Menu title={"Labels"} {x} {y} on:close>
@@ -24,7 +23,9 @@
         <LabelButton {card} {label} on:select on:edit />
       {/each}
     </div>
-    <div class="gray-button" on:click={() => dispatch("create")}>Create a new label</div>
+    <div class="gray-button" on:click={() => dispatch("create")}>
+      Create a new label
+    </div>
   </MenuItem>
 </Menu>
 
@@ -38,7 +39,7 @@
 
   .labels-wrapper {
     overflow: auto;
-    max-height: 30vh
+    max-height: 30vh;
   }
 
   .gray-button {
