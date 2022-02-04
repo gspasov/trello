@@ -26,7 +26,7 @@
 	<div>
 		{#if isNewListSectionVisible}
 			<div class="new-list-form" transition:slide={{ duration: 300 }}>
-				<input type="text" name="card" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
+				<input type="text" name="list" placeholder="Enter list title..." bind:value={newListTitle} bind:this={inputRef}/>
 				<ActionClose title={"Add list"} on:click={handleCreateList} on:close={toggleAddListSectionVisibility}/>
 			</div>
 		{:else}
