@@ -27,6 +27,7 @@
     {#if isNewListSectionVisible}
       <div class="new-list-form" transition:slide={{ duration: 300 }}>
         <input
+          class="input-primary"
           type="text"
           name="list"
           placeholder="Enter list title..."
@@ -40,13 +41,13 @@
         />
       </div>
     {:else}
-      <div
-        class="add-list-btn"
+      <button
+        class="btn-add-list"
         class:hidden={isNewListSectionVisible}
         on:click={toggleAddListSectionVisibility}
       >
-        <span class="plus">+</span>Add another list
-      </div>
+        + Add another list
+      </button>
     {/if}
   </div>
 </main>
@@ -57,31 +58,24 @@
     gap: 0.25rem;
   }
 
-  .plus {
-    font-size: 1.5em;
-    line-height: 17px;
-  }
-
   .hidden {
-    display: none;
+    display: none !important;
   }
 
-  .add-list-btn {
+  .btn-add-list {
     color: whitesmoke;
+    border: none;
+    text-align: left;
     background-color: #ffffff3d;
     width: 250px;
     padding: 10px 0px 10px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 20px;
   }
 
-  .add-list-btn:hover {
+  .btn-add-list:hover {
     background-color: #ffffff4f;
   }
 
-  .add-list-btn:active {
+  .btn-add-list:active {
     background-color: #ffffff6f;
   }
 
@@ -92,20 +86,8 @@
   }
 
   input {
-    display: block;
-    padding: 5px;
-    box-shadow: inset 0 0 0 2px #0079bf;
-    border: none;
-    font-size: 14px;
     width: 250px;
     height: 37px;
-    padding-left: 10px;
     margin-bottom: 5px;
-    color: #333;
-    resize: none;
-  }
-
-  input:focus {
-    outline: none;
   }
 </style>

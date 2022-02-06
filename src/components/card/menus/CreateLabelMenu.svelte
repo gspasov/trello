@@ -62,7 +62,12 @@
 >
   <div class="content">
     <span class="title">Name</span>
-    <input name="label" bind:this={inputRef} bind:value={labelName} />
+    <input
+      class="input-primary"
+      name="label"
+      bind:this={inputRef}
+      bind:value={labelName}
+    />
     <span class="title">Select color</span>
     <div class="color-box-wrapper">
       {#each $DefaultLabelStore as { id, color, type } (id)}
@@ -79,12 +84,12 @@
     </div>
     <div class="actions-wrapper">
       {#if isEditMode}
-        <button class="save" on:click={handleEdit}>Save</button>
-        <button class="delete" on:click={() => dispatch("delete")}
+        <button class="btn-primary" on:click={handleEdit}>Save</button>
+        <button class="btn-danger" on:click={() => dispatch("delete")}
           >Delete</button
         >
       {:else}
-        <button class="save" on:click={handleCreate}>Create</button>
+        <button class="btn-primary" on:click={handleCreate}>Create</button>
       {/if}
     </div>
   </div>
@@ -95,24 +100,13 @@
     padding: 0px 12px 6px 12px;
   }
   input {
-    border: none;
-    width: 100%;
-    line-height: 20px;
-    border-radius: 3px;
-    box-shadow: inset 0 0 0 2px #0079bf;
     margin-bottom: 12px;
-    font-size: 14px;
-  }
-
-  input:focus {
-    outline: none;
   }
 
   span.title {
     display: block;
     color: #5e6c84;
     font-size: 12px;
-    line-height: 20px;
     font-weight: 600;
   }
 
@@ -130,7 +124,6 @@
     color: white;
     text-align: center;
     line-height: 30px;
-    font-size: 14px;
   }
 
   .color-box:hover {
@@ -143,33 +136,7 @@
     margin-top: 20px;
   }
 
-  button.save {
-    background-color: #0079bf;
-    color: #fff;
-    font-size: 14px;
-    line-height: 20px;
-    padding: 4px 10px;
-    cursor: pointer;
-    border: 2px solid #0079bf;
+  button {
     width: 70px;
-    border-radius: 3px;
-    margin: 0;
-  }
-
-  button.delete {
-    background-color: #b04632;
-    color: #fff;
-    font-size: 14px;
-    line-height: 20px;
-    padding: 4px 10px;
-    cursor: pointer;
-    border: 2px solid #b04632;
-    width: 70px;
-    border-radius: 3px;
-    margin: 0;
-  }
-
-  button:hover {
-    filter: brightness(90%);
   }
 </style>

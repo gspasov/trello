@@ -41,7 +41,6 @@
     padding: 6px 12px;
     color: white;
     font-weight: 600;
-    font-size: 14px;
     text-align: center;
     overflow: hidden;
     white-space: nowrap;
@@ -55,7 +54,6 @@
   .add > span {
     display: block;
     color: gray;
-    line-height: 20px;
     transform: rotate(135deg);
   }
 

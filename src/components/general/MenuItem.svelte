@@ -17,7 +17,6 @@
     padding: 6px 12px;
   }
   span {
-    font-size: 14px;
     display: block;
     padding: 6px 12px;
     cursor: pointer;

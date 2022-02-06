@@ -136,9 +136,12 @@
       {/if}
       <h4>Description</h4>
       {#if card.description.isJust() && !isDescriptionEditVisible}
-        <div class="edit-button" on:click={toggleDescriptionEditSection}>
+        <button
+          class="btn-secondary btn-edit"
+          on:click={toggleDescriptionEditSection}
+        >
           Edit
-        </div>
+        </button>
       {/if}
       <div class="description-section">
         {#if isDescriptionEditVisible}
@@ -270,17 +273,12 @@
   }
 
   textarea {
-    border: none;
     box-shadow: inset 0 0 0 2px #0079bf;
     overflow-wrap: break-word;
-    resize: none;
     width: 100%;
-    line-height: 20px;
     padding: 8px 12px;
     font-size: 0.85rem;
     min-height: 100px;
-    border-radius: 3px;
-    margin: 0;
   }
 
   textarea:focus {
@@ -319,7 +317,6 @@
   .window-sidebar span[class*="title"] {
     color: #5e6c84;
     font-size: 12px;
-    line-height: 20px;
     font-weight: 600;
   }
   .sidebar-flex {
@@ -327,18 +324,7 @@
     flex-direction: column;
     gap: 0.5rem;
   }
-  .edit-button {
+  .btn-edit {
     display: inline-block;
-    background: #091e420a;
-    cursor: pointer;
-    text-align: center;
-    border-radius: 3px;
-    line-height: 20px;
-    font-size: 14px;
-    padding: 6px 12px;
-  }
-
-  .edit-button:hover {
-    background: #091e4221;
   }
 </style>

@@ -37,7 +37,7 @@
       {/each}
     </div>
   {/if}
-  <div class="title">{card.title}</div>
+  <div>{card.title}</div>
 </div>
 
 <style>
@@ -47,16 +47,11 @@
     border-radius: 2px;
     padding: 5px 0px 5px 8px;
     box-shadow: 0 1px 0 #091e4240;
-    font-size: 14px;
     cursor: pointer;
   }
 
   .card:hover {
     background-color: whitesmoke;
-  }
-
-  .title {
-    line-height: 20px;
   }
 
   .label-wrapper {

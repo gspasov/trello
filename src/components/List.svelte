@@ -98,12 +98,12 @@
     </div>
     <input
       class:hidden={!isEditingListTitle}
-      class="title-input"
+      class="input-primary"
       bind:value={newTitleText}
       bind:this={newTitleInputRef}
       on:keydown={handleTitleInputSubmit}
     />
-    <span class="list-menu-btn" on:click|stopPropagation={openListMenu}
+    <span class="btn-list-menu" on:click|stopPropagation={openListMenu}
       >&#9679;&#9679;&#9679;</span
     >
   </div>
@@ -149,13 +149,13 @@
       />
     </div>
   </div>
-  <div
+  <button
     class="add-btn"
     class:hidden={isAddCardSectionVisible}
     on:click={toggleAddCardSectionVisibility}
   >
-    +Add a card
-  </div>
+    + Add a card
+  </button>
   {#if list.isMenuOpened}
     <div transition:fade={{ duration: 150 }} use:clickOutside={closeListMenu}>
       <Menu
@@ -180,7 +180,7 @@
   .list {
     background-color: #ebecf0;
     width: 250px;
-    padding: 10px 4px;
+    padding: 8px 4px;
     border-radius: 3px;
   }
 
@@ -191,37 +191,26 @@
   }
 
   .title {
-    font-size: 14px;
     font-weight: 600;
     align-self: center;
     padding-left: 6px;
   }
 
-  .title-input {
-    width: 100%;
+  input {
     align-self: center;
-    margin: 0;
-    box-shadow: inset 0 0 0 2px #0079bf;
-    font-size: 14px;
     font-weight: 600;
-    border: none;
-    border-radius: 3px;
   }
 
-  .title-input:focus {
-    outline: none;
-  }
-
-  .list-menu-btn {
+  .btn-list-menu {
     font-size: 8px;
-    padding: 8px 7px;
+    padding: 4px 8px;
     color: #999;
     align-self: center;
-    border-radius: 2px;
+    border-radius: 3px;
     cursor: pointer;
   }
 
-  .list-menu-btn:hover {
+  .btn-list-menu:hover {
     background-color: #d2d2d2;
     color: #444;
   }
@@ -244,20 +233,13 @@
 
   textarea {
     display: block;
-    background-color: white;
-    border-radius: 2px;
     box-shadow: 0 1px 0 #091e4240;
     border-color: white;
-    font-size: 14px;
     width: 100%;
     min-height: 54px;
     max-height: 162px;
-    color: #333;
     resize: vertical;
-  }
-
-  textarea:focus {
-    outline: none;
+    margin-bottom: 0.4em;
   }
 
   .add-card-parent {
@@ -265,15 +247,12 @@
   }
 
   .add-btn {
-    height: 30px;
-    background-color: #ebecf0;
-    border-radius: 3px;
-    font-size: 14px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    line-height: 24px;
     color: #666666;
-    cursor: pointer;
-    padding: 0px 4px 0px 6px;
-    display: flex;
-    align-items: center;
+    background-color: #ebecf0;
   }
 
   .add-btn:hover {

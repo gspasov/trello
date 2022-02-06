@@ -23,9 +23,9 @@
         <LabelButton {card} {label} on:select on:edit />
       {/each}
     </div>
-    <div class="gray-button" on:click={() => dispatch("create")}>
+    <button class="btn-secondary " on:click={() => dispatch("create")}>
       Create a new label
-    </div>
+    </button>
   </MenuItem>
 </Menu>
 
@@ -42,18 +42,9 @@
     max-height: 30vh;
   }
 
-  .gray-button {
-    background: #091e420a;
-    cursor: pointer;
-    text-align: center;
-    border-radius: 3px;
-    line-height: 20px;
-    font-size: 14px;
+  button {
+    width: 100%;
     margin-top: 8px;
     padding: 6px 0px;
-  }
-
-  .gray-button:hover {
-    background: #091e4221;
   }
 </style>

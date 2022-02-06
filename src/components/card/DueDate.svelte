@@ -84,8 +84,6 @@
     cursor: pointer;
     text-align: center;
     border-radius: 3px;
-    line-height: 20px;
-    font-size: 14px;
     padding: 6px 16px;
   }
 

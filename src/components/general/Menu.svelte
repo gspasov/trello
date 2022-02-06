@@ -50,7 +50,6 @@
 
   .title {
     align-self: center;
-    font-size: 14px;
     line-height: 26px;
     color: #5e6c84;
   }
