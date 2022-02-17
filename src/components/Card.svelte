@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { LabelStore } from "../stores";
   import CloseButton from "./general/CloseButton.svelte";
-  import { Card, deleteCard } from "../models/card";
+  import { Card, deleteCard, getLabels } from "../models/card";
+  import { BoardsStore } from "../stores";
 
   export let card: Card;
   export let listId: string;
+  export let boardId: string;
 
   let isCloseBtnHidden: boolean = true;
-  $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
+  $: cardLabels = getLabels($BoardsStore, boardId, listId, card.id);
 
   function handleDeleteCard(): void {
-    deleteCard(card.id, listId);
+    deleteCard(card.id, boardId, listId);
   }
 
   function setCloseBtnVisibility(isVisible: boolean): void {

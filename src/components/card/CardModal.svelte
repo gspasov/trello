@@ -6,10 +6,14 @@
     DefaultMouseEvent,
     CardModalMenus,
   } from "../../supportTypes";
-  import { Card, updateCard, updateCardLabel } from "../../models/card";
+  import {
+    Card,
+    getLabels,
+    updateCard,
+    updateCardLabel,
+  } from "../../models/card";
   import type { List } from "../../models/list";
   import type { Label } from "../../models/label";
-  import { LabelStore } from "../../stores";
   import ActionClose from "../general/ActionClose.svelte";
   import ModalAction from "./ModalAction.svelte";
   import LabelsMenu from "./menus/LabelsMenu.svelte";
@@ -21,9 +25,11 @@
   import LabelsSection from "./LabelsSection.svelte";
   import { Just } from "@quanterall/lich";
   import { stringToMaybe } from "../../utilities";
+  import { BoardsStore } from "../../stores";
 
   export let card: Card;
   export let list: List;
+  export let boardId: string;
 
   let cardDescription: string = card.description.otherwise("");
   let isDescriptionEditVisible = false;
@@ -32,7 +38,7 @@
   let menusVisibility = initialMenusState();
   let editingLabel: Label;
 
-  $: cardLabels = $LabelStore.filter((l) => card.labelIds.includes(l.id));
+  $: cardLabels = getLabels($BoardsStore, boardId, list.id, card.id);
 
   function closeAllMenus(): void {
     menusVisibility = initialMenusState();
@@ -56,14 +62,14 @@
 
   function editCardDescription(): void {
     card = { ...card, description: stringToMaybe(cardDescription) };
-    updateCard(card.id, list.id, card);
+    updateCard(card.id, boardId, list.id, card);
     toggleDescriptionEditSection();
   }
 
   function attachLabelToCard(e: CustomEvent): void {
     let label: Label = e.detail.label;
     card = updateCardLabel(card, label);
-    updateCard(card.id, list.id, card);
+    updateCard(card.id, boardId, list.id, card);
   }
 
   function handleDueDateCompleted(
@@ -71,7 +77,7 @@
   ): void {
     let completed = e.detail.completed;
     card = { ...card, completed };
-    updateCard(card.id, list.id, card);
+    updateCard(card.id, boardId, list.id, card);
   }
 
   function openLabelEditMenu(e: CustomEvent): void {
@@ -105,21 +111,21 @@
 
   function handleSelectedDueDate(e: CustomEvent<Date>): void {
     card = { ...card, dueDate: Just(e.detail) };
-    updateCard(card.id, list.id, card);
+    updateCard(card.id, boardId, list.id, card);
     closeAllMenus();
   }
 
   function handleRemoveDueDate(): void {
     card = { ...card, dueDate: undefined };
-    updateCard(card.id, list.id, card);
+    updateCard(card.id, boardId, list.id, card);
     closeAllMenus();
   }
 </script>
 
 <div>
-  <div>
+  <div class="title-section">
     <h3>{card.title}</h3>
-    <span>in list {list.name}</span>
+    <span>in list <i>{list.name}</i></span>
   </div>
   <div class="container">
     <div class="window-main">
@@ -201,6 +207,7 @@
     {card}
     x={menuPosition.x}
     y={menuPosition.y + 40}
+    {boardId}
     on:select={attachLabelToCard}
     on:create={() => openMenu(CardModalMenus.LABEL_CREATE)}
     on:edit={openLabelEditMenu}
@@ -211,6 +218,7 @@
   <CreateLabelMenu
     x={menuPosition.x}
     y={menuPosition.y + 40}
+    {boardId}
     on:back={() => showMenu(CardModalMenus.LABELS)}
     on:close={closeAllMenus}
   />
@@ -221,6 +229,7 @@
     isEditMode={true}
     x={menuPosition.x}
     y={menuPosition.y + 40}
+    {boardId}
     on:back={() => showMenu(CardModalMenus.LABELS)}
     on:delete={() => openMenu(CardModalMenus.LABEL_DELETE)}
     on:close={closeAllMenus}
@@ -231,6 +240,7 @@
     label={editingLabel}
     x={menuPosition.x}
     y={menuPosition.y + 40}
+    {boardId}
     on:back={() => showMenu(CardModalMenus.LABEL_EDIT)}
     on:delete={() => showMenu(CardModalMenus.LABELS)}
     on:close={closeAllMenus}
@@ -283,6 +293,10 @@
 
   textarea:focus {
     outline: none;
+  }
+
+  .title-section {
+    padding-right: 20px;
   }
 
   .description-text {

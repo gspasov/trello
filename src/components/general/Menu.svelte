@@ -37,7 +37,7 @@
     width: 250px;
     border-radius: 3px;
     box-shadow: 0 8px 16px -4px #091e4240, 0 0 0 1px #091e4214;
-    z-index: 1;
+    z-index: 10;
     padding: 5px 0px;
   }
 

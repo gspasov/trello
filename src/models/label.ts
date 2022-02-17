@@ -1,6 +1,6 @@
-import { Just, Maybe, Nothing } from "@quanterall/lich";
+import { Maybe, Nothing } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
-import { LabelStore } from "../stores";
+import { BoardsStore } from "../stores";
 import { assertUnreachable } from "../utilities";
 
 export enum LabelColorType {
@@ -12,6 +12,7 @@ export enum LabelColorType {
   Blue = "blue",
   LightBlue = "light-blue",
   Gray = "gray",
+  AddBtnGray = "add-btn-gray",
 }
 
 export function labelColorTypeMapping(labelColorType: LabelColorType): string {
@@ -32,6 +33,8 @@ export function labelColorTypeMapping(labelColorType: LabelColorType): string {
       return "#00c2e0";
     case LabelColorType.Gray:
       return "#b3bac5";
+    case LabelColorType.AddBtnGray:
+      return "#e5e5e5";
     default:
       return assertUnreachable(labelColorType);
   }
@@ -58,32 +61,74 @@ export function Label(
 }
 
 export function createLabel(
+  boardId: string,
   type: LabelColorType,
   name: Maybe<string> = Nothing()
 ): void {
-  LabelStore.update((labels) => {
-    return orderLabelsByColor([
-      ...labels,
-      {
-        id: uuidv4(),
-        type: type,
-        color: labelColorTypeMapping(type),
-        name,
-      },
-    ]);
+  BoardsStore.update((boards) => {
+    return boards.map((board) => {
+      if (board.id !== boardId) return board;
+
+      return {
+        ...board,
+        labels: orderLabelsByColor([
+          ...board.labels,
+          Label(uuidv4(), type, name),
+        ]),
+      };
+    });
   });
 }
 
-export function updateLabel(id: string, newLabel: Label): void {
-  LabelStore.update((labels) => {
-    return orderLabelsByColor(
-      labels.map((label) => {
-        if (id !== label.id) return label;
+export function updateLabel(
+  id: string,
+  boardId: string,
+  newLabel: Label
+): void {
+  BoardsStore.update((boards) => {
+    return boards.map((board) => {
+      if (board.id !== boardId) return board;
 
-        return newLabel;
-      })
-    );
+      return {
+        ...board,
+        labels: orderLabelsByColor(
+          board.labels.map((label) => {
+            if (id !== label.id) return label;
+
+            return newLabel;
+          })
+        ),
+      };
+    });
   });
+}
+
+export function deleteLabel(id: string, boardId: string): void {
+  BoardsStore.update((boards) => {
+    return boards.map((board) => {
+      if (board.id !== boardId) return board;
+
+      return {
+        ...board,
+        labels: orderLabelsByColor(
+          board.labels.filter((label) => label.id !== id)
+        ),
+      };
+    });
+  });
+}
+
+export function defaultLabels(): Label[] {
+  return [
+    Label(uuidv4(), LabelColorType.Green),
+    Label(uuidv4(), LabelColorType.Yellow),
+    Label(uuidv4(), LabelColorType.Orange),
+    Label(uuidv4(), LabelColorType.Red),
+    Label(uuidv4(), LabelColorType.Purple),
+    Label(uuidv4(), LabelColorType.Blue),
+    Label(uuidv4(), LabelColorType.LightBlue),
+    Label(uuidv4(), LabelColorType.Gray),
+  ];
 }
 
 export function orderLabelsByColor(labels: Label[]): Label[] {
@@ -100,6 +145,7 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
           case LabelColorType.Blue:
           case LabelColorType.LightBlue:
           case LabelColorType.Gray:
+          case LabelColorType.AddBtnGray:
             return -1;
           default:
             return assertUnreachable(b.type);
@@ -117,6 +163,7 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
           case LabelColorType.Blue:
           case LabelColorType.LightBlue:
           case LabelColorType.Gray:
+          case LabelColorType.AddBtnGray:
             return -1;
           default:
             return assertUnreachable(b.type);
@@ -125,7 +172,6 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
       case LabelColorType.Orange: {
         switch (b.type) {
           case LabelColorType.Green:
-            return 1;
           case LabelColorType.Yellow:
             return 1;
           case LabelColorType.Orange:
@@ -135,6 +181,7 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
           case LabelColorType.Blue:
           case LabelColorType.LightBlue:
           case LabelColorType.Gray:
+          case LabelColorType.AddBtnGray:
             return -1;
           default:
             return assertUnreachable(b.type);
@@ -143,9 +190,7 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
       case LabelColorType.Red: {
         switch (b.type) {
           case LabelColorType.Green:
-            return 1;
           case LabelColorType.Yellow:
-            return 1;
           case LabelColorType.Orange:
             return 1;
           case LabelColorType.Red:
@@ -154,6 +199,7 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
           case LabelColorType.Blue:
           case LabelColorType.LightBlue:
           case LabelColorType.Gray:
+          case LabelColorType.AddBtnGray:
             return -1;
           default:
             return assertUnreachable(b.type);
@@ -162,11 +208,8 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
       case LabelColorType.Purple: {
         switch (b.type) {
           case LabelColorType.Green:
-            return 1;
           case LabelColorType.Yellow:
-            return 1;
           case LabelColorType.Orange:
-            return 1;
           case LabelColorType.Red:
             return 1;
           case LabelColorType.Purple:
@@ -174,6 +217,7 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
           case LabelColorType.Blue:
           case LabelColorType.LightBlue:
           case LabelColorType.Gray:
+          case LabelColorType.AddBtnGray:
             return -1;
           default:
             return assertUnreachable(b.type);
@@ -182,19 +226,16 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
       case LabelColorType.Blue: {
         switch (b.type) {
           case LabelColorType.Green:
-            return 1;
           case LabelColorType.Yellow:
-            return 1;
           case LabelColorType.Orange:
-            return 1;
           case LabelColorType.Red:
-            return 1;
           case LabelColorType.Purple:
             return 1;
           case LabelColorType.Blue:
             return 0;
           case LabelColorType.LightBlue:
           case LabelColorType.Gray:
+          case LabelColorType.AddBtnGray:
             return -1;
           default:
             return assertUnreachable(b.type);
@@ -203,20 +244,16 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
       case LabelColorType.LightBlue: {
         switch (b.type) {
           case LabelColorType.Green:
-            return 1;
           case LabelColorType.Yellow:
-            return 1;
           case LabelColorType.Orange:
-            return 1;
           case LabelColorType.Red:
-            return 1;
           case LabelColorType.Purple:
-            return 1;
           case LabelColorType.Blue:
             return 1;
           case LabelColorType.LightBlue:
             return 0;
           case LabelColorType.Gray:
+          case LabelColorType.AddBtnGray:
             return -1;
           default:
             return assertUnreachable(b.type);
@@ -225,20 +262,33 @@ export function orderLabelsByColor(labels: Label[]): Label[] {
       case LabelColorType.Gray: {
         switch (b.type) {
           case LabelColorType.Green:
-            return 1;
           case LabelColorType.Yellow:
-            return 1;
           case LabelColorType.Orange:
-            return 1;
           case LabelColorType.Red:
-            return 1;
           case LabelColorType.Purple:
-            return 1;
           case LabelColorType.Blue:
-            return 1;
           case LabelColorType.LightBlue:
             return 1;
+          case LabelColorType.AddBtnGray:
+            return -1;
           case LabelColorType.Gray:
+            return 0;
+          default:
+            return assertUnreachable(b.type);
+        }
+      }
+      case LabelColorType.AddBtnGray: {
+        switch (b.type) {
+          case LabelColorType.Green:
+          case LabelColorType.Yellow:
+          case LabelColorType.Orange:
+          case LabelColorType.Red:
+          case LabelColorType.Purple:
+          case LabelColorType.Blue:
+          case LabelColorType.LightBlue:
+          case LabelColorType.Gray:
+            return 1;
+          case LabelColorType.AddBtnGray:
             return 0;
           default:
             return assertUnreachable(b.type);

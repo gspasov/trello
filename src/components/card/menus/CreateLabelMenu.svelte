@@ -10,13 +10,16 @@
   } from "../../../models/label";
   import { DefaultLabelStore } from "../../../stores";
   import { onMount } from "svelte";
-  import { Maybe, Nothing } from "@quanterall/lich";
+  import { Just, Maybe, Nothing } from "@quanterall/lich";
   import { stringToMaybe } from "../../../utilities";
+  import LabelBox from "../../general/LabelBox.svelte";
+  import LabeledInput from "../../general/LabeledInput.svelte";
 
   export let x: number;
   export let y: number;
   export let label: Maybe<Label> = Nothing();
   export let isEditMode = false;
+  export let boardId: string;
 
   const dispatch = createEventDispatcher();
   let inputRef: HTMLInputElement;
@@ -30,7 +33,7 @@
   onMount(() => inputRef.focus());
 
   function handleCreate(): void {
-    createLabel(selectedColorType, stringToMaybe(labelName));
+    createLabel(boardId, selectedColorType, stringToMaybe(labelName));
     dispatch("back");
   }
 
@@ -42,7 +45,7 @@
         color: labelColorTypeMapping(selectedColorType),
         name: stringToMaybe(labelName),
       }))
-      .onJust((l) => updateLabel(l.id, l));
+      .onJust((l) => updateLabel(l.id, boardId, l));
 
     dispatch("back");
   }
@@ -61,25 +64,23 @@
   on:back
 >
   <div class="content">
-    <span class="title">Name</span>
-    <input
-      class="input-primary"
-      name="label"
-      bind:this={inputRef}
+    <LabeledInput
+      title={Just("Name")}
+      bind:ref={inputRef}
       bind:value={labelName}
     />
     <span class="title">Select color</span>
     <div class="color-box-wrapper">
       {#each $DefaultLabelStore as { id, color, type } (id)}
-        <span
-          class="color-box"
-          style="--color: {color}; --color-hover: {color}99;"
-          on:click={() => handleColorSelection(type)}
+        <LabelBox
+          {color}
+          selectable={true}
+          on:select={() => handleColorSelection(type)}
         >
           {#if selectedColorType === type}
             &#10004;
           {/if}
-        </span>
+        </LabelBox>
       {/each}
     </div>
     <div class="actions-wrapper">
@@ -99,9 +100,6 @@
   .content {
     padding: 0px 12px 6px 12px;
   }
-  input {
-    margin-bottom: 12px;
-  }
 
   span.title {
     display: block;
@@ -114,20 +112,6 @@
     display: grid;
     grid-template-columns: auto auto auto auto;
     gap: 0.5rem;
-  }
-  .color-box {
-    width: 50px;
-    height: 30px;
-    border-radius: 3px;
-    background-color: var(--color);
-    cursor: pointer;
-    color: white;
-    text-align: center;
-    line-height: 30px;
-  }
-
-  .color-box:hover {
-    background-color: var(--color-hover);
   }
 
   .actions-wrapper {

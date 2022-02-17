@@ -1,19 +1,17 @@
 <script lang="ts">
   import Menu from "../../general/Menu.svelte";
   import { createEventDispatcher } from "svelte";
-  import { LabelStore } from "../../../stores";
-  import type { Label } from "../../../models/label";
+  import { deleteLabel, Label } from "../../../models/label";
 
   export let x: number;
   export let y: number;
   export let label: Label = undefined;
+  export let boardId: string;
 
   const dispatch = createEventDispatcher();
 
   function handleDelete(): void {
-    LabelStore.update((labels) => {
-      return labels.filter((l) => l.id !== label.id);
-    });
+    deleteLabel(label.id, boardId);
     dispatch("delete");
   }
 </script>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { clickOutside } from "../../clickOutside";
   import CloseButton from "./CloseButton.svelte";
 
   export let backgroundColor: string;
@@ -8,22 +7,14 @@
   }
   export function hide(): void {
     shown = false;
-    clickedAmountsOutside = 0;
   }
 
   let shown = false;
-  let clickedAmountsOutside = 0;
 
   function handleKeyDown(e: KeyboardEvent): void {
     if (e.key == "Escape") {
       hide();
     }
-  }
-
-  function handleOutsideClick(): void {
-    // console.info("clicked outside")
-    // clickedAmountsOutside++;
-    // if (clickedAmountsOutside >= 2) hide();
   }
 </script>
 
@@ -31,11 +22,7 @@
 
 {#if shown}
   <div class="modal-wrapper">
-    <div
-      class="modal"
-      style={`background-color: ${backgroundColor}`}
-      use:clickOutside={handleOutsideClick}
-    >
+    <div class="modal" style={`background-color: ${backgroundColor}`}>
       <span class="close">
         <CloseButton on:click={() => hide()} />
       </span>
@@ -55,6 +42,7 @@
     height: 100%;
     top: 0;
     left: 0;
+    z-index: 3;
   }
 
   .modal {

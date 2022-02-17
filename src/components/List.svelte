@@ -13,6 +13,7 @@
   import { List, updateList, deleteList, closeListMenu } from "../models/list";
 
   export let list: List;
+  export let boardId: string;
 
   let newTitleText = list.name;
   let newCardTitle = "";
@@ -25,7 +26,7 @@
 
   function handleDndCards(e): void {
     const cards: CardType[] = e.detail.items;
-    updateList(list.id, { ...list, cards });
+    updateList(boardId, list.id, { ...list, cards });
   }
 
   function transformDraggedElement(e): void {
@@ -43,7 +44,7 @@
 
   function handleCreateCard(): void {
     if (newCardTitle.trim() !== "") {
-      createCard(list.id, newCardTitle);
+      createCard(boardId, list.id, newCardTitle);
     }
     newCardTitle = "";
     hideAddCardSection();
@@ -54,27 +55,27 @@
   ): void {
     const rect = event.currentTarget.getBoundingClientRect();
     menuPosition = { x: rect.left, y: rect.top };
-    updateList(list.id, { ...list, isMenuOpened: true });
+    updateList(boardId, list.id, { ...list, isMenuOpened: true });
   }
 
   function handleDeleteList(): void {
     list.isMenuOpened = false;
-    deleteList(list.id);
+    deleteList(boardId, list.id);
   }
 
   function deleteAllCardsFromList(): void {
-    updateList(list.id, { ...list, cards: [], isMenuOpened: false });
+    updateList(boardId, list.id, { ...list, cards: [], isMenuOpened: false });
   }
 
   function startEditingListTitle(): void {
     isEditingListTitle = true;
-    closeListMenu();
+    closeListMenu(boardId);
     setTimeout(() => newTitleInputRef.focus(), 1);
   }
 
   function handleTitleInputSubmit(e: KeyboardEvent): void {
     if (e.key === "Enter") {
-      updateList(list.id, { ...list, name: newTitleText });
+      updateList(boardId, list.id, { ...list, name: newTitleText });
       isEditingListTitle = false;
     }
     if (e.key === "Escape") {
@@ -124,7 +125,7 @@
         animate:flip={{ duration: 300 }}
         on:click={() => handleCardClick(card.id)}
       >
-        <Card {card} listId={list.id} />
+        <Card {card} listId={list.id} {boardId} />
         {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
           <span class="card-shadow" />
         {/if}
@@ -162,7 +163,7 @@
         title={"List actions"}
         x={menuPosition.x}
         y={menuPosition.y + 30}
-        on:close={closeListMenu}
+        on:close={() => closeListMenu(boardId)}
       >
         <MenuItem lineText={"Rename"} on:click={startEditingListTitle} />
         <MenuItem

@@ -1,6 +1,7 @@
 import { Maybe, Nothing } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
-import { BoardStore } from "../stores";
+import { BoardsStore } from "../stores";
+import type { Board } from "./board";
 import type { Label } from "./label";
 
 export type Card = {
@@ -31,56 +32,78 @@ export function Card(
   };
 }
 
-export function createCard(listId: string, title: string): void {
-  BoardStore.update((state) => {
+export function createCard(
+  boardId: string,
+  listId: string,
+  title: string
+): void {
+  BoardsStore.update((state) => {
     const newCardId = uuidv4();
-    return {
-      ...state,
-      lists: state.lists.map((l) => {
-        if (listId !== l.id) return l;
 
-        return {
-          ...l,
-          cards: [...l.cards, Card(newCardId, title)],
-        };
-      }),
-    };
+    return state.map((board) => {
+      if (board.id !== boardId) return board;
+
+      return {
+        ...board,
+        lists: board.lists.map((list) => {
+          if (list.id !== listId) return list;
+
+          return {
+            ...list,
+            cards: [...list.cards, Card(newCardId, title)],
+          };
+        }),
+      };
+    });
   });
 }
 
-export function updateCard(id: string, listId: string, newCard: Card): void {
-  BoardStore.update((state) => {
-    return {
-      ...state,
-      lists: state.lists.map((l) => {
-        if (listId !== l.id) return l;
+export function updateCard(
+  id: string,
+  boardId: string,
+  listId: string,
+  newCard: Card
+): void {
+  BoardsStore.update((state) => {
+    return state.map((board) => {
+      if (board.id !== boardId) return board;
 
-        return {
-          ...l,
-          cards: l.cards.map((c) => {
-            if (id !== c.id) return c;
+      return {
+        ...board,
+        lists: board.lists.map((list) => {
+          if (list.id !== listId) return list;
 
-            return newCard;
-          }),
-        };
-      }),
-    };
+          return {
+            ...list,
+            cards: list.cards.map((card) => {
+              if (card.id !== id) return card;
+
+              return newCard;
+            }),
+          };
+        }),
+      };
+    });
   });
 }
 
-export function deleteCard(id: string, listId: string): void {
-  BoardStore.update((state) => {
-    return {
-      ...state,
-      lists: state.lists.map((l) => {
-        if (listId !== l.id) return l;
+export function deleteCard(id: string, boardId: string, listId: string): void {
+  BoardsStore.update((state) => {
+    return state.map((board) => {
+      if (board.id !== boardId) return board;
 
-        return {
-          ...l,
-          cards: l.cards.filter((c) => c.id !== id),
-        };
-      }),
-    };
+      return {
+        ...board,
+        lists: board.lists.map((list) => {
+          if (list.id !== listId) return list;
+
+          return {
+            ...list,
+            cards: list.cards.filter((card) => card.id !== id),
+          };
+        }),
+      };
+    });
   });
 }
 
@@ -91,4 +114,19 @@ export function updateCardLabel(card: Card, label: Label): Card {
       ? card.labelIds.filter((id) => id !== label.id)
       : [...card.labelIds, label.id],
   };
+}
+
+export function getLabels(
+  boards: Board[],
+  boardId: string,
+  listId: string,
+  cardId: string
+): Label[] {
+  const boardLabels = boards.find((b) => b.id === boardId).labels;
+  const cardLabelIds = boards
+    .find((b) => b.id === boardId)
+    .lists.find((l) => l.id === listId)
+    .cards.find((c) => c.id === cardId).labelIds;
+
+  return boardLabels.filter((l) => cardLabelIds.includes(l.id));
 }

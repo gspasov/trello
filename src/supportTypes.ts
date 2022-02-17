@@ -1,9 +1,15 @@
+import type { LabelColorType } from "./models/label";
+
 export type DefaultMouseEvent = MouseEvent & {
   currentTarget: EventTarget & HTMLElement;
 };
 
 export interface DispatchDueDatePosition {
   openDueDate: Coordinates;
+}
+
+export interface DispatchOpenNewBoardMenu {
+  openNewBoardMenu: Coordinates;
 }
 
 export interface DispatchCompleted {
@@ -17,6 +23,14 @@ export interface DispatchCompletedPayload {
 export interface Coordinates {
   x: number;
   y: number;
+}
+
+export enum AppMenus {
+  NEW_BOARD = "newBoard",
+}
+
+export interface AppMenusVisibility {
+  newBoard: boolean;
 }
 
 export enum CardModalMenus {

@@ -3,16 +3,17 @@
   import MenuItem from "../../general/MenuItem.svelte";
   import LabelButton from "../LabelButton.svelte";
   import { createEventDispatcher } from "svelte";
-  import { LabelStore } from "../../../stores";
   import type { Card } from "../../../models/card";
+  import { BoardsStore } from "../../../stores";
 
   export let x: number;
   export let y: number;
   export let card: Card;
+  export let boardId: string;
 
   const dispatch = createEventDispatcher();
 
-  $: labels = $LabelStore;
+  $: labels = $BoardsStore.find((board) => board.id === boardId).labels;
 </script>
 
 <Menu title={"Labels"} {x} {y} on:close>
