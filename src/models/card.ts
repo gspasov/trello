@@ -1,4 +1,4 @@
-import { Maybe, Nothing } from "@quanterall/lich";
+import { Maybe, Nothing, nullableToMaybe } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
 import { BoardsStore } from "../stores";
 import type { Board } from "./board";
@@ -122,11 +122,16 @@ export function getLabels(
   listId: string,
   cardId: string
 ): Label[] {
-  const boardLabels = boards.find((b) => b.id === boardId).labels;
-  const cardLabelIds = boards
-    .find((b) => b.id === boardId)
-    .lists.find((l) => l.id === listId)
-    .cards.find((c) => c.id === cardId).labelIds;
+  const boardLabels = nullableToMaybe(boards.find((b) => b.id === boardId)).map(
+    (b) => b.labels
+  );
 
-  return boardLabels.filter((l) => cardLabelIds.includes(l.id));
+  const cardLabelIds = nullableToMaybe(boards.find((b) => b.id === boardId))
+    .bind((b) => nullableToMaybe(b.lists.find((l) => l.id === listId)))
+    .bind((l) => nullableToMaybe(l.cards.find((c) => c.id === cardId)))
+    .map((c) => c.labelIds);
+
+  return boardLabels
+    .otherwise([])
+    .filter((l) => cardLabelIds.otherwise([]).includes(l.id));
 }
