@@ -14,13 +14,16 @@
   on:mouseenter={toggleHover}
   on:mouseleave={toggleHover}
 >
-  <span class:hover class:rotate-to-left={move} class:rotate-to-right={!move}
-    >&#10132;</span
-  >
+  <i
+    class="fa fa-arrow-right"
+    class:rotate-to-left={move}
+    class:rotate-to-right={!move}
+    area-hidden="true"
+  />
 </div>
 
 <style>
-  span {
+  i {
     position: fixed;
     margin-top: 10px;
     height: 24px;
@@ -30,7 +33,7 @@
     color: white;
     text-align: center;
     border-radius: 100px;
-    transition: 0.3s fade;
+    transition: 0.4s;
   }
 
   div {

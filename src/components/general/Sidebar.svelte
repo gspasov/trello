@@ -44,7 +44,11 @@
 <nav class:open style="background-color: {backgroundColor}">
   <div class="title-section">
     <span class="title">Your Boards</span>
-    <span class="btn-add" on:click={handleOpenNewBoardMenu}>&#43;</span>
+    <i
+      class="fa fa-plus btn-add"
+      aria-hidden="true"
+      on:click={handleOpenNewBoardMenu}
+    />
   </div>
   {#each boards as board (board.id)}
     <MenuItem
@@ -62,17 +66,17 @@
         </div>
         <div>
           {#if board.favorite}
-            <span
-              class="board-star filled"
+            <i
+              class="fa fa-star board-star"
+              aria-hidden="true"
               on:click|stopPropagation={() => handleFavoriteChange(board.id)}
-              >&#x2605;</span
-            >
+            />
           {:else}
-            <span
-              class="board-star empty"
+            <i
+              class="fa fa-star-o board-star "
+              aria-hidden="true"
               on:click|stopPropagation={() => handleFavoriteChange(board.id)}
-              >&#x2606;</span
-            >
+            />
           {/if}
         </div>
       </div>
@@ -86,7 +90,6 @@
     width: 0px;
     position: fixed;
     z-index: 2;
-    /* margin-top: 45px; */
     top: 45px;
     left: 0;
     overflow-x: hidden; /* Disable horizontal scroll */
@@ -105,13 +108,9 @@
     min-width: 150px;
   }
   .btn-add {
-    display: block;
     color: whitesmoke;
-    padding: 1px 4px 6px 4px;
-    font-size: 24px;
-    line-height: 16px;
-    align-items: center;
-    text-align: center;
+    align-self: center;
+    padding: 6px 7px 4px 7px;
     cursor: pointer;
     border-radius: 3px;
   }
@@ -148,16 +147,13 @@
     margin-left: 8px;
     min-width: 150px;
   }
-
   .board-star {
+    padding: 2px;
     color: whitesmoke;
     float: right;
-    display: block;
-    font-size: 20px;
-    padding-bottom: 4px;
   }
 
   .board-star:hover {
-    font-size: 24px;
+    color: white;
   }
 </style>

@@ -155,14 +155,14 @@
     class:hidden={isAddCardSectionVisible}
     on:click={toggleAddCardSectionVisibility}
   >
-    + Add a card
+    <i class="fa fa-plus" aria-hidden="true" /> Add a card
   </button>
   {#if list.isMenuOpened}
     <div transition:fade={{ duration: 150 }} use:clickOutside={closeListMenu}>
       <Menu
         title={"List actions"}
         x={menuPosition.x}
-        y={menuPosition.y + 30}
+        y={menuPosition.y}
         on:close={() => closeListMenu(boardId)}
       >
         <MenuItem lineText={"Rename"} on:click={startEditingListTitle} />

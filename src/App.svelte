@@ -117,7 +117,7 @@
           class:hidden={isNewListSectionVisible}
           on:click={toggleAddListSectionVisibility}
         >
-          + Add another list
+          <i class="fa fa-plus" aria-hidden="true" /> Add another list
         </button>
       {/if}
     </div>

@@ -25,11 +25,11 @@
   on:mouseenter={() => setCloseBtnVisibility(false)}
 >
   {#if !isCloseBtnHidden}
-    <div class="close-parent">
-      <span class="close" on:click={handleDeleteCard}>
-        <CloseButton small={true} />
-      </span>
-    </div>
+    <i
+      class="fa fa-times close"
+      aria-hidden="true"
+      on:click={handleDeleteCard}
+    />
   {/if}
   {#if cardLabels.length > 0}
     <div class="label-wrapper">
@@ -44,7 +44,7 @@
 <style>
   .card {
     background-color: white;
-    min-height: 20px;
+    min-height: 21px;
     border-radius: 2px;
     padding: 5px 0px 5px 8px;
     box-shadow: 0 1px 0 #091e4240;
@@ -69,14 +69,12 @@
     border-radius: 3px;
   }
 
-  .close-parent {
+  .close {
     position: absolute;
     right: 2px;
-  }
-
-  .close {
+    top: 2px;
     color: #999;
-    padding: 3px 9px 4px 9px;
+    padding: 7px 9px 6px 9px;
   }
 
   .close:hover {
