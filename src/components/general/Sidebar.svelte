@@ -86,7 +86,8 @@
     width: 0px;
     position: fixed;
     z-index: 2;
-    top: 0;
+    /* margin-top: 45px; */
+    top: 45px;
     left: 0;
     overflow-x: hidden; /* Disable horizontal scroll */
     transition: 0.3s;

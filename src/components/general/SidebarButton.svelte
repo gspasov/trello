@@ -22,7 +22,7 @@
 <style>
   span {
     position: fixed;
-    top: 10px;
+    margin-top: 10px;
     height: 24px;
     width: 24px;
     line-height: 23px;
@@ -35,7 +35,7 @@
 
   div {
     position: fixed;
-    top: 0;
+    top: 45px;
     left: 0;
     height: 100vh;
     width: 12px;

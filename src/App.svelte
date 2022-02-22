@@ -6,6 +6,7 @@
   import Modal from "./components/general/Modal.svelte";
   import Sidebar from "./components/general/Sidebar.svelte";
   import SidebarButton from "./components/general/SidebarButton.svelte";
+  import Header from "./components/Header.svelte";
   import NewBoardMenu from "./components/NewBoardMenu.svelte";
   import type { Card } from "./models/card";
   import { createList, List } from "./models/list";
@@ -81,6 +82,7 @@
   }
 </script>
 
+<Header />
 <main>
   <Sidebar
     open={isSidebarOpen}
@@ -89,7 +91,9 @@
   />
   <SidebarButton move={isSidebarOpen} on:click={toggleSidebar} />
   <div class:move={isSidebarOpen} class="content-wrapper">
-    <Board board={selectedBoard} on:cardOpened={handleCardOpen} />
+    {#if selectedBoard !== undefined}
+      <Board board={selectedBoard} on:cardOpened={handleCardOpen} />
+    {/if}
     <div>
       {#if isNewListSectionVisible}
         <div class="new-list-form" transition:slide={{ duration: 300 }}>
@@ -143,6 +147,7 @@
     transform: translateX(250px);
   }
   main {
+    margin-top: 45px;
     display: flex;
     overflow: hidden;
     height: 100vh;
