@@ -23,12 +23,8 @@
 
   const dispatch = createEventDispatcher();
   let inputRef: HTMLInputElement;
-  let labelName: string = label.fold("", (label) =>
-    label.name.fold("", (x) => x)
-  );
-  let selectedColorType: LabelColorType = label
-    .map((label) => label.type)
-    .otherwise(LabelColorType.Green);
+  let labelName: string = getLabelName(label);
+  let selectedColorType: LabelColorType = getLabelColorType(label);
 
   onMount(() => inputRef.focus());
 
@@ -38,16 +34,33 @@
   }
 
   function handleEdit(): void {
-    label = label
-      .map((label) => ({
-        ...label,
-        type: selectedColorType,
-        color: labelColorTypeMapping(selectedColorType),
-        name: stringToMaybe(labelName),
-      }))
-      .onJust((l) => updateLabel(l.id, boardId, l));
+    if (isLabelChanged(label)) {
+      label = label
+        .map((label) => ({
+          ...label,
+          type: selectedColorType,
+          color: labelColorTypeMapping(selectedColorType),
+          name: stringToMaybe(labelName),
+        }))
+        .onJust((l) => updateLabel(l.id, boardId, l));
+    }
 
     dispatch("back");
+  }
+
+  function getLabelName(l: Maybe<Label>): string {
+    return l.fold("", (v) => v.name.fold("", (x) => x));
+  }
+
+  function getLabelColorType(l: Maybe<Label>): LabelColorType {
+    return l.map((v) => v.type).otherwise(LabelColorType.Green);
+  }
+
+  function isLabelChanged(l: Maybe<Label>): boolean {
+    return (
+      labelName !== getLabelName(l) ||
+      selectedColorType !== l.fold(LabelColorType.Green, (v) => v.type)
+    );
   }
 
   function handleColorSelection(colorType: LabelColorType): void {
