@@ -1,6 +1,5 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { fade } from "svelte/transition";
   import Card from "./Card.svelte";
   import Menu from "./general/Menu.svelte";
   import MenuItem from "./general/MenuItem.svelte";
@@ -158,7 +157,7 @@
     <i class="fa fa-plus" aria-hidden="true" /> Add a card
   </button>
   {#if list.isMenuOpened}
-    <div transition:fade={{ duration: 150 }} use:clickOutside={closeListMenu}>
+    <div use:clickOutside={closeListMenu}>
       <Menu
         title={"List actions"}
         x={menuPosition.x}
