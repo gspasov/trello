@@ -32,13 +32,8 @@
   }
 
   function handleBoardCreate(): void {
-    console.info("here");
     if (!isBoardTitleInvalid) {
-      console.info("board title", boardTitle.trim());
-      console.info("hey", boardTitle.trim(), selectedColorType);
       createBoard(boardTitle.trim(), selectedColorType);
-      console.info("end");
-      console.info($BoardsStore);
     }
     dispatch("close");
   }
