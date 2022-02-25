@@ -2,8 +2,10 @@
   import { dndzone } from "svelte-dnd-action";
   import { flip } from "svelte/animate";
   import List from "./List.svelte";
-  import { List as ListType, updateLists } from "../models/list";
+  import type { List as ListType } from "../models/list";
   import type { Board } from "../models/board";
+  import { addStateAction } from "../stores/stateActionStore";
+  import { MoveListAction } from "../actions";
 
   export let board: Board;
 
@@ -13,7 +15,7 @@
 
   function handleDndColumns(e): void {
     const lists: ListType[] = e.detail.items;
-    updateLists(board.id, lists);
+    addStateAction(MoveListAction({ boardId: board.id, lists }));
   }
 </script>
 

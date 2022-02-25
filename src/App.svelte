@@ -1,5 +1,6 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
+  import { CreateListAction } from "./actions";
   import Board from "./components/Board.svelte";
   import CardModal from "./components/card/CardModal.svelte";
   import ActionClose from "./components/general/ActionClose.svelte";
@@ -9,8 +10,9 @@
   import Header from "./components/Header.svelte";
   import NewBoardMenu from "./components/NewBoardMenu.svelte";
   import type { Card } from "./models/card";
-  import { createList, List } from "./models/list";
-  import { BackgroundColor, BoardsStore } from "./stores";
+  import type { List } from "./models/list";
+  import { addStateAction } from "./stores/stateActionStore";
+  import { WorkspaceStore } from "./stores/workspaceStore";
   import { AppMenus, AppMenusVisibility, Coordinates } from "./supportTypes";
 
   let newListTitle = "";
@@ -23,7 +25,7 @@
   let selectedList: List;
   let modalRef: Modal;
 
-  $: selectedBoard = $BoardsStore.find((board) => board.selected);
+  $: selectedBoard = $WorkspaceStore.find((board) => board.selected);
   $: bodyStyle = `
     <style> 
       body {
@@ -48,7 +50,9 @@
   }
 
   function handleCreateList(): void {
-    createList(selectedBoard.id, newListTitle);
+    addStateAction(
+      CreateListAction({ boardId: selectedBoard.id, title: newListTitle })
+    );
 
     newListTitle = "";
     isNewListSectionVisible = false;

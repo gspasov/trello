@@ -1,11 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import {
-    boardColorTypeDarkMapping,
-    changeFavorite,
-    changeSelected,
-  } from "../../models/board";
-  import { BoardsStore } from "../../stores";
+    AddBoardToFavoritesAction,
+    ChangeSelectedBoardAction,
+    RemoveBoardFromFavoritesAction,
+  } from "../../actions";
+  import { boardColorTypeDarkMapping } from "../../models/board";
+  import { addStateAction } from "../../stores/stateActionStore";
+  import { WorkspaceStore } from "../../stores/workspaceStore";
   import type {
     Coordinates,
     DispatchOpenNewBoardMenu,
@@ -17,7 +19,7 @@
   const dispatchOpenNewBoardMenu =
     createEventDispatcher<DispatchOpenNewBoardMenu>();
 
-  $: boards = $BoardsStore;
+  $: boards = $WorkspaceStore;
   $: backgroundColor = boardColorTypeDarkMapping(
     boards.find((b) => b.selected).color.type
   );
@@ -32,12 +34,16 @@
     dispatchOpenNewBoardMenu("openNewBoardMenu", coordinates);
   }
 
-  function handleFavoriteChange(id: string): void {
-    changeFavorite(id);
+  function handleAddToFavorites(boardId: string): void {
+    addStateAction(AddBoardToFavoritesAction({ boardId }));
+  }
+
+  function handleRemoveFromFavorites(boardId: string): void {
+    addStateAction(RemoveBoardFromFavoritesAction({ boardId }));
   }
 
   function handleBoardSelection(boardId: string): void {
-    changeSelected(boardId);
+    addStateAction(ChangeSelectedBoardAction({ boardId }));
   }
 </script>
 
@@ -69,13 +75,14 @@
             <i
               class="fa fa-star board-star"
               aria-hidden="true"
-              on:click|stopPropagation={() => handleFavoriteChange(board.id)}
+              on:click|stopPropagation={() =>
+                handleRemoveFromFavorites(board.id)}
             />
           {:else}
             <i
               class="fa fa-star-o board-star "
               aria-hidden="true"
-              on:click|stopPropagation={() => handleFavoriteChange(board.id)}
+              on:click|stopPropagation={() => handleAddToFavorites(board.id)}
             />
           {/if}
         </div>

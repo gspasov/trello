@@ -6,12 +6,7 @@
     DefaultMouseEvent,
     CardModalMenus,
   } from "../../supportTypes";
-  import {
-    Card,
-    getLabels,
-    updateCard,
-    updateCardLabel,
-  } from "../../models/card";
+  import { Card, getLabels } from "../../models/card";
   import type { List } from "../../models/list";
   import type { Label } from "../../models/label";
   import ActionClose from "../general/ActionClose.svelte";
@@ -23,9 +18,19 @@
   import DatePickerMenu from "./menus/DatePickerMenu.svelte";
   import DueDate from "./DueDate.svelte";
   import LabelsSection from "./LabelsSection.svelte";
-  import { Just } from "@quanterall/lich";
+  import { Just, Nothing } from "@quanterall/lich";
   import { stringToMaybe } from "../../utilities";
-  import { BoardsStore } from "../../stores";
+  import { addStateAction } from "../../stores/stateActionStore";
+  import {
+    AttachLabelToCardAction,
+    DetachLabelFromCardAction,
+    EditCardDescriptionAction,
+    MarkCardAsDoneAction,
+    MarkCardAsUndoneAction,
+    RemoveCardDueDateAction,
+    SetCardDueDateAction,
+  } from "../../actions";
+  import { WorkspaceStore } from "../../stores/workspaceStore";
 
   export let card: Card;
   export let list: List;
@@ -38,7 +43,7 @@
   let menusVisibility = initialMenusState();
   let editingLabel: Label;
 
-  $: cardLabels = getLabels($BoardsStore, boardId, list.id, card.id);
+  $: cardLabels = getLabels($WorkspaceStore, boardId, list.id, card.id);
 
   function closeAllMenus(): void {
     menusVisibility = initialMenusState();
@@ -57,19 +62,55 @@
 
   function toggleDescriptionEditSection(): void {
     isDescriptionEditVisible = !isDescriptionEditVisible;
-    setTimeout(() => inputRef.focus(), 1);
+    if (isDescriptionEditVisible) setTimeout(() => inputRef.focus(), 1);
   }
 
   function editCardDescription(): void {
-    card = { ...card, description: stringToMaybe(cardDescription) };
-    updateCard(card.id, boardId, list.id, card);
+    if (
+      card.description.fold(
+        true,
+        (description) => description !== cardDescription
+      )
+    ) {
+      card = { ...card, description: stringToMaybe(cardDescription) };
+      addStateAction(
+        EditCardDescriptionAction({
+          boardId,
+          listId: list.id,
+          cardId: card.id,
+          description: stringToMaybe(cardDescription),
+        })
+      );
+    }
     toggleDescriptionEditSection();
   }
 
-  function attachLabelToCard(e: CustomEvent): void {
+  function toggleLabelToCard(e: CustomEvent): void {
     let label: Label = e.detail.label;
-    card = updateCardLabel(card, label);
-    updateCard(card.id, boardId, list.id, card);
+    if (card.labelIds.includes(label.id)) {
+      card = {
+        ...card,
+        labelIds: card.labelIds.filter((id) => id !== label.id),
+      };
+      addStateAction(
+        DetachLabelFromCardAction({
+          boardId,
+          listId: list.id,
+          cardId: card.id,
+          labelId: label.id,
+        })
+      );
+    } else {
+      card = { ...card, labelIds: [...card.labelIds, label.id] };
+      addStateAction(
+        AttachLabelToCardAction({
+          boardId,
+          listId: list.id,
+          cardId: card.id,
+          labelId: label.id,
+        })
+      );
+    }
   }
 
   function handleDueDateCompleted(
@@ -77,7 +118,16 @@
   ): void {
     let completed = e.detail.completed;
     card = { ...card, completed };
-    updateCard(card.id, boardId, list.id, card);
+    const payload = {
+      boardId,
+      listId: list.id,
+      cardId: card.id,
+    };
+    if (completed) {
+      addStateAction(MarkCardAsDoneAction(payload));
+    } else {
+      addStateAction(MarkCardAsUndoneAction(payload));
+    }
   }
 
   function openLabelEditMenu(e: CustomEvent): void {
@@ -111,13 +161,22 @@
 
   function handleSelectedDueDate(e: CustomEvent<Date>): void {
     card = { ...card, dueDate: Just(e.detail) };
-    updateCard(card.id, boardId, list.id, card);
+    addStateAction(
+      SetCardDueDateAction({
+        boardId,
+        listId: list.id,
+        cardId: card.id,
+        dueDate: Just(e.detail),
+      })
+    );
     closeAllMenus();
   }
 
   function handleRemoveDueDate(): void {
-    card = { ...card, dueDate: undefined };
-    updateCard(card.id, boardId, list.id, card);
+    card = { ...card, dueDate: Nothing() };
+    addStateAction(
+      RemoveCardDueDateAction({ boardId, listId: list.id, cardId: card.id })
+    );
     closeAllMenus();
   }
 </script>
@@ -125,7 +184,7 @@
 <div>
   <div class="title-section">
     <h3>{card.title}</h3>
-    <span>in list <i>{list.name}</i></span>
+    <span>in list <i>{list.title}</i></span>
   </div>
   <div class="container">
     <div class="window-main">
@@ -208,7 +267,7 @@
     x={menuPosition.x}
     y={menuPosition.y + 40}
     {boardId}
-    on:select={attachLabelToCard}
+    on:select={toggleLabelToCard}
     on:create={() => openMenu(CardModalMenus.LABEL_CREATE)}
     on:edit={openLabelEditMenu}
     on:close={closeAllMenus}
@@ -250,6 +309,7 @@
   <DatePickerMenu
     x={menuPosition.x}
     y={menuPosition.y + 40}
+    showRemoveButton={card.dueDate.isJust()}
     on:select={handleSelectedDueDate}
     on:remove={handleRemoveDueDate}
     on:close={closeAllMenus}

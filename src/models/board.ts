@@ -1,9 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
-import { Just, Maybe, Nothing } from "@quanterall/lich";
 import { assertUnreachable } from "../utilities";
-import { BoardsStore } from "../stores";
 import type { List } from "./list";
 import { defaultLabels, Label } from "./label";
+import type { UpdateBoardStore } from "../stores/workspaceStore";
+import type {
+  AddBoardToFavoritesActionPayload,
+  ChangeSelectedBoardActionPayload,
+  CreateBoardActionPayload,
+  RemoveBoardFromFavoritesAction,
+  RemoveBoardFromFavoritesActionPayload,
+} from "../actions";
 
 export type Board = {
   id: string;
@@ -35,32 +41,51 @@ export function Board(
   };
 }
 
-export function createBoard(title: string, color: BoardColorType): void {
-  BoardsStore.update((boards) => {
-    return [
+export function processCreateBoard({
+  title,
+  color,
+}: CreateBoardActionPayload): UpdateBoardStore {
+  return (boards) => {
+    const updatedBoards = [
       ...boards,
       Board(uuidv4(), title, [], defaultLabels(), BoardColor(uuidv4(), color)),
     ];
-  });
+
+    return updatedBoards;
+  };
 }
 
-export function changeSelected(id: string): void {
-  BoardsStore.update((boards) => {
-    return boards.map((board) => {
-      if (board.id !== id) return { ...board, selected: false };
-      return { ...board, selected: true };
-    });
-  });
+export function processAddBoardToFavorites({
+  boardId,
+}: AddBoardToFavoritesActionPayload): UpdateBoardStore {
+  return toggleBoardFavorite(boardId, true);
 }
 
-export function changeFavorite(id: string): void {
-  BoardsStore.update((boards) => {
+export function processRemoveBoardFromFavorites({
+  boardId,
+}: RemoveBoardFromFavoritesActionPayload): UpdateBoardStore {
+  return toggleBoardFavorite(boardId, false);
+}
+
+export function processChangeSelectedBoardAction({
+  boardId,
+}: ChangeSelectedBoardActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return boards.map((board) => ({
+      ...board,
+      selected: board.id === boardId,
+    }));
+  };
+}
+
+function toggleBoardFavorite(id: string, favorite: boolean): UpdateBoardStore {
+  return (boards) => {
     return boards.map((board) => {
       if (board.id !== id) return board;
 
-      return { ...board, favorite: !board.favorite };
+      return { ...board, favorite };
     });
-  });
+  };
 }
 
 export type BoardColor = {

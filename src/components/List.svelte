@@ -8,13 +8,23 @@
   import { flip } from "svelte/animate";
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from "svelte-dnd-action";
   import ActionClose from "./general/ActionClose.svelte";
-  import { Card as CardType, createCard } from "../models/card";
-  import { List, updateList, deleteList, closeListMenu } from "../models/list";
+  import type { Card as CardType } from "../models/card";
+  import type { List } from "../models/list";
+  import { addStateAction } from "../stores/stateActionStore";
+  import {
+    CloseListMenuAction,
+    CreateCardAction,
+    DeleteAllCardsFromListAction,
+    DeleteListAction,
+    MoveCardAction,
+    OpenListMenuAction,
+    RenameListAction,
+  } from "../actions";
 
   export let list: List;
   export let boardId: string;
 
-  let newTitleText = list.name;
+  let newTitleText = list.title;
   let newCardTitle = "";
   let isAddCardSectionVisible = false;
   let isEditingListTitle = false;
@@ -25,7 +35,7 @@
 
   function handleDndCards(e): void {
     const cards: CardType[] = e.detail.items;
-    updateList(boardId, list.id, { ...list, cards });
+    addStateAction(MoveCardAction({ boardId, listId: list.id, cards }));
   }
 
   function transformDraggedElement(e): void {
@@ -43,7 +53,9 @@
 
   function handleCreateCard(): void {
     if (newCardTitle.trim() !== "") {
-      createCard(boardId, list.id, newCardTitle);
+      addStateAction(
+        CreateCardAction({ boardId, listId: list.id, title: newCardTitle })
+      );
     }
     newCardTitle = "";
     hideAddCardSection();
@@ -54,27 +66,34 @@
   ): void {
     const rect = event.currentTarget.getBoundingClientRect();
     menuPosition = { x: rect.left, y: rect.top };
-    updateList(boardId, list.id, { ...list, isMenuOpened: true });
+    addStateAction(OpenListMenuAction({ boardId, listId: list.id }));
   }
 
   function handleDeleteList(): void {
-    list.isMenuOpened = false;
-    deleteList(boardId, list.id);
+    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
+    addStateAction(DeleteListAction({ boardId, listId: list.id }));
   }
 
   function deleteAllCardsFromList(): void {
-    updateList(boardId, list.id, { ...list, cards: [], isMenuOpened: false });
+    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
+    addStateAction(DeleteAllCardsFromListAction({ boardId, listId: list.id }));
   }
 
   function startEditingListTitle(): void {
     isEditingListTitle = true;
-    closeListMenu(boardId);
+    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
     setTimeout(() => newTitleInputRef.focus(), 1);
+  }
+
+  function closeListMenu(): void {
+    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
   }
 
   function handleTitleInputSubmit(e: KeyboardEvent): void {
     if (e.key === "Enter") {
-      updateList(boardId, list.id, { ...list, name: newTitleText });
+      addStateAction(
+        RenameListAction({ boardId, listId: list.id, title: newTitleText })
+      );
       isEditingListTitle = false;
     }
     if (e.key === "Escape") {
@@ -94,7 +113,7 @@
       class="title"
       on:click={() => (isEditingListTitle = true)}
     >
-      {list.name}
+      {list.title}
     </div>
     <input
       class:hidden={!isEditingListTitle}
@@ -162,7 +181,7 @@
         title={"List actions"}
         x={menuPosition.x}
         y={menuPosition.y}
-        on:close={() => closeListMenu(boardId)}
+        on:close={closeListMenu}
       >
         <MenuItem lineText={"Rename"} on:click={startEditingListTitle} />
         <MenuItem

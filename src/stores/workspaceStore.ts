@@ -1,12 +1,10 @@
 import { writable } from "svelte/store";
-import { defaultLabels } from "./models/label";
+import { Board, BoardColor, BoardColorType } from "../models/board";
 import { v4 as uuidv4 } from "uuid";
-import { List } from "./models/list";
-import { Card } from "./models/card";
+import { List } from "../models/list";
+import { Card } from "../models/card";
 import { Just } from "@quanterall/lich";
-import { Board, BoardColor, BoardColorType } from "./models/board";
-
-const labels = defaultLabels();
+import { defaultLabels } from "../models/label";
 
 const testingBoard = Board(
   uuidv4(),
@@ -33,28 +31,18 @@ const testingBoard = Board(
       Card(uuidv4(), "Card 7"),
     ]),
   ],
-  labels,
+  defaultLabels(),
   BoardColor(uuidv4(), BoardColorType.Orange),
   true
 );
 
-const boards = [testingBoard];
+const workspace: Board[] = [testingBoard];
+export const WorkspaceStore = writable(workspace);
 
-const boardColors = [
-  BoardColor(uuidv4(), BoardColorType.Green),
-  BoardColor(uuidv4(), BoardColorType.LightGreen),
-  BoardColor(uuidv4(), BoardColorType.Orange),
-  BoardColor(uuidv4(), BoardColorType.Red),
-  BoardColor(uuidv4(), BoardColorType.Purple),
-  BoardColor(uuidv4(), BoardColorType.Pink),
-  BoardColor(uuidv4(), BoardColorType.Blue),
-  BoardColor(uuidv4(), BoardColorType.LightBlue),
-  BoardColor(uuidv4(), BoardColorType.Gray),
-];
+export type UpdateBoardStore = (boards: Board[]) => Board[];
 
-const backgroundColor = "#00AECC";
-
-export const BoardsStore = writable(boards);
-export const BoardColors = writable(boardColors);
-export const DefaultLabelStore = writable(labels);
-export const BackgroundColor = writable(backgroundColor);
+export function updateWorkspace(newBoards: Board) {
+  WorkspaceStore.update((boards) => {
+    return [...boards, newBoards];
+  });
+}

@@ -1,6 +1,11 @@
 import { Maybe, Nothing } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
-import { BoardsStore } from "../stores";
+import type {
+  CreateLabelActionPayload,
+  DeleteLabelActionPayload,
+  UpdateLabelActionPayload,
+} from "../actions";
+import type { UpdateBoardStore } from "../stores/workspaceStore";
 import { assertUnreachable } from "../utilities";
 
 export enum LabelColorType {
@@ -60,12 +65,12 @@ export function Label(
   };
 }
 
-export function createLabel(
-  boardId: string,
-  type: LabelColorType,
-  name: Maybe<string> = Nothing()
-): void {
-  BoardsStore.update((boards) => {
+export function processCreateLabel({
+  boardId,
+  color,
+  name,
+}: CreateLabelActionPayload): UpdateBoardStore {
+  return (boards) => {
     return boards.map((board) => {
       if (board.id !== boardId) return board;
 
@@ -73,19 +78,20 @@ export function createLabel(
         ...board,
         labels: orderLabelsByColor([
           ...board.labels,
-          Label(uuidv4(), type, name),
+          Label(uuidv4(), color, name),
         ]),
       };
     });
-  });
+  };
 }
 
-export function updateLabel(
-  id: string,
-  boardId: string,
-  newLabel: Label
-): void {
-  BoardsStore.update((boards) => {
+export function processUpdateLabel({
+  boardId,
+  labelId,
+  colorType,
+  name,
+}: UpdateLabelActionPayload): UpdateBoardStore {
+  return (boards) => {
     return boards.map((board) => {
       if (board.id !== boardId) return board;
 
@@ -93,29 +99,32 @@ export function updateLabel(
         ...board,
         labels: orderLabelsByColor(
           board.labels.map((label) => {
-            if (id !== label.id) return label;
+            if (labelId !== label.id) return label;
 
-            return newLabel;
+            return Label(labelId, colorType, name);
           })
         ),
       };
     });
-  });
+  };
 }
 
-export function deleteLabel(id: string, boardId: string): void {
-  BoardsStore.update((boards) => {
+export function processDeleteLabel({
+  boardId,
+  labelId,
+}: DeleteLabelActionPayload): UpdateBoardStore {
+  return (boards) => {
     return boards.map((board) => {
       if (board.id !== boardId) return board;
 
       return {
         ...board,
         labels: orderLabelsByColor(
-          board.labels.filter((label) => label.id !== id)
+          board.labels.filter((label) => label.id !== labelId)
         ),
       };
     });
-  });
+  };
 }
 
 export function defaultLabels(): Label[] {

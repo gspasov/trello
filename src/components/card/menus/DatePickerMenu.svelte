@@ -5,6 +5,7 @@
 
   export let x: number;
   export let y: number;
+  export let showRemoveButton: boolean;
   let date = new Date();
 
   const dispatchDate = createEventDispatcher<{ select: Date }>();
@@ -17,9 +18,11 @@
     <button class="btn-primary" on:click={() => dispatchDate("select", date)}
       >Save</button
     >
-    <button class="btn-secondary" on:click={() => dispatch("remove")}
-      >Remove</button
-    >
+    {#if showRemoveButton}
+      <button class="btn-secondary" on:click={() => dispatch("remove")}
+        >Remove</button
+      >
+    {/if}
   </div>
 </Menu>
 

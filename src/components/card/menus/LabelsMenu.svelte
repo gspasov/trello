@@ -4,7 +4,7 @@
   import LabelButton from "../LabelButton.svelte";
   import { createEventDispatcher } from "svelte";
   import type { Card } from "../../../models/card";
-  import { BoardsStore } from "../../../stores";
+  import { WorkspaceStore } from "../../../stores/workspaceStore";
 
   export let x: number;
   export let y: number;
@@ -13,7 +13,7 @@
 
   const dispatch = createEventDispatcher();
 
-  $: labels = $BoardsStore.find((board) => board.id === boardId).labels;
+  $: labels = $WorkspaceStore.find((board) => board.id === boardId).labels;
 </script>
 
 <Menu title={"Labels"} {x} {y} on:close>

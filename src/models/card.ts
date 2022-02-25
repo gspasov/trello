@@ -1,6 +1,18 @@
-import { Maybe, Nothing, nullableToMaybe } from "@quanterall/lich";
+import { Just, Maybe, Nothing, nullableToMaybe } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
-import { BoardsStore } from "../stores";
+import type {
+  AttachLabelToCardActionPayload,
+  CreateCardActionPayload,
+  DeleteCardActionPayload,
+  DetachLabelFromCardActionPayload,
+  EditCardDescriptionActionPayload,
+  MarkCardAsDoneActionPayload,
+  MarkCardAsUndonePayload,
+  RemoveCardDueDateActionPayload,
+  RenameCardActionPayload,
+  SetCardDueDateActionPayload,
+} from "../actions";
+import type { UpdateBoardStore } from "../stores/workspaceStore";
 import type { Board } from "./board";
 import type { Label } from "./label";
 
@@ -32,88 +44,177 @@ export function Card(
   };
 }
 
-export function createCard(
-  boardId: string,
-  listId: string,
-  title: string
-): void {
-  BoardsStore.update((state) => {
-    const newCardId = uuidv4();
-
-    return state.map((board) => {
-      if (board.id !== boardId) return board;
-
-      return {
-        ...board,
-        lists: board.lists.map((list) => {
-          if (list.id !== listId) return list;
-
-          return {
-            ...list,
-            cards: [...list.cards, Card(newCardId, title)],
-          };
-        }),
-      };
-    });
-  });
-}
-
-export function updateCard(
-  id: string,
-  boardId: string,
-  listId: string,
-  newCard: Card
-): void {
-  BoardsStore.update((state) => {
-    return state.map((board) => {
-      if (board.id !== boardId) return board;
-
-      return {
-        ...board,
-        lists: board.lists.map((list) => {
-          if (list.id !== listId) return list;
-
-          return {
-            ...list,
-            cards: list.cards.map((card) => {
-              if (card.id !== id) return card;
-
-              return newCard;
-            }),
-          };
-        }),
-      };
-    });
-  });
-}
-
-export function deleteCard(id: string, boardId: string, listId: string): void {
-  BoardsStore.update((state) => {
-    return state.map((board) => {
-      if (board.id !== boardId) return board;
-
-      return {
-        ...board,
-        lists: board.lists.map((list) => {
-          if (list.id !== listId) return list;
-
-          return {
-            ...list,
-            cards: list.cards.filter((card) => card.id !== id),
-          };
-        }),
-      };
-    });
-  });
-}
-
-export function updateCardLabel(card: Card, label: Label): Card {
-  return {
-    ...card,
-    labelIds: card.labelIds.includes(label.id)
-      ? card.labelIds.filter((id) => id !== label.id)
-      : [...card.labelIds, label.id],
+export function processCreateCard({
+  boardId,
+  listId,
+  title,
+}: CreateCardActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCards(boards, boardId, listId, (cards: Card[]) => [
+      ...cards,
+      Card(uuidv4(), title),
+    ]);
   };
+}
+
+export function processEditCardDescription({
+  boardId,
+  listId,
+  cardId,
+  description,
+}: EditCardDescriptionActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      description,
+    }));
+  };
+}
+
+export function processRenameCard({
+  boardId,
+  cardId,
+  listId,
+  title,
+}: RenameCardActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      title,
+    }));
+  };
+}
+
+export function processAttachLabelToCard({
+  boardId,
+  listId,
+  cardId,
+  labelId,
+}: AttachLabelToCardActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      labelIds: [...card.labelIds, labelId],
+    }));
+  };
+}
+
+export function processDetachLabelFromCard({
+  boardId,
+  listId,
+  cardId,
+  labelId,
+}: DetachLabelFromCardActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      labelIds: card.labelIds.filter((id) => id !== labelId),
+    }));
+  };
+}
+
+export function processSetCardDueDate({
+  boardId,
+  cardId,
+  listId,
+  dueDate,
+}: SetCardDueDateActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      dueDate,
+    }));
+  };
+}
+
+export function processRemoveCardDueDate({
+  boardId,
+  listId,
+  cardId,
+}: RemoveCardDueDateActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      dueDate: Nothing(),
+    }));
+  };
+}
+
+export function processMarkCardAsDone({
+  boardId,
+  listId,
+  cardId,
+}: MarkCardAsDoneActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      done: true,
+    }));
+  };
+}
+
+export function processMarkCardAsUndone({
+  boardId,
+  listId,
+  cardId,
+}: MarkCardAsUndonePayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+      ...card,
+      done: false,
+    }));
+  };
+}
+
+export function processDeleteCard({
+  boardId,
+  listId,
+  cardId,
+}: DeleteCardActionPayload): UpdateBoardStore {
+  return (boards) => {
+    return updateCards(boards, boardId, listId, (cards: Card[]) =>
+      cards.filter((card) => card.id !== cardId)
+    );
+  };
+}
+
+function updateCard(
+  boards: Board[],
+  boardId: string,
+  listId: string,
+  cardId: string,
+  cardUpdater: (card: Card) => Card
+): Board[] {
+  return updateCards(boards, boardId, listId, (cards) =>
+    cards.map((card) => {
+      if (card.id !== cardId) return card;
+
+      return cardUpdater(card);
+    })
+  );
+}
+
+function updateCards(
+  boards: Board[],
+  boardId: string,
+  listId: string,
+  cardsUpdater: (cards: Card[]) => Card[]
+): Board[] {
+  return boards.map((board) => {
+    if (board.id !== boardId) return board;
+
+    return {
+      ...board,
+      lists: board.lists.map((list) => {
+        if (list.id !== listId) return list;
+
+        return {
+          ...list,
+          cards: cardsUpdater(list.cards),
+        };
+      }),
+    };
+  });
 }
 
 export function getLabels(
