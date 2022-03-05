@@ -1,26 +1,32 @@
 <script lang="ts">
+  import { RedoEvent, UndoEvent } from "../events";
   import { boardColorTypeDarkMapping } from "../models/board";
-  import { WorkspaceStore } from "../stores/workspaceStore";
+  import { addHistoryEvent } from "../stores/eventStore";
+  import { StateStore } from "../stores/stateStore";
 
-  $: boards = $WorkspaceStore;
+  $: boards = $StateStore.boards;
   $: backgroundColor = boardColorTypeDarkMapping(
     boards.find((b) => b.selected).color.type
   );
 
-  function handleUndo(): void {}
+  function handleUndo(): void {
+    addHistoryEvent(UndoEvent());
+  }
 
-  function handleRedo(): void {}
+  function handleRedo(): void {
+    addHistoryEvent(RedoEvent());
+  }
 </script>
 
 <section style="background-color: {backgroundColor}">
   <div class="container">
     <span>Quantrello</span>
     <div class="undo-redo-section">
-      <button aria-label="Undo" title="Undo">
-        <i class="fa fa-undo" aria-hidden="true" on:click={handleUndo} />
+      <button aria-label="Undo" title="Undo" on:click={handleUndo}>
+        <i class="fa fa-undo" aria-hidden="true" />
       </button>
-      <button aria-label="Redo" title="Redo">
-        <i class="fa fa-repeat" aria-hidden="true" on:click={handleRedo} />
+      <button aria-label="Redo" title="Redo" on:click={handleRedo}>
+        <i class="fa fa-repeat" aria-hidden="true" />
       </button>
     </div>
   </div>

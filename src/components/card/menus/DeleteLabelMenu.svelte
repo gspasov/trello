@@ -2,8 +2,8 @@
   import Menu from "../../general/Menu.svelte";
   import { createEventDispatcher } from "svelte";
   import type { Label } from "../../../models/label";
-  import { addStateAction } from "../../../stores/stateActionStore";
-  import { DeleteLabelAction } from "../../../actions";
+  import { addWorkspaceEvent } from "../../../stores/eventStore";
+  import { DeleteLabelEvent } from "../../../events";
 
   export let x: number;
   export let y: number;
@@ -13,7 +13,7 @@
   const dispatch = createEventDispatcher();
 
   function handleDelete(): void {
-    addStateAction(DeleteLabelAction({ boardId, labelId: label.id }));
+    addWorkspaceEvent(DeleteLabelEvent({ boardId, labelId: label.id }));
     dispatch("delete");
   }
 </script>

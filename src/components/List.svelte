@@ -10,16 +10,17 @@
   import ActionClose from "./general/ActionClose.svelte";
   import type { Card as CardType } from "../models/card";
   import type { List } from "../models/list";
-  import { addStateAction } from "../stores/stateActionStore";
+  import { addWorkspaceEvent } from "../stores/eventStore";
   import {
-    CloseListMenuAction,
-    CreateCardAction,
-    DeleteAllCardsFromListAction,
-    DeleteListAction,
-    MoveCardAction,
-    OpenListMenuAction,
-    RenameListAction,
-  } from "../actions";
+    CloseListMenuEvent,
+    ConsiderMoveCardEvent,
+    CreateCardEvent,
+    DeleteAllCardsFromListEvent,
+    DeleteListEvent,
+    MoveCardEvent,
+    OpenListMenuEvent,
+    RenameListEvent,
+  } from "../events";
 
   export let list: List;
   export let boardId: string;
@@ -33,9 +34,17 @@
   let menuPosition = { x: 0, y: 0 };
   const dispatch = createEventDispatcher();
 
+  function handleConsiderDndCards(e): void {
+    const cards: CardType[] = e.detail.items;
+    addWorkspaceEvent(
+      ConsiderMoveCardEvent({ boardId, listId: list.id, cards })
+    );
+  }
+
   function handleDndCards(e): void {
     const cards: CardType[] = e.detail.items;
-    addStateAction(MoveCardAction({ boardId, listId: list.id, cards }));
+    console.info("finalize card move", e.detail.items);
+    addWorkspaceEvent(MoveCardEvent({ boardId, listId: list.id, cards }));
   }
 
   function transformDraggedElement(e): void {
@@ -53,8 +62,8 @@
 
   function handleCreateCard(): void {
     if (newCardTitle.trim() !== "") {
-      addStateAction(
-        CreateCardAction({ boardId, listId: list.id, title: newCardTitle })
+      addWorkspaceEvent(
+        CreateCardEvent({ boardId, listId: list.id, title: newCardTitle })
       );
     }
     newCardTitle = "";
@@ -66,33 +75,35 @@
   ): void {
     const rect = event.currentTarget.getBoundingClientRect();
     menuPosition = { x: rect.left, y: rect.top };
-    addStateAction(OpenListMenuAction({ boardId, listId: list.id }));
+    addWorkspaceEvent(OpenListMenuEvent({ boardId, listId: list.id }));
   }
 
   function handleDeleteList(): void {
-    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
-    addStateAction(DeleteListAction({ boardId, listId: list.id }));
+    addWorkspaceEvent(CloseListMenuEvent({ boardId, listId: list.id }));
+    addWorkspaceEvent(DeleteListEvent({ boardId, listId: list.id }));
   }
 
   function deleteAllCardsFromList(): void {
-    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
-    addStateAction(DeleteAllCardsFromListAction({ boardId, listId: list.id }));
+    addWorkspaceEvent(CloseListMenuEvent({ boardId, listId: list.id }));
+    addWorkspaceEvent(
+      DeleteAllCardsFromListEvent({ boardId, listId: list.id })
+    );
   }
 
   function startEditingListTitle(): void {
     isEditingListTitle = true;
-    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
+    addWorkspaceEvent(CloseListMenuEvent({ boardId, listId: list.id }));
     setTimeout(() => newTitleInputRef.focus(), 1);
   }
 
   function closeListMenu(): void {
-    addStateAction(CloseListMenuAction({ boardId, listId: list.id }));
+    addWorkspaceEvent(CloseListMenuEvent({ boardId, listId: list.id }));
   }
 
   function handleTitleInputSubmit(e: KeyboardEvent): void {
     if (e.key === "Enter") {
-      addStateAction(
-        RenameListAction({ boardId, listId: list.id, title: newTitleText })
+      addWorkspaceEvent(
+        RenameListEvent({ boardId, listId: list.id, title: newTitleText })
       );
       isEditingListTitle = false;
     }
@@ -134,7 +145,7 @@
       transformDraggedElement,
       dropTargetStyle: {},
     }}
-    on:consider={handleDndCards}
+    on:consider={handleConsiderDndCards}
     on:finalize={handleDndCards}
   >
     {#each list.cards as card (card.id)}

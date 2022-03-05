@@ -1,18 +1,17 @@
-import { Just, Maybe, Nothing, nullableToMaybe } from "@quanterall/lich";
+import { Maybe, Nothing, nullableToMaybe } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
 import type {
-  AttachLabelToCardActionPayload,
-  CreateCardActionPayload,
-  DeleteCardActionPayload,
-  DetachLabelFromCardActionPayload,
-  EditCardDescriptionActionPayload,
-  MarkCardAsDoneActionPayload,
+  AttachLabelToCardEventPayload,
+  CreateCardEventPayload,
+  DeleteCardEventPayload,
+  DetachLabelFromCardEventPayload,
+  EditCardDescriptionEventPayload,
+  MarkCardAsDoneEventPayload,
   MarkCardAsUndonePayload,
-  RemoveCardDueDateActionPayload,
-  RenameCardActionPayload,
-  SetCardDueDateActionPayload,
-} from "../actions";
-import type { UpdateBoardStore } from "../stores/workspaceStore";
+  RemoveCardDueDateEventPayload,
+  RenameCardEventPayload,
+  SetCardDueDateEventPayload,
+} from "../events";
 import type { Board } from "./board";
 import type { Label } from "./label";
 
@@ -44,138 +43,103 @@ export function Card(
   };
 }
 
-export function processCreateCard({
-  boardId,
-  listId,
-  title,
-}: CreateCardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCards(boards, boardId, listId, (cards: Card[]) => [
-      ...cards,
-      Card(uuidv4(), title),
-    ]);
-  };
+export function processCreateCard(
+  boards: Board[],
+  { boardId, listId, title }: CreateCardEventPayload
+): Board[] {
+  return updateCards(boards, boardId, listId, (cards: Card[]) => [
+    ...cards,
+    Card(uuidv4(), title),
+  ]);
 }
 
-export function processEditCardDescription({
-  boardId,
-  listId,
-  cardId,
-  description,
-}: EditCardDescriptionActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      description,
-    }));
-  };
+export function processEditCardDescription(
+  boards: Board[],
+  { boardId, listId, cardId, description }: EditCardDescriptionEventPayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    description,
+  }));
 }
 
-export function processRenameCard({
-  boardId,
-  cardId,
-  listId,
-  title,
-}: RenameCardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      title,
-    }));
-  };
+export function processRenameCard(
+  boards: Board[],
+  { boardId, cardId, listId, title }: RenameCardEventPayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    title,
+  }));
 }
 
-export function processAttachLabelToCard({
-  boardId,
-  listId,
-  cardId,
-  labelId,
-}: AttachLabelToCardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      labelIds: [...card.labelIds, labelId],
-    }));
-  };
+export function processAttachLabelToCard(
+  boards: Board[],
+  { boardId, listId, cardId, labelId }: AttachLabelToCardEventPayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    labelIds: [...card.labelIds, labelId],
+  }));
 }
 
-export function processDetachLabelFromCard({
-  boardId,
-  listId,
-  cardId,
-  labelId,
-}: DetachLabelFromCardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      labelIds: card.labelIds.filter((id) => id !== labelId),
-    }));
-  };
+export function processDetachLabelFromCard(
+  boards: Board[],
+  { boardId, listId, cardId, labelId }: DetachLabelFromCardEventPayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    labelIds: card.labelIds.filter((id) => id !== labelId),
+  }));
 }
 
-export function processSetCardDueDate({
-  boardId,
-  cardId,
-  listId,
-  dueDate,
-}: SetCardDueDateActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      dueDate,
-    }));
-  };
+export function processSetCardDueDate(
+  boards: Board[],
+  { boardId, cardId, listId, dueDate }: SetCardDueDateEventPayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    dueDate,
+  }));
 }
 
-export function processRemoveCardDueDate({
-  boardId,
-  listId,
-  cardId,
-}: RemoveCardDueDateActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      dueDate: Nothing(),
-    }));
-  };
+export function processRemoveCardDueDate(
+  boards: Board[],
+  { boardId, listId, cardId }: RemoveCardDueDateEventPayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    dueDate: Nothing(),
+  }));
 }
 
-export function processMarkCardAsDone({
-  boardId,
-  listId,
-  cardId,
-}: MarkCardAsDoneActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      done: true,
-    }));
-  };
+export function processMarkCardAsDone(
+  boards: Board[],
+  { boardId, listId, cardId }: MarkCardAsDoneEventPayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    done: true,
+  }));
 }
 
-export function processMarkCardAsUndone({
-  boardId,
-  listId,
-  cardId,
-}: MarkCardAsUndonePayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-      ...card,
-      done: false,
-    }));
-  };
+export function processMarkCardAsUndone(
+  boards: Board[],
+  { boardId, listId, cardId }: MarkCardAsUndonePayload
+): Board[] {
+  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
+    ...card,
+    done: false,
+  }));
 }
 
-export function processDeleteCard({
-  boardId,
-  listId,
-  cardId,
-}: DeleteCardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateCards(boards, boardId, listId, (cards: Card[]) =>
-      cards.filter((card) => card.id !== cardId)
-    );
-  };
+export function processDeleteCard(
+  boards: Board[],
+  { boardId, listId, cardId }: DeleteCardEventPayload
+): Board[] {
+  return updateCards(boards, boardId, listId, (cards: Card[]) =>
+    cards.filter((card) => card.id !== cardId)
+  );
 }
 
 function updateCard(

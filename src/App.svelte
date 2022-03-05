@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
-  import { CreateListAction } from "./actions";
+  import { CreateListEvent } from "./events";
   import Board from "./components/Board.svelte";
   import CardModal from "./components/card/CardModal.svelte";
   import ActionClose from "./components/general/ActionClose.svelte";
@@ -11,9 +11,9 @@
   import NewBoardMenu from "./components/NewBoardMenu.svelte";
   import type { Card } from "./models/card";
   import type { List } from "./models/list";
-  import { addStateAction } from "./stores/stateActionStore";
-  import { WorkspaceStore } from "./stores/workspaceStore";
+  import { addWorkspaceEvent } from "./stores/eventStore";
   import { AppMenus, AppMenusVisibility, Coordinates } from "./supportTypes";
+  import { StateStore } from "./stores/stateStore";
 
   let newListTitle = "";
   let isNewListSectionVisible = false;
@@ -25,7 +25,7 @@
   let selectedList: List;
   let modalRef: Modal;
 
-  $: selectedBoard = $WorkspaceStore.find((board) => board.selected);
+  $: selectedBoard = $StateStore.boards.find((board) => board.selected);
   $: bodyStyle = `
     <style> 
       body {
@@ -50,8 +50,8 @@
   }
 
   function handleCreateList(): void {
-    addStateAction(
-      CreateListAction({ boardId: selectedBoard.id, title: newListTitle })
+    addWorkspaceEvent(
+      CreateListEvent({ boardId: selectedBoard.id, title: newListTitle })
     );
 
     newListTitle = "";

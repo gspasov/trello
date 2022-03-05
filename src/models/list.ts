@@ -1,15 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 import type {
-  CloseListMenuActionPayload,
-  CreateListActionPayload,
-  DeleteAllCardsFromListActionPayload,
-  DeleteListActionPayload,
-  MoveCardActionPayload,
-  MoveListActionPayload,
-  OpenListMenuActionPayload,
-  RenameListActionPayload,
-} from "../actions";
-import type { UpdateBoardStore } from "../stores/workspaceStore";
+  CloseListMenuEventPayload,
+  CreateListEventPayload,
+  DeleteAllCardsFromListEventPayload,
+  DeleteListEventPayload,
+  MoveCardEventPayload,
+  MoveListEventPayload,
+  OpenListMenuEventPayload,
+  RenameListEventPayload,
+} from "../events";
 import type { Board } from "./board";
 import type { Card } from "./card";
 
@@ -29,98 +28,80 @@ export function List(id: string, title: string, cards: Card[]): List {
   };
 }
 
-export function processCreateList({
-  boardId,
-  title,
-}: CreateListActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateLists(boards, boardId, (lists) => [
-      ...lists,
-      List(uuidv4(), title, []),
-    ]);
-  };
+export function processCreateList(
+  boards: Board[],
+  { boardId, title }: CreateListEventPayload
+): Board[] {
+  return updateLists(boards, boardId, (lists) => [
+    ...lists,
+    List(uuidv4(), title, []),
+  ]);
 }
 
-export function processRenameList({
-  boardId,
-  listId,
-  title,
-}: RenameListActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateList(boards, boardId, listId, (list) => ({
-      ...list,
-      title,
-    }));
-  };
+export function processRenameList(
+  boards: Board[],
+  { boardId, listId, title }: RenameListEventPayload
+): Board[] {
+  return updateList(boards, boardId, listId, (list) => ({
+    ...list,
+    title,
+  }));
 }
 
-export function processMoveList({
-  boardId,
-  lists,
-}: MoveListActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateLists(boards, boardId, (_) => lists);
-  };
+export function processMoveList(
+  boards: Board[],
+  { boardId, lists }: MoveListEventPayload
+): Board[] {
+  return updateLists(boards, boardId, (_) => lists);
 }
 
-export function processMoveCard({
-  boardId,
-  listId,
-  cards,
-}: MoveCardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateList(boards, boardId, listId, (list) => ({
-      ...list,
-      cards,
-    }));
-  };
+export function processMoveCard(
+  boards: Board[],
+  { boardId, listId, cards }: MoveCardEventPayload
+): Board[] {
+  return updateList(boards, boardId, listId, (list) => ({
+    ...list,
+    cards,
+  }));
 }
 
-export function processDeleteAllCardsFromList({
-  boardId,
-  listId,
-}: DeleteAllCardsFromListActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateList(boards, boardId, listId, (list) => ({
-      ...list,
-      cards: [],
-    }));
-  };
+export function processDeleteAllCardsFromList(
+  boards: Board[],
+  { boardId, listId }: DeleteAllCardsFromListEventPayload
+): Board[] {
+  return updateList(boards, boardId, listId, (list) => ({
+    ...list,
+    cards: [],
+  }));
 }
 
-export function processDeleteList({
-  boardId,
-  listId,
-}: DeleteListActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateLists(boards, boardId, (lists) =>
-      lists.filter((list) => list.id !== listId)
-    );
-  };
+export function processDeleteList(
+  boards: Board[],
+  { boardId, listId }: DeleteListEventPayload
+): Board[] {
+  return updateLists(boards, boardId, (lists) =>
+    lists.filter((list) => list.id !== listId)
+  );
 }
 
-export function processOpenListMenu({
-  boardId,
-  listId,
-}: OpenListMenuActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateList(boards, boardId, listId, (list) => ({
-      ...list,
-      isMenuOpened: true,
-    }));
-  };
+export function processOpenListMenu(
+  boards: Board[],
+  { boardId, listId }: OpenListMenuEventPayload
+): Board[] {
+  return updateList(boards, boardId, listId, (list) => ({
+    ...list,
+    isMenuOpened: true,
+  }));
 }
 
-export function processCloseListMenu({
-  boardId,
-  listId,
-}: CloseListMenuActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return updateList(boards, boardId, listId, (list) => ({
-      ...list,
-      isMenuOpened: false,
-    }));
-  };
+export function processCloseListMenu(
+  boards: Board[],
+  { boardId, listId }: CloseListMenuEventPayload
+): Board[] {
+  return updateList(boards, boardId, listId, (list) => ({
+    ...list,
+    isMenuOpened: false,
+  }));
 }
 
 function updateList(

@@ -2,14 +2,12 @@ import { v4 as uuidv4 } from "uuid";
 import { assertUnreachable } from "../utilities";
 import type { List } from "./list";
 import { defaultLabels, Label } from "./label";
-import type { UpdateBoardStore } from "../stores/workspaceStore";
 import type {
-  AddBoardToFavoritesActionPayload,
-  ChangeSelectedBoardActionPayload,
-  CreateBoardActionPayload,
-  RemoveBoardFromFavoritesAction,
-  RemoveBoardFromFavoritesActionPayload,
-} from "../actions";
+  AddBoardToFavoritesEventPayload,
+  ChangeSelectedBoardEventPayload,
+  CreateBoardEventPayload,
+  RemoveBoardFromFavoritesEventPayload,
+} from "../events";
 
 export type Board = {
   id: string;
@@ -41,51 +39,52 @@ export function Board(
   };
 }
 
-export function processCreateBoard({
-  title,
-  color,
-}: CreateBoardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    const updatedBoards = [
-      ...boards,
-      Board(uuidv4(), title, [], defaultLabels(), BoardColor(uuidv4(), color)),
-    ];
+export function processCreateBoard(
+  boards: Board[],
+  { title, color }: CreateBoardEventPayload
+): Board[] {
+  const updatedBoards = [
+    ...boards,
+    Board(uuidv4(), title, [], defaultLabels(), BoardColor(uuidv4(), color)),
+  ];
 
-    return updatedBoards;
-  };
+  return updatedBoards;
 }
 
-export function processAddBoardToFavorites({
-  boardId,
-}: AddBoardToFavoritesActionPayload): UpdateBoardStore {
-  return toggleBoardFavorite(boardId, true);
+export function processAddBoardToFavorites(
+  boards: Board[],
+  { boardId }: AddBoardToFavoritesEventPayload
+): Board[] {
+  return toggleBoardFavorite(boards, boardId, true);
 }
 
-export function processRemoveBoardFromFavorites({
-  boardId,
-}: RemoveBoardFromFavoritesActionPayload): UpdateBoardStore {
-  return toggleBoardFavorite(boardId, false);
+export function processRemoveBoardFromFavorites(
+  boards: Board[],
+  { boardId }: RemoveBoardFromFavoritesEventPayload
+): Board[] {
+  return toggleBoardFavorite(boards, boardId, false);
 }
 
-export function processChangeSelectedBoardAction({
-  boardId,
-}: ChangeSelectedBoardActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return boards.map((board) => ({
-      ...board,
-      selected: board.id === boardId,
-    }));
-  };
+export function processChangeSelectedBoard(
+  boards: Board[],
+  { boardId }: ChangeSelectedBoardEventPayload
+): Board[] {
+  return boards.map((board) => ({
+    ...board,
+    selected: board.id === boardId,
+  }));
 }
 
-function toggleBoardFavorite(id: string, favorite: boolean): UpdateBoardStore {
-  return (boards) => {
-    return boards.map((board) => {
-      if (board.id !== id) return board;
+function toggleBoardFavorite(
+  boards: Board[],
+  id: string,
+  favorite: boolean
+): Board[] {
+  return boards.map((board) => {
+    if (board.id !== id) return board;
 
-      return { ...board, favorite };
-    });
-  };
+    return { ...board, favorite };
+  });
 }
 
 export type BoardColor = {

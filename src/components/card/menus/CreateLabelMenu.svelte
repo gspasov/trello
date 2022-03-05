@@ -6,14 +6,14 @@
     LabelColorType,
     labelColorTypeMapping,
   } from "../../../models/label";
-  import { DefaultLabelColorsStore } from "../../../stores/defaultLabelColorsStore";
   import { onMount } from "svelte";
   import { Just, Maybe, Nothing } from "@quanterall/lich";
   import { stringToMaybe } from "../../../utilities";
   import LabelBox from "../../general/LabelBox.svelte";
   import LabeledInput from "../../general/LabeledInput.svelte";
-  import { addStateAction } from "../../../stores/stateActionStore";
-  import { CreateLabelAction, UpdateLabelAction } from "../../../actions";
+  import { addWorkspaceEvent } from "../../../stores/eventStore";
+  import { CreateLabelEvent, UpdateLabelEvent } from "../../../events";
+  import { StateStore } from "../../../stores/stateStore";
 
   export let x: number;
   export let y: number;
@@ -29,8 +29,8 @@
   onMount(() => inputRef.focus());
 
   function handleCreate(): void {
-    addStateAction(
-      CreateLabelAction({
+    addWorkspaceEvent(
+      CreateLabelEvent({
         boardId,
         color: selectedColorType,
         name: stringToMaybe(labelName),
@@ -49,8 +49,8 @@
           name: stringToMaybe(labelName),
         }))
         .onJust((l) => {
-          addStateAction(
-            UpdateLabelAction({
+          addWorkspaceEvent(
+            UpdateLabelEvent({
               labelId: l.id,
               boardId,
               colorType: l.type,
@@ -99,7 +99,7 @@
     />
     <span class="title">Select color</span>
     <div class="color-box-wrapper">
-      {#each $DefaultLabelColorsStore as { id, color, type } (id)}
+      {#each $StateStore.labels as { id, color, type } (id)}
         <LabelBox
           {color}
           selectable={true}

@@ -1,12 +1,12 @@
 import { Maybe, Nothing } from "@quanterall/lich";
 import { v4 as uuidv4 } from "uuid";
 import type {
-  CreateLabelActionPayload,
-  DeleteLabelActionPayload,
-  UpdateLabelActionPayload,
-} from "../actions";
-import type { UpdateBoardStore } from "../stores/workspaceStore";
+  CreateLabelEventPayload,
+  DeleteLabelEventPayload,
+  UpdateLabelEventPayload,
+} from "../events";
 import { assertUnreachable } from "../utilities";
+import type { Board } from "./board";
 
 export enum LabelColorType {
   Green = "green",
@@ -65,66 +65,57 @@ export function Label(
   };
 }
 
-export function processCreateLabel({
-  boardId,
-  color,
-  name,
-}: CreateLabelActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return boards.map((board) => {
-      if (board.id !== boardId) return board;
+export function processCreateLabel(
+  boards: Board[],
+  { boardId, color, name }: CreateLabelEventPayload
+): Board[] {
+  return boards.map((board) => {
+    if (board.id !== boardId) return board;
 
-      return {
-        ...board,
-        labels: orderLabelsByColor([
-          ...board.labels,
-          Label(uuidv4(), color, name),
-        ]),
-      };
-    });
-  };
+    return {
+      ...board,
+      labels: orderLabelsByColor([
+        ...board.labels,
+        Label(uuidv4(), color, name),
+      ]),
+    };
+  });
 }
 
-export function processUpdateLabel({
-  boardId,
-  labelId,
-  colorType,
-  name,
-}: UpdateLabelActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return boards.map((board) => {
-      if (board.id !== boardId) return board;
+export function processUpdateLabel(
+  boards: Board[],
+  { boardId, labelId, colorType, name }: UpdateLabelEventPayload
+): Board[] {
+  return boards.map((board) => {
+    if (board.id !== boardId) return board;
 
-      return {
-        ...board,
-        labels: orderLabelsByColor(
-          board.labels.map((label) => {
-            if (labelId !== label.id) return label;
+    return {
+      ...board,
+      labels: orderLabelsByColor(
+        board.labels.map((label) => {
+          if (labelId !== label.id) return label;
 
-            return Label(labelId, colorType, name);
-          })
-        ),
-      };
-    });
-  };
+          return Label(labelId, colorType, name);
+        })
+      ),
+    };
+  });
 }
 
-export function processDeleteLabel({
-  boardId,
-  labelId,
-}: DeleteLabelActionPayload): UpdateBoardStore {
-  return (boards) => {
-    return boards.map((board) => {
-      if (board.id !== boardId) return board;
+export function processDeleteLabel(
+  boards: Board[],
+  { boardId, labelId }: DeleteLabelEventPayload
+): Board[] {
+  return boards.map((board) => {
+    if (board.id !== boardId) return board;
 
-      return {
-        ...board,
-        labels: orderLabelsByColor(
-          board.labels.filter((label) => label.id !== labelId)
-        ),
-      };
-    });
-  };
+    return {
+      ...board,
+      labels: orderLabelsByColor(
+        board.labels.filter((label) => label.id !== labelId)
+      ),
+    };
+  });
 }
 
 export function defaultLabels(): Label[] {

@@ -1,13 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import {
-    AddBoardToFavoritesAction,
-    ChangeSelectedBoardAction,
-    RemoveBoardFromFavoritesAction,
-  } from "../../actions";
+    AddBoardToFavoritesEvent,
+    ChangeSelectedBoardEvent,
+    RemoveBoardFromFavoritesEvent,
+  } from "../../events";
   import { boardColorTypeDarkMapping } from "../../models/board";
-  import { addStateAction } from "../../stores/stateActionStore";
-  import { WorkspaceStore } from "../../stores/workspaceStore";
+  import { addWorkspaceEvent } from "../../stores/eventStore";
+  import { StateStore } from "../../stores/stateStore";
   import type {
     Coordinates,
     DispatchOpenNewBoardMenu,
@@ -19,7 +19,7 @@
   const dispatchOpenNewBoardMenu =
     createEventDispatcher<DispatchOpenNewBoardMenu>();
 
-  $: boards = $WorkspaceStore;
+  $: boards = $StateStore.boards;
   $: backgroundColor = boardColorTypeDarkMapping(
     boards.find((b) => b.selected).color.type
   );
@@ -35,15 +35,15 @@
   }
 
   function handleAddToFavorites(boardId: string): void {
-    addStateAction(AddBoardToFavoritesAction({ boardId }));
+    addWorkspaceEvent(AddBoardToFavoritesEvent({ boardId }));
   }
 
   function handleRemoveFromFavorites(boardId: string): void {
-    addStateAction(RemoveBoardFromFavoritesAction({ boardId }));
+    addWorkspaceEvent(RemoveBoardFromFavoritesEvent({ boardId }));
   }
 
   function handleBoardSelection(boardId: string): void {
-    addStateAction(ChangeSelectedBoardAction({ boardId }));
+    addWorkspaceEvent(ChangeSelectedBoardEvent({ boardId }));
   }
 </script>
 

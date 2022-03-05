@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { DeleteCardAction } from "../actions";
+  import { DeleteCardEvent } from "../events";
   import { Card, getLabels } from "../models/card";
-  import { addStateAction } from "../stores/stateActionStore";
-  import { WorkspaceStore } from "../stores/workspaceStore";
+  import { addWorkspaceEvent } from "../stores/eventStore";
+  import { StateStore } from "../stores/stateStore";
 
   export let card: Card;
   export let listId: string;
   export let boardId: string;
 
   let isCloseBtnHidden: boolean = true;
-  $: cardLabels = getLabels($WorkspaceStore, boardId, listId, card.id);
+  $: cardLabels = getLabels($StateStore.boards, boardId, listId, card.id);
 
   function handleDeleteCard(): void {
-    addStateAction(DeleteCardAction({ boardId, listId, cardId: card.id }));
+    addWorkspaceEvent(DeleteCardEvent({ boardId, listId, cardId: card.id }));
   }
 
   function setCloseBtnVisibility(isVisible: boolean): void {

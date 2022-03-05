@@ -20,17 +20,17 @@
   import LabelsSection from "./LabelsSection.svelte";
   import { Just, Nothing } from "@quanterall/lich";
   import { stringToMaybe } from "../../utilities";
-  import { addStateAction } from "../../stores/stateActionStore";
+  import { addWorkspaceEvent } from "../../stores/eventStore";
   import {
-    AttachLabelToCardAction,
-    DetachLabelFromCardAction,
-    EditCardDescriptionAction,
-    MarkCardAsDoneAction,
-    MarkCardAsUndoneAction,
-    RemoveCardDueDateAction,
-    SetCardDueDateAction,
-  } from "../../actions";
-  import { WorkspaceStore } from "../../stores/workspaceStore";
+    AttachLabelToCardEvent,
+    DetachLabelFromCardEvent,
+    EditCardDescriptionEvent,
+    MarkCardAsDoneEvent,
+    MarkCardAsUndoneEvent,
+    RemoveCardDueDateEvent,
+    SetCardDueDateEvent,
+  } from "../../events";
+  import { StateStore } from "../../stores/stateStore";
 
   export let card: Card;
   export let list: List;
@@ -43,7 +43,7 @@
   let menusVisibility = initialMenusState();
   let editingLabel: Label;
 
-  $: cardLabels = getLabels($WorkspaceStore, boardId, list.id, card.id);
+  $: cardLabels = getLabels($StateStore.boards, boardId, list.id, card.id);
 
   function closeAllMenus(): void {
     menusVisibility = initialMenusState();
@@ -73,8 +73,8 @@
       )
     ) {
       card = { ...card, description: stringToMaybe(cardDescription) };
-      addStateAction(
-        EditCardDescriptionAction({
+      addWorkspaceEvent(
+        EditCardDescriptionEvent({
           boardId,
           listId: list.id,
           cardId: card.id,
@@ -92,8 +92,8 @@
         ...card,
         labelIds: card.labelIds.filter((id) => id !== label.id),
       };
-      addStateAction(
-        DetachLabelFromCardAction({
+      addWorkspaceEvent(
+        DetachLabelFromCardEvent({
           boardId,
           listId: list.id,
           cardId: card.id,
@@ -102,8 +102,8 @@
       );
     } else {
       card = { ...card, labelIds: [...card.labelIds, label.id] };
-      addStateAction(
-        AttachLabelToCardAction({
+      addWorkspaceEvent(
+        AttachLabelToCardEvent({
           boardId,
           listId: list.id,
           cardId: card.id,
@@ -124,9 +124,9 @@
       cardId: card.id,
     };
     if (completed) {
-      addStateAction(MarkCardAsDoneAction(payload));
+      addWorkspaceEvent(MarkCardAsDoneEvent(payload));
     } else {
-      addStateAction(MarkCardAsUndoneAction(payload));
+      addWorkspaceEvent(MarkCardAsUndoneEvent(payload));
     }
   }
 
@@ -161,8 +161,8 @@
 
   function handleSelectedDueDate(e: CustomEvent<Date>): void {
     card = { ...card, dueDate: Just(e.detail) };
-    addStateAction(
-      SetCardDueDateAction({
+    addWorkspaceEvent(
+      SetCardDueDateEvent({
         boardId,
         listId: list.id,
         cardId: card.id,
@@ -174,8 +174,8 @@
 
   function handleRemoveDueDate(): void {
     card = { ...card, dueDate: Nothing() };
-    addStateAction(
-      RemoveCardDueDateAction({ boardId, listId: list.id, cardId: card.id })
+    addWorkspaceEvent(
+      RemoveCardDueDateEvent({ boardId, listId: list.id, cardId: card.id })
     );
     closeAllMenus();
   }

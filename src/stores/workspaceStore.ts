@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { Writable, writable } from "svelte/store";
 import { Board, BoardColor, BoardColorType } from "../models/board";
 import { v4 as uuidv4 } from "uuid";
 import { List } from "../models/list";
@@ -36,13 +36,4 @@ const testingBoard = Board(
   true
 );
 
-const workspace: Board[] = [testingBoard];
-export const WorkspaceStore = writable(workspace);
-
-export type UpdateBoardStore = (boards: Board[]) => Board[];
-
-export function updateWorkspace(newBoards: Board) {
-  WorkspaceStore.update((boards) => {
-    return [...boards, newBoards];
-  });
-}
+export const WorkspaceStore: Writable<Board[]> = writable([testingBoard]);

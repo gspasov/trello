@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Just } from "@quanterall/lich";
   import { onMount, createEventDispatcher } from "svelte";
-  import { CreateBoardAction } from "../actions";
+  import { CreateBoardEvent } from "../events";
   import { BoardColorType, boardColorTypeMapping } from "../models/board";
-  import { DefaultBoardColorsStore } from "../stores/defaultBoardColorsStore";
-  import { addStateAction } from "../stores/stateActionStore";
+  import { addWorkspaceEvent } from "../stores/eventStore";
+  import { StateStore } from "../stores/stateStore";
   import LabelBox from "./general/LabelBox.svelte";
   import LabeledInput from "./general/LabeledInput.svelte";
   import Menu from "./general/Menu.svelte";
@@ -31,8 +31,8 @@
 
   function handleBoardCreate(): void {
     if (!isBoardTitleInvalid) {
-      addStateAction(
-        CreateBoardAction({
+      addWorkspaceEvent(
+        CreateBoardEvent({
           title: boardTitle.trim(),
           color: selectedColorType,
         })
@@ -59,7 +59,7 @@
   <MenuItem>
     <span class="title">Background</span>
     <div class="color-box-wrapper">
-      {#each $DefaultBoardColorsStore as { id, color, type } (id)}
+      {#each $StateStore.boardColors as { id, color, type } (id)}
         <LabelBox
           {color}
           selectable={true}
