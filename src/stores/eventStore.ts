@@ -75,15 +75,19 @@ export function addServerEvent(event: ServerEvent): void {
   ServerEventStore.set([]);
 }
 
+const eventsToNotUpdateHistoryFor: EventType[] = [
+  EventType.ConsiderMoveCard,
+  EventType.ConsiderMoveList,
+  EventType.OpenListMenu,
+  EventType.CloseListMenu,
+];
+
 WorkspaceEventStore.subscribe((events) => {
   for (const event of events) {
     WorkspaceStore.update((boards) =>
       executeWorkspaceEvent(event, boards)
         .onRight((newBoards) => {
-          if (
-            event.type !== EventType.ConsiderMoveCard &&
-            event.type !== EventType.ConsiderMoveList
-          ) {
+          if (!eventsToNotUpdateHistoryFor.includes(event.type)) {
             addHistoryEvent(
               UpdateHistoryEvent({ boards: newBoards, eventType: event.type })
             );
