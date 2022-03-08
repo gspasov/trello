@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Maybe, Nothing } from "@quanterall/lich";
 
-  export let ref: HTMLInputElement = undefined;
+  export let ref: HTMLInputElement;
   export let title: Maybe<string> = Nothing();
   export let required: boolean = false;
   export let invalid: boolean = false;

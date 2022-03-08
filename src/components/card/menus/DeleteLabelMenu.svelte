@@ -7,7 +7,7 @@
 
   export let x: number;
   export let y: number;
-  export let label: Label = undefined;
+  export let label: Label;
   export let boardId: string;
 
   const dispatch = createEventDispatcher();

@@ -13,12 +13,14 @@
   $: isListMenuOpened =
     board.lists.filter((list) => list.isMenuOpened).length > 0;
 
-  function handleConsiderDndColumns(e): void {
+  function handleConsiderDndColumns(
+    e: CustomEvent<GenericDndEvent<ListType>>
+  ): void {
     const lists: ListType[] = e.detail.items;
     addWorkspaceEvent(ConsiderMoveListEvent({ boardId: board.id, lists }));
   }
 
-  function handleDndColumns(e): void {
+  function handleDndColumns(e: CustomEvent<GenericDndEvent<ListType>>): void {
     const lists: ListType[] = e.detail.items;
     addWorkspaceEvent(MoveListEvent({ boardId: board.id, lists }));
   }

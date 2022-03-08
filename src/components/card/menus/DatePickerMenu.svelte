@@ -2,13 +2,14 @@
   import { createEventDispatcher } from "svelte";
   import { DatePicker } from "date-picker-svelte";
   import Menu from "../../general/Menu.svelte";
+  import type { DispatchSelectDueDate } from "../../../supportTypes";
 
   export let x: number;
   export let y: number;
   export let showRemoveButton: boolean;
   let date = new Date();
 
-  const dispatchDate = createEventDispatcher<{ select: Date }>();
+  const dispatchDate = createEventDispatcher<DispatchSelectDueDate>();
   const dispatch = createEventDispatcher();
 </script>
 

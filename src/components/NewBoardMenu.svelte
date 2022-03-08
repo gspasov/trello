@@ -14,7 +14,7 @@
   export let y: number;
 
   let boardTitle: string = "";
-  let inputRef: HTMLInputElement = undefined;
+  let inputRef: HTMLInputElement;
   let selectedColorType: BoardColorType = BoardColorType.LightBlue;
   let isBoardTitleInvalid: boolean = false;
 

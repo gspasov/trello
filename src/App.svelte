@@ -12,8 +12,14 @@
   import type { Card } from "./models/card";
   import type { List } from "./models/list";
   import { addWorkspaceEvent } from "./stores/eventStore";
-  import { AppMenus, AppMenusVisibility, Coordinates } from "./supportTypes";
+  import {
+    AppMenus,
+    AppMenusVisibility,
+    Coordinates,
+    DispatchCardOpenPayload,
+  } from "./supportTypes";
   import { StateStore } from "./stores/stateStore";
+  import { nullableToMaybe } from "@quanterall/lich";
 
   let newListTitle = "";
   let isNewListSectionVisible = false;
@@ -25,7 +31,10 @@
   let selectedList: List;
   let modalRef: Modal;
 
-  $: selectedBoard = $StateStore.boards.find((board) => board.selected);
+  $: boards = $StateStore.boards;
+  $: selectedBoard = nullableToMaybe(
+    boards.find((board) => board.selected)
+  ).otherwise(boards[0]);
   $: bodyStyle = `
     <style> 
       body {
@@ -34,13 +43,9 @@
     </style>
   `;
 
-  function handleCardOpen(e: CustomEvent): void {
-    selectedList = selectedBoard.lists.find(
-      (list) => list.id === e.detail.listId
-    );
-    selectedCard = selectedList.cards.find(
-      (card) => card.id === e.detail.cardId
-    );
+  function handleCardOpen(e: CustomEvent<DispatchCardOpenPayload>): void {
+    selectedList = e.detail.list;
+    selectedCard = e.detail.card;
     modalRef.show();
   }
 
@@ -89,6 +94,8 @@
 <Header />
 <main>
   <Sidebar
+    {boards}
+    boardColorType={selectedBoard.color.type}
     open={isSidebarOpen}
     on:click={toggleSidebar}
     on:openNewBoardMenu={(e) => openMenuCustom(AppMenus.NEW_BOARD, e)}
@@ -139,6 +146,7 @@
     card={selectedCard}
     list={selectedList}
     boardId={selectedBoard.id}
+    boardLabels={selectedBoard.labels}
   />
 </Modal>
 

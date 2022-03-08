@@ -48,7 +48,7 @@
           color: labelColorTypeMapping(selectedColorType),
           name: stringToMaybe(labelName),
         }))
-        .onJust((l) => {
+        .onJust((l) =>
           addWorkspaceEvent(
             UpdateLabelEvent({
               labelId: l.id,
@@ -56,8 +56,8 @@
               colorType: l.type,
               name: l.name,
             })
-          );
-        });
+          )
+        );
     }
 
     dispatch("back");

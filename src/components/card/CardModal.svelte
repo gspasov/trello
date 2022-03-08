@@ -6,7 +6,7 @@
     DefaultMouseEvent,
     CardModalMenus,
   } from "../../supportTypes";
-  import { Card, getLabels } from "../../models/card";
+  import type { Card } from "../../models/card";
   import type { List } from "../../models/list";
   import type { Label } from "../../models/label";
   import ActionClose from "../general/ActionClose.svelte";
@@ -30,11 +30,11 @@
     RemoveCardDueDateEvent,
     SetCardDueDateEvent,
   } from "../../events";
-  import { StateStore } from "../../stores/stateStore";
 
   export let card: Card;
   export let list: List;
   export let boardId: string;
+  export let boardLabels: Label[];
 
   let cardDescription: string = card.description.otherwise("");
   let isDescriptionEditVisible = false;
@@ -43,7 +43,9 @@
   let menusVisibility = initialMenusState();
   let editingLabel: Label;
 
-  $: cardLabels = getLabels($StateStore.boards, boardId, list.id, card.id);
+  $: cardLabels = boardLabels.filter((label) =>
+    card.labelIds.includes(label.id)
+  );
 
   function closeAllMenus(): void {
     menusVisibility = initialMenusState();
@@ -66,12 +68,11 @@
   }
 
   function editCardDescription(): void {
-    if (
-      card.description.fold(
-        true,
-        (description) => description !== cardDescription
-      )
-    ) {
+    const isDescriptionChanged = card.description.fold(
+      true,
+      (description) => description !== cardDescription
+    );
+    if (isDescriptionChanged) {
       card = { ...card, description: stringToMaybe(cardDescription) };
       addWorkspaceEvent(
         EditCardDescriptionEvent({
@@ -263,10 +264,10 @@
 </div>
 {#if menusVisibility.labels}
   <LabelsMenu
-    {card}
+    labels={boardLabels}
+    cardLabelIds={cardLabels.map((label) => label.id)}
     x={menuPosition.x}
     y={menuPosition.y + 40}
-    {boardId}
     on:select={toggleLabelToCard}
     on:create={() => openMenu(CardModalMenus.LABEL_CREATE)}
     on:edit={openLabelEditMenu}

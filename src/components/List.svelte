@@ -21,6 +21,9 @@
     OpenListMenuEvent,
     RenameListEvent,
   } from "../events";
+  import type { DispatchCardOpen } from "../supportTypes";
+  import { nullableToMaybe } from "@quanterall/lich";
+  import { hasOwnProperty } from "../utilities";
 
   export let list: List;
   export let boardId: string;
@@ -32,23 +35,28 @@
   let newTitleInputRef: HTMLInputElement;
   let newCardInputRef: HTMLTextAreaElement;
   let menuPosition = { x: 0, y: 0 };
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<DispatchCardOpen>();
 
-  function handleConsiderDndCards(e): void {
+  function handleConsiderDndCards(
+    e: CustomEvent<GenericDndEvent<CardType>>
+  ): void {
     const cards: CardType[] = e.detail.items;
     addWorkspaceEvent(
       ConsiderMoveCardEvent({ boardId, listId: list.id, cards })
     );
   }
 
-  function handleDndCards(e): void {
+  function handleDndCards(e: CustomEvent<GenericDndEvent<CardType>>): void {
     const cards: CardType[] = e.detail.items;
-    console.info("finalize card move", e.detail.items);
     addWorkspaceEvent(MoveCardEvent({ boardId, listId: list.id, cards }));
   }
 
-  function transformDraggedElement(e): void {
-    e.querySelector(".card").style.transform = "rotate(5deg)";
+  function transformDraggedElement(e: HTMLElement | undefined): void {
+    nullableToMaybe(e)
+      .bind((element) =>
+        nullableToMaybe(element.querySelector<HTMLElement>(".card"))
+      )
+      .map((element) => (element.style.transform = "rotate(5deg)"));
   }
 
   function toggleAddCardSectionVisibility(): void {
@@ -112,8 +120,8 @@
     }
   }
 
-  function handleCardClick(cardId: string): void {
-    dispatch("cardOpened", { listId: list.id, cardId });
+  function handleCardClick(list: List, card: CardType): void {
+    dispatch("cardOpened", { list, card });
   }
 </script>
 
@@ -152,10 +160,10 @@
       <div
         style="position: relative;"
         animate:flip={{ duration: 300 }}
-        on:click={() => handleCardClick(card.id)}
+        on:click={() => handleCardClick(list, card)}
       >
         <Card {card} listId={list.id} {boardId} />
-        {#if card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+        {#if hasOwnProperty(card, SHADOW_ITEM_MARKER_PROPERTY_NAME) && card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
           <span class="card-shadow" />
         {/if}
       </div>

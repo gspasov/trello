@@ -50,9 +50,9 @@
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
 "@quanterall/lich@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@quanterall/lich/-/lich-1.0.7.tgz#363f23f8490994c8796b21cd484bfc70ec6d20c6"
-  integrity sha512-IaWoo16Adp8HaSgqqJNdOQkpgTBmFg2yFEgH+Ez4ASmfni1ug7Q0HRnTh+SgnskVFqRMmkTCuVHNu4tGCni7gA==
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@quanterall/lich/-/lich-1.0.9.tgz#65f59c24abfb1b80477c261dcbd2e756904420fc"
+  integrity sha512-u+4Gv3eMFvbfZ9+15JsXLOTK9tvljeT+Bup9GS/ZnjICih3fdWu0aIfSC/G5UBLGfBU6dBBx0H7u86x31eJDMw==
 
 "@rollup/plugin-commonjs@^17.0.0":
   version "17.1.0"

@@ -1,4 +1,5 @@
-import type { LabelColorType } from "./models/label";
+import type { Card } from "./models/card";
+import type { List } from "./models/list";
 
 export type DefaultMouseEvent = MouseEvent & {
   currentTarget: EventTarget & HTMLElement;
@@ -18,6 +19,19 @@ export interface DispatchCompleted {
 
 export interface DispatchCompletedPayload {
   completed: boolean;
+}
+
+export interface DispatchSelectDueDate {
+  select: Date;
+}
+
+export interface DispatchCardOpen {
+  cardOpened: DispatchCardOpenPayload;
+}
+
+export interface DispatchCardOpenPayload {
+  list: List;
+  card: Card;
 }
 
 export interface Coordinates {

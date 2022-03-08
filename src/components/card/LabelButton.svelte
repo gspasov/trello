@@ -1,10 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import type { Label } from "../../models/label";
-  import type { Card } from "../../models/card";
 
   export let label: Label;
-  export let card: Card;
+  export let cardLabelIds: string[];
 
   const dispatch = createEventDispatcher();
 </script>
@@ -17,7 +16,7 @@
   >
     <div class="color-content">
       <span>{label.name.otherwise("")}</span>
-      {#if card.labelIds.includes(label.id)}
+      {#if cardLabelIds.includes(label.id)}
         <span>&#10004;</span>
       {/if}
     </div>
@@ -35,7 +34,6 @@
   .container {
     display: flex;
     gap: 0.25rem;
-    padding-top: 4px;
     justify-content: space-between;
   }
 

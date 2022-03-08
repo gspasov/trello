@@ -5,9 +5,12 @@
     ChangeSelectedBoardEvent,
     RemoveBoardFromFavoritesEvent,
   } from "../../events";
-  import { boardColorTypeDarkMapping } from "../../models/board";
+  import {
+    Board,
+    BoardColorType,
+    boardColorTypeDarkMapping,
+  } from "../../models/board";
   import { addWorkspaceEvent } from "../../stores/eventStore";
-  import { StateStore } from "../../stores/stateStore";
   import type {
     Coordinates,
     DispatchOpenNewBoardMenu,
@@ -15,14 +18,13 @@
   import MenuItem from "./MenuItem.svelte";
 
   export let open = false;
+  export let boards: Board[];
+  export let boardColorType: BoardColorType;
 
   const dispatchOpenNewBoardMenu =
     createEventDispatcher<DispatchOpenNewBoardMenu>();
 
-  $: boards = $StateStore.boards;
-  $: backgroundColor = boardColorTypeDarkMapping(
-    boards.find((b) => b.selected).color.type
-  );
+  $: backgroundColor = boardColorTypeDarkMapping(boardColorType);
 
   function handleOpenNewBoardMenu(
     event: MouseEvent & { currentTarget: EventTarget & HTMLSpanElement }

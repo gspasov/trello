@@ -3,17 +3,14 @@
   import MenuItem from "../../general/MenuItem.svelte";
   import LabelButton from "../LabelButton.svelte";
   import { createEventDispatcher } from "svelte";
-  import type { Card } from "../../../models/card";
-  import { StateStore } from "../../../stores/stateStore";
+  import type { Label } from "../../../models/label";
 
   export let x: number;
   export let y: number;
-  export let card: Card;
-  export let boardId: string;
+  export let labels: Label[];
+  export let cardLabelIds: string[];
 
   const dispatch = createEventDispatcher();
-
-  $: labels = $StateStore.boards.find((board) => board.id === boardId).labels;
 </script>
 
 <Menu title={"Labels"} {x} {y} on:close>
@@ -21,7 +18,7 @@
     <h4>Labels</h4>
     <div class="labels-wrapper">
       {#each labels as label (label.id)}
-        <LabelButton {card} {label} on:select on:edit />
+        <LabelButton {cardLabelIds} {label} on:select on:edit />
       {/each}
     </div>
     <button class="btn-secondary " on:click={() => dispatch("create")}>
@@ -39,8 +36,11 @@
   }
 
   .labels-wrapper {
+    display: grid;
+    gap: 0.25rem;
     overflow: auto;
     max-height: 30vh;
+    padding: 4px 0px;
   }
 
   button {

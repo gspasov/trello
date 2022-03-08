@@ -1,13 +1,15 @@
 <script lang="ts">
+  import { nullableToMaybe } from "@quanterall/lich";
+
   import { RedoEvent, UndoEvent } from "../events";
-  import { boardColorTypeDarkMapping } from "../models/board";
+  import { Board, boardColorTypeDarkMapping } from "../models/board";
   import { addHistoryEvent } from "../stores/eventStore";
   import { StateStore } from "../stores/stateStore";
 
   $: boards = $StateStore.boards;
-  $: backgroundColor = boardColorTypeDarkMapping(
-    boards.find((b) => b.selected).color.type
-  );
+  $: backgroundColor = nullableToMaybe<Board>(boards.find((b) => b.selected))
+    .map((board) => boardColorTypeDarkMapping(board.color.type))
+    .otherwise("#000000");
 
   function handleUndo(): void {
     addHistoryEvent(UndoEvent());
