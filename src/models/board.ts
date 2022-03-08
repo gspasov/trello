@@ -43,12 +43,15 @@ export function processCreateBoard(
   boards: Board[],
   { title, color }: CreateBoardEventPayload
 ): Board[] {
+  const boardId = uuidv4();
   const updatedBoards = [
     ...boards,
-    Board(uuidv4(), title, [], defaultLabels(), BoardColor(uuidv4(), color)),
+    Board(boardId, title, [], defaultLabels(), BoardColor(uuidv4(), color)),
   ];
 
-  return updatedBoards;
+  return processChangeSelectedBoard(updatedBoards.sort(sortByName), {
+    boardId,
+  });
 }
 
 export function processAddBoardToFavorites(
@@ -163,4 +166,8 @@ export function boardColorTypeDarkMapping(
     default:
       return assertUnreachable(labelColorType);
   }
+}
+
+function sortByName(a: Board, b: Board): number {
+  return a.name.localeCompare(b.name);
 }
