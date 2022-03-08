@@ -30,14 +30,12 @@
   }
 
   function handleBoardCreate(): void {
-    if (!isBoardTitleInvalid) {
-      addWorkspaceEvent(
-        CreateBoardEvent({
-          title: boardTitle.trim(),
-          color: selectedColorType,
-        })
-      );
-    }
+    addWorkspaceEvent(
+      CreateBoardEvent({
+        title: boardTitle.trim(),
+        color: selectedColorType,
+      })
+    );
     dispatch("close");
   }
 </script>
