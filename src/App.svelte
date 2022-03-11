@@ -104,7 +104,7 @@
       .otherwise(defaultDarkColor)}
     open={isSidebarOpen}
     on:click={toggleSidebar}
-    on:openNewBoardMenu={(e) => openMenuCustom(AppMenus.NEW_BOARD, e)}
+    on:openMenu={(e) => openMenuCustom(AppMenus.NEW_BOARD, e)}
   />
   <SidebarButton move={isSidebarOpen} on:click={toggleSidebar} />
   {#if selectedBoard.isJust()}

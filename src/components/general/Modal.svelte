@@ -1,5 +1,6 @@
 <script lang="ts">
   import CloseButton from "./CloseButton.svelte";
+  import { clickOutside } from "../../clickOutside";
 
   export let backgroundColor: string;
   export function show(): void {
@@ -22,7 +23,11 @@
 
 {#if shown}
   <div class="modal-wrapper">
-    <div class="modal" style={`background-color: ${backgroundColor}`}>
+    <div
+      class="modal"
+      style={`background-color: ${backgroundColor}`}
+      use:clickOutside={() => hide()}
+    >
       <span class="close">
         <CloseButton on:click={() => hide()} />
       </span>

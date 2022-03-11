@@ -7,18 +7,14 @@
   } from "../../events";
   import type { Board } from "../../models/board";
   import { addWorkspaceEvent } from "../../stores/eventStore";
-  import type {
-    Coordinates,
-    DispatchOpenNewBoardMenu,
-  } from "../../supportTypes";
+  import type { Coordinates, DispatchOpenMenu } from "../../supportTypes";
   import MenuItem from "./MenuItem.svelte";
 
   export let open = false;
   export let boards: Board[];
   export let backgroundColor: string;
 
-  const dispatchOpenNewBoardMenu =
-    createEventDispatcher<DispatchOpenNewBoardMenu>();
+  const dispatchOpenNewBoardMenu = createEventDispatcher<DispatchOpenMenu>();
 
   function handleOpenNewBoardMenu(
     event: MouseEvent & { currentTarget: EventTarget & HTMLSpanElement }
@@ -27,7 +23,7 @@
       x: event.currentTarget.offsetLeft,
       y: event.currentTarget.offsetTop,
     };
-    dispatchOpenNewBoardMenu("openNewBoardMenu", coordinates);
+    dispatchOpenNewBoardMenu("openMenu", coordinates);
   }
 
   function handleAddToFavorites(boardId: string): void {

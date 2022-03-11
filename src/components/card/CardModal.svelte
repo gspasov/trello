@@ -30,6 +30,7 @@
     RemoveCardDueDateEvent,
     SetCardDueDateEvent,
   } from "../../events";
+  import { clickOutside } from "./../../clickOutside";
 
   export let card: Card;
   export let list: List;
@@ -190,14 +191,17 @@
   <div class="container">
     <div class="window-main">
       {#if cardLabels.length > 0}
-        <LabelsSection labels={cardLabels} />
+        <LabelsSection
+          labels={cardLabels}
+          on:openMenu={(e) => openMenuCustom(CardModalMenus.LABELS, e)}
+        />
       {/if}
       {#if card.dueDate.isJust()}
         <DueDate
           dueDate={card.dueDate.value}
           completed={card.completed}
           on:toggleCompleted={handleDueDateCompleted}
-          on:openDueDate={(e) => openMenuCustom(CardModalMenus.DUE_DATE, e)}
+          on:openMenu={(e) => openMenuCustom(CardModalMenus.DUE_DATE, e)}
         />
       {/if}
       <h4>Description</h4>
@@ -263,65 +267,77 @@
   </div>
 </div>
 {#if menusVisibility.labels}
-  <LabelsMenu
-    labels={boardLabels}
-    cardLabelIds={cardLabels.map((label) => label.id)}
-    x={menuPosition.x}
-    y={menuPosition.y + 40}
-    on:select={toggleLabelToCard}
-    on:create={() => openMenu(CardModalMenus.LABEL_CREATE)}
-    on:edit={openLabelEditMenu}
-    on:close={closeAllMenus}
-  />
+  <div use:clickOutside={() => closeAllMenus()}>
+    <LabelsMenu
+      labels={boardLabels}
+      cardLabelIds={cardLabels.map((label) => label.id)}
+      x={menuPosition.x}
+      y={menuPosition.y + 40}
+      on:select={toggleLabelToCard}
+      on:create={() => openMenu(CardModalMenus.LABEL_CREATE)}
+      on:edit={openLabelEditMenu}
+      on:close={closeAllMenus}
+    />
+  </div>
 {/if}
 {#if menusVisibility.labelCreate}
-  <CreateLabelMenu
-    x={menuPosition.x}
-    y={menuPosition.y + 40}
-    {boardId}
-    on:back={() => showMenu(CardModalMenus.LABELS)}
-    on:close={closeAllMenus}
-  />
+  <div use:clickOutside={() => closeAllMenus()}>
+    <CreateLabelMenu
+      x={menuPosition.x}
+      y={menuPosition.y + 40}
+      {boardId}
+      on:back={() => showMenu(CardModalMenus.LABELS)}
+      on:close={closeAllMenus}
+    />
+  </div>
 {/if}
 {#if menusVisibility.labelEdit}
-  <CreateLabelMenu
-    label={Just(editingLabel)}
-    isEditMode={true}
-    x={menuPosition.x}
-    y={menuPosition.y + 40}
-    {boardId}
-    on:back={() => showMenu(CardModalMenus.LABELS)}
-    on:delete={() => openMenu(CardModalMenus.LABEL_DELETE)}
-    on:close={closeAllMenus}
-  />
+  <div use:clickOutside={() => closeAllMenus()}>
+    <CreateLabelMenu
+      label={Just(editingLabel)}
+      isEditMode={true}
+      x={menuPosition.x}
+      y={menuPosition.y + 40}
+      {boardId}
+      on:back={() => showMenu(CardModalMenus.LABELS)}
+      on:delete={() => openMenu(CardModalMenus.LABEL_DELETE)}
+      on:close={closeAllMenus}
+    />
+  </div>
 {/if}
 {#if menusVisibility.labelDelete}
-  <DeleteLabelMenu
-    label={editingLabel}
-    x={menuPosition.x}
-    y={menuPosition.y + 40}
-    {boardId}
-    on:back={() => showMenu(CardModalMenus.LABEL_EDIT)}
-    on:delete={() => showMenu(CardModalMenus.LABELS)}
-    on:close={closeAllMenus}
-  />
+  <div use:clickOutside={() => closeAllMenus()}>
+    <DeleteLabelMenu
+      label={editingLabel}
+      x={menuPosition.x}
+      y={menuPosition.y + 40}
+      {boardId}
+      on:back={() => showMenu(CardModalMenus.LABEL_EDIT)}
+      on:delete={() => showMenu(CardModalMenus.LABELS)}
+      on:close={closeAllMenus}
+    />
+  </div>
 {/if}
 {#if menusVisibility.dueDate}
-  <DatePickerMenu
-    x={menuPosition.x}
-    y={menuPosition.y + 40}
-    showRemoveButton={card.dueDate.isJust()}
-    on:select={handleSelectedDueDate}
-    on:remove={handleRemoveDueDate}
-    on:close={closeAllMenus}
-  />
+  <div use:clickOutside={() => closeAllMenus()}>
+    <DatePickerMenu
+      x={menuPosition.x}
+      y={menuPosition.y + 40}
+      showRemoveButton={card.dueDate.isJust()}
+      on:select={handleSelectedDueDate}
+      on:remove={handleRemoveDueDate}
+      on:close={closeAllMenus}
+    />
+  </div>
 {/if}
 {#if menusVisibility.move}
-  <MoveCardMenu
-    x={menuPosition.x}
-    y={menuPosition.y + 40}
-    on:close={closeAllMenus}
-  />
+  <div use:clickOutside={() => closeAllMenus()}>
+    <MoveCardMenu
+      x={menuPosition.x}
+      y={menuPosition.y + 40}
+      on:close={closeAllMenus}
+    />
+  </div>
 {/if}
 
 <style>

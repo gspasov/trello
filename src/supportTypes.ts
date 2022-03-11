@@ -5,12 +5,8 @@ export type DefaultMouseEvent = MouseEvent & {
   currentTarget: EventTarget & HTMLElement;
 };
 
-export interface DispatchDueDatePosition {
-  openDueDate: Coordinates;
-}
-
-export interface DispatchOpenNewBoardMenu {
-  openNewBoardMenu: Coordinates;
+export interface DispatchOpenMenu {
+  openMenu: Coordinates;
 }
 
 export interface DispatchCompleted {

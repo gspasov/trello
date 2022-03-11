@@ -3,7 +3,7 @@
   import type {
     Coordinates,
     DispatchCompleted,
-    DispatchDueDatePosition,
+    DispatchOpenMenu,
   } from "../../supportTypes";
 
   export let dueDate: Date;
@@ -16,7 +16,7 @@
   });
   let isDueDateMenuOpen = false;
   const dispatchCompleted = createEventDispatcher<DispatchCompleted>();
-  const dipatchDueDateOpen = createEventDispatcher<DispatchDueDatePosition>();
+  const dispatchOpenMenu = createEventDispatcher<DispatchOpenMenu>();
 
   function toggleComplated(): void {
     completed = !completed;
@@ -31,7 +31,7 @@
       x: event.currentTarget.offsetLeft,
       y: event.currentTarget.offsetTop,
     };
-    dipatchDueDateOpen("openDueDate", coordinates);
+    dispatchOpenMenu("openMenu", coordinates);
   }
 </script>
 

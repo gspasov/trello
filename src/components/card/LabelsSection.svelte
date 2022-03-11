@@ -1,12 +1,25 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import {
     Label,
     LabelColorType,
     labelColorTypeMapping,
   } from "../../models/label";
+  import type { Coordinates, DispatchOpenMenu } from "../../supportTypes";
   import LabelBox from "../general/LabelBox.svelte";
 
   export let labels: Label[];
+  const dispatch = createEventDispatcher<DispatchOpenMenu>();
+
+  function handleClick(
+    event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }
+  ): void {
+    const coordinates: Coordinates = {
+      x: event.currentTarget.offsetLeft,
+      y: event.currentTarget.offsetTop,
+    };
+    dispatch("openMenu", coordinates);
+  }
 </script>
 
 <div class="labels-section">
@@ -19,12 +32,14 @@
         {/if}
       </LabelBox>
     {/each}
-    <LabelBox
-      selectable={true}
-      color={labelColorTypeMapping(LabelColorType.AddBtnGray)}
-    >
-      <div class="add">&#x2715;</div>
-    </LabelBox>
+    <div on:click={handleClick}>
+      <LabelBox
+        selectable={true}
+        color={labelColorTypeMapping(LabelColorType.AddBtnGray)}
+      >
+        <div class="add">&#x2715;</div>
+      </LabelBox>
+    </div>
   </div>
 </div>
 

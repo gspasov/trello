@@ -36,4 +36,4 @@ const testingBoard = Board(
   true
 );
 
-export const WorkspaceStore: Writable<Board[]> = writable([]);
+export const WorkspaceStore: Writable<Board[]> = writable([testingBoard]);
