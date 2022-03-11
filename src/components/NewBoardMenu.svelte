@@ -15,7 +15,7 @@
 
   let boardTitle: string = "";
   let inputRef: HTMLInputElement;
-  let selectedColorType: BoardColorType = BoardColorType.LightBlue;
+  let selectedColorType: BoardColorType = BoardColorType.Orange;
   let isBoardTitleInvalid: boolean = false;
 
   // Focus the input when the menu loads

@@ -11,6 +11,10 @@
   import NewBoardMenu from "./components/NewBoardMenu.svelte";
   import type { Card } from "./models/card";
   import type { List } from "./models/list";
+  import {
+    Board as BoardType,
+    boardColorTypeDarkMapping,
+  } from "./models/board";
   import { addWorkspaceEvent } from "./stores/eventStore";
   import {
     AppMenus,
@@ -19,7 +23,9 @@
     DispatchCardOpenPayload,
   } from "./supportTypes";
   import { StateStore } from "./stores/stateStore";
-  import { nullableToMaybe } from "@quanterall/lich";
+  import { Maybe, nullableToMaybe } from "@quanterall/lich";
+  import { clickOutside } from "./clickOutside";
+  import { getBodyStyle } from "./utilities";
 
   let newListTitle = "";
   let isNewListSectionVisible = false;
@@ -30,18 +36,12 @@
   let selectedCard: Card;
   let selectedList: List;
   let modalRef: Modal;
+  const defaultDarkColor = "#b07727";
+  const defaultBackgroundColor = "#D29034";
 
   $: boards = $StateStore.boards;
-  $: selectedBoard = nullableToMaybe(
-    boards.find((board) => board.selected)
-  ).otherwise(boards[0]);
-  $: bodyStyle = `
-    <style> 
-      body {
-        background-color: ${selectedBoard.color.color};
-      } 
-    </style>
-  `;
+  $: selectedBoard = nullableToMaybe(boards.find((board) => board.selected));
+  $: bodyStyle = getBodyStyle(selectedBoard, defaultBackgroundColor);
 
   function handleCardOpen(e: CustomEvent<DispatchCardOpenPayload>): void {
     selectedList = e.detail.list;
@@ -54,13 +54,13 @@
     setTimeout(() => inputRef.focus(), 1);
   }
 
-  function handleCreateList(): void {
-    addWorkspaceEvent(
-      CreateListEvent({ boardId: selectedBoard.id, title: newListTitle })
-    );
+  function handleCreateList(board: Maybe<BoardType>, title: string): void {
+    if (board.isJust()) {
+      addWorkspaceEvent(CreateListEvent({ boardId: board.value.id, title }));
 
-    newListTitle = "";
-    isNewListSectionVisible = false;
+      newListTitle = "";
+      isNewListSectionVisible = false;
+    }
   }
 
   function toggleSidebar(): void {
@@ -91,64 +91,74 @@
   }
 </script>
 
-<Header />
+<Header
+  backgroundColor={selectedBoard
+    .map((board) => boardColorTypeDarkMapping(board.color.type))
+    .otherwise(defaultDarkColor)}
+/>
 <main>
   <Sidebar
     {boards}
-    boardColorType={selectedBoard.color.type}
+    backgroundColor={selectedBoard
+      .map((board) => boardColorTypeDarkMapping(board.color.type))
+      .otherwise(defaultDarkColor)}
     open={isSidebarOpen}
     on:click={toggleSidebar}
     on:openNewBoardMenu={(e) => openMenuCustom(AppMenus.NEW_BOARD, e)}
   />
   <SidebarButton move={isSidebarOpen} on:click={toggleSidebar} />
-  <div class:move={isSidebarOpen} class="content-wrapper">
-    {#if selectedBoard !== undefined}
-      <Board board={selectedBoard} on:cardOpened={handleCardOpen} />
-    {/if}
-    <div>
-      {#if isNewListSectionVisible}
-        <div class="new-list-form" transition:slide={{ duration: 300 }}>
-          <input
-            class="input-primary"
-            type="text"
-            name="list"
-            placeholder="Enter list title..."
-            bind:value={newListTitle}
-            bind:this={inputRef}
-          />
-          <ActionClose
-            title={"Add list"}
-            on:click={handleCreateList}
-            on:close={toggleAddListSectionVisibility}
-          />
-        </div>
-      {:else}
-        <button
-          class="btn-add-list"
-          class:hidden={isNewListSectionVisible}
-          on:click={toggleAddListSectionVisibility}
-        >
-          <i class="fa fa-plus" aria-hidden="true" /> Add another list
-        </button>
-      {/if}
+  {#if selectedBoard.isJust()}
+    <div class:move={isSidebarOpen} class="content-wrapper">
+      <Board board={selectedBoard.value} on:cardOpened={handleCardOpen} />
+      <div>
+        {#if isNewListSectionVisible}
+          <div class="new-list-form" transition:slide={{ duration: 300 }}>
+            <input
+              class="input-primary"
+              type="text"
+              name="list"
+              placeholder="Enter list title..."
+              bind:value={newListTitle}
+              bind:this={inputRef}
+            />
+            <ActionClose
+              title={"Add list"}
+              on:click={() => handleCreateList(selectedBoard, newListTitle)}
+              on:close={toggleAddListSectionVisibility}
+            />
+          </div>
+        {:else}
+          <button
+            class="btn-add-list"
+            class:hidden={isNewListSectionVisible}
+            on:click={toggleAddListSectionVisibility}
+          >
+            <i class="fa fa-plus" aria-hidden="true" /> Add another list
+          </button>
+        {/if}
+      </div>
     </div>
-  </div>
+  {/if}
 </main>
 {#if menusVisibility.newBoard}
-  <NewBoardMenu
-    x={menuPosition.x}
-    y={menuPosition.y + 40}
-    on:close={closeAllMenus}
-  />
+  <div use:clickOutside={closeAllMenus}>
+    <NewBoardMenu
+      x={menuPosition.x}
+      y={menuPosition.y + 40}
+      on:close={closeAllMenus}
+    />
+  </div>
 {/if}
-<Modal bind:this={modalRef} backgroundColor={"#fdfdfd"}>
-  <CardModal
-    card={selectedCard}
-    list={selectedList}
-    boardId={selectedBoard.id}
-    boardLabels={selectedBoard.labels}
-  />
-</Modal>
+{#if selectedBoard.isJust()}
+  <Modal bind:this={modalRef} backgroundColor={"#fdfdfd"}>
+    <CardModal
+      card={selectedCard}
+      list={selectedList}
+      boardId={selectedBoard.value.id}
+      boardLabels={selectedBoard.value.labels}
+    />
+  </Modal>
+{/if}
 
 <svelte:head>
   {@html bodyStyle}

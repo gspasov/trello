@@ -5,11 +5,7 @@
     ChangeSelectedBoardEvent,
     RemoveBoardFromFavoritesEvent,
   } from "../../events";
-  import {
-    Board,
-    BoardColorType,
-    boardColorTypeDarkMapping,
-  } from "../../models/board";
+  import type { Board } from "../../models/board";
   import { addWorkspaceEvent } from "../../stores/eventStore";
   import type {
     Coordinates,
@@ -19,12 +15,10 @@
 
   export let open = false;
   export let boards: Board[];
-  export let boardColorType: BoardColorType;
+  export let backgroundColor: string;
 
   const dispatchOpenNewBoardMenu =
     createEventDispatcher<DispatchOpenNewBoardMenu>();
-
-  $: backgroundColor = boardColorTypeDarkMapping(boardColorType);
 
   function handleOpenNewBoardMenu(
     event: MouseEvent & { currentTarget: EventTarget & HTMLSpanElement }

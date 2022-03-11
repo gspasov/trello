@@ -1,15 +1,8 @@
 <script lang="ts">
-  import { nullableToMaybe } from "@quanterall/lich";
-
   import { RedoEvent, UndoEvent } from "../events";
-  import { Board, boardColorTypeDarkMapping } from "../models/board";
   import { addHistoryEvent } from "../stores/eventStore";
-  import { StateStore } from "../stores/stateStore";
 
-  $: boards = $StateStore.boards;
-  $: backgroundColor = nullableToMaybe<Board>(boards.find((b) => b.selected))
-    .map((board) => boardColorTypeDarkMapping(board.color.type))
-    .otherwise("#000000");
+  export let backgroundColor: string;
 
   function handleUndo(): void {
     addHistoryEvent(UndoEvent());
@@ -22,7 +15,7 @@
 
 <section style="background-color: {backgroundColor}">
   <div class="container">
-    <span>Quantrello</span>
+    <span><span class="q">Q</span><span>uantrello</span></span>
     <div class="undo-redo-section">
       <button aria-label="Undo" title="Undo" on:click={handleUndo}>
         <i class="fa fa-undo" aria-hidden="true" />
@@ -55,6 +48,10 @@
     font-size: 20px;
     color: white;
     font-weight: 800;
+  }
+
+  span .q {
+    color: #01c0c9;
   }
 
   .undo-redo-section {
