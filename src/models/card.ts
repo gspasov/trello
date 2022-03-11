@@ -47,7 +47,7 @@ export function processCreateCard(
   boards: Board[],
   { boardId, listId, title }: CreateCardEventPayload
 ): Board[] {
-  return updateCards(boards, boardId, listId, (cards: Card[]) => [
+  return updateCards(boards, boardId, listId, (cards: Card[]): Card[] => [
     ...cards,
     Card(uuidv4(), title),
   ]);
@@ -57,87 +57,135 @@ export function processEditCardDescription(
   boards: Board[],
   { boardId, listId, cardId, description }: EditCardDescriptionEventPayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    description,
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      description,
+    })
+  );
 }
 
 export function processRenameCard(
   boards: Board[],
   { boardId, cardId, listId, title }: RenameCardEventPayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    title,
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      title,
+    })
+  );
 }
 
 export function processAttachLabelToCard(
   boards: Board[],
   { boardId, listId, cardId, labelId }: AttachLabelToCardEventPayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    labelIds: [...card.labelIds, labelId],
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      labelIds: [...card.labelIds, labelId],
+    })
+  );
 }
 
 export function processDetachLabelFromCard(
   boards: Board[],
   { boardId, listId, cardId, labelId }: DetachLabelFromCardEventPayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    labelIds: card.labelIds.filter((id) => id !== labelId),
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      labelIds: card.labelIds.filter((id) => id !== labelId),
+    })
+  );
 }
 
 export function processSetCardDueDate(
   boards: Board[],
   { boardId, cardId, listId, dueDate }: SetCardDueDateEventPayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    dueDate,
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      dueDate,
+    })
+  );
 }
 
 export function processRemoveCardDueDate(
   boards: Board[],
   { boardId, listId, cardId }: RemoveCardDueDateEventPayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    dueDate: Nothing(),
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      dueDate: Nothing(),
+    })
+  );
 }
 
 export function processMarkCardAsDone(
   boards: Board[],
   { boardId, listId, cardId }: MarkCardAsDoneEventPayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    done: true,
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      completed: true,
+    })
+  );
 }
 
 export function processMarkCardAsUndone(
   boards: Board[],
   { boardId, listId, cardId }: MarkCardAsUndonePayload
 ): Board[] {
-  return updateCard(boards, boardId, listId, cardId, (card: Card) => ({
-    ...card,
-    done: false,
-  }));
+  return updateCard(
+    boards,
+    boardId,
+    listId,
+    cardId,
+    (card: Card): Card => ({
+      ...card,
+      completed: false,
+    })
+  );
 }
 
 export function processDeleteCard(
   boards: Board[],
   { boardId, listId, cardId }: DeleteCardEventPayload
 ): Board[] {
-  return updateCards(boards, boardId, listId, (cards: Card[]) =>
+  return updateCards(boards, boardId, listId, (cards: Card[]): Card[] =>
     cards.filter((card) => card.id !== cardId)
   );
 }

@@ -157,12 +157,13 @@
     on:finalize={handleDndCards}
   >
     {#each list.cards as card (card.id)}
-      <div
-        style="position: relative;"
-        animate:flip={{ duration: 300 }}
-        on:click={() => handleCardClick(list, card)}
-      >
-        <Card {card} listId={list.id} {boardId} />
+      <div style="position: relative;" animate:flip={{ duration: 300 }}>
+        <Card
+          {card}
+          listId={list.id}
+          {boardId}
+          on:click={() => handleCardClick(list, card)}
+        />
         {#if hasOwnProperty(card, SHADOW_ITEM_MARKER_PROPERTY_NAME) && card[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
           <span class="card-shadow" />
         {/if}
