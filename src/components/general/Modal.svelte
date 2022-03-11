@@ -25,7 +25,7 @@
   <div class="modal-wrapper">
     <div
       class="modal"
-      style={`background-color: ${backgroundColor}`}
+      style="background-color: {backgroundColor}"
       use:clickOutside={() => hide()}
     >
       <span class="close">
