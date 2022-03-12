@@ -46,42 +46,6 @@ const localWorkspace = nullableToEither(
 )
   .map(JSON.parse)
   .bind((value) => validatorToEither(validateWorkspace, JSON.stringify)(value))
-  .map((boards) =>
-    boards.map((board) => {
-      return Board(
-        board.id,
-        board.name,
-        board.lists.map((list) => {
-          return List(
-            list.id,
-            list.title,
-            list.cards.map((card) => {
-              return Card(
-                card.id,
-                card.title,
-                card.description.type === "Just"
-                  ? Just(card.description.value)
-                  : Nothing(),
-                card.labelIds,
-                card.completed,
-                card.assignedTo.type === "Just"
-                  ? Just(card.assignedTo.value)
-                  : Nothing(),
-                card.dueDate.type === "Just"
-                  ? Just(new Date(card.dueDate.value))
-                  : Nothing()
-              );
-            }),
-            list.isMenuOpened
-          );
-        }),
-        board.labels,
-        board.color,
-        board.selected,
-        board.favorite
-      );
-    })
-  )
   .onLeft((e) =>
     console.error("Failed to validate Boards from local storage: ", e)
   )

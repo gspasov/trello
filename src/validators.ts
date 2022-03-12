@@ -1,4 +1,4 @@
-import type { Just, Maybe, Nothing } from "@quanterall/lich";
+import { Just, Maybe, Nothing } from "@quanterall/lich";
 import * as svt from "simple-validation-tools";
 import { Board, BoardColor, BoardColorType } from "./models/board";
 import { Label, LabelColorType } from "./models/label";
@@ -66,7 +66,7 @@ export function validateCard(value: unknown): svt.ValidationResult<Card> {
     completed: svt.validateBoolean,
     description: validateMaybe(svt.validateString),
     assignedTo: validateMaybe(svt.validateString),
-    dueDate: validateMaybe(svt.validateString),
+    dueDate: validateMaybe(validateDate),
   });
 }
 
@@ -95,27 +95,47 @@ export function validateLabelColorType(
   ]);
 }
 
+export function validateDate(value: unknown): svt.ValidationResult<Date> {
+  const validationResult = svt.validateString(value);
+  return validationResult.valid
+    ? svt.Valid(new Date(validationResult.value))
+    : svt.Invalid(validationResult.errors);
+}
+
 export function validateMaybe<T>(
   validator: svt.Validator<T>
 ): svt.Validator<Maybe<T>> {
   return function (value: unknown): svt.ValidationResult<Maybe<T>> {
-    return svt.validateOneOf<Maybe<T>>(value, [
-      validateNothing,
-      validateJust(validator),
-    ]);
+    return svt.validateWithTypeTag<Maybe<T>>(
+      value,
+      {
+        ["Nothing"]: validateNothing,
+        ["Just"]: validateJust(validator),
+      },
+      "type"
+    );
   };
 }
 
 export function validateNothing<T>(
   value: unknown
-): svt.ValidationResult<Nothing<T>> {
-  return svt.validate(value, { type: "Nothing" });
+): svt.ValidationResult<Maybe<T>> {
+  const validationResult = svt.validate<Nothing<T>>(value, { type: "Nothing" });
+  return validationResult.valid
+    ? svt.Valid(Nothing())
+    : svt.Invalid(validationResult.errors);
 }
 
 export function validateJust<T>(
   validator: svt.Validator<T>
-): svt.Validator<Just<T>> {
-  return function (value: unknown): svt.ValidationResult<Just<T>> {
-    return svt.validate(value, { type: "Just", value: validator });
+): svt.Validator<Maybe<T>> {
+  return function (value: unknown): svt.ValidationResult<Maybe<T>> {
+    const validationResult = svt.validate<Just<T>>(value, {
+      type: "Just",
+      value: validator,
+    });
+    return validationResult.valid
+      ? svt.Valid(Just(validationResult.value.value))
+      : svt.Invalid(validationResult.errors);
   };
 }
