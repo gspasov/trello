@@ -12,11 +12,7 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<div
-  class="list-context-menu"
-  style="top: {y}px; left: {x}px;"
-  draggable={false}
->
+<div class="list-context-menu" style="top: {y}px; left: {x}px;">
   <div class="title-section">
     {#if isSubMenu}
       <BackArrowButton on:click={() => dispatch("back")} />
