@@ -22,11 +22,8 @@
   export let boardId: string;
 
   const dispatch = createEventDispatcher();
-  let inputRef: HTMLInputElement;
   let labelName: string = getLabelName(label);
   let selectedColorType: LabelColorType = getLabelColorType(label);
-
-  onMount(() => inputRef.focus());
 
   function handleCreate(): void {
     addWorkspaceEvent(
@@ -92,11 +89,7 @@
   on:back
 >
   <div class="content">
-    <LabeledInput
-      title={Just("Name")}
-      bind:ref={inputRef}
-      bind:value={labelName}
-    />
+    <LabeledInput title={Just("Name")} bind:value={labelName} />
     <span class="title">Select color</span>
     <div class="color-box-wrapper">
       {#each $StateStore.labels as { id, color, type } (id)}
