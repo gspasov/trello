@@ -166,7 +166,7 @@
 
 <style>
   .move {
-    transform: translateX(250px);
+    margin-left: 250px;
   }
   main {
     margin-top: 45px;
