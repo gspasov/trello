@@ -1,5 +1,6 @@
-import { Just, Maybe, Nothing } from "@quanterall/lich";
+import { Either, Just, Left, Maybe, Nothing, Right } from "@quanterall/lich";
 import type { Board } from "./models/board";
+import type * as svt from "simple-validation-tools";
 
 export function stringToMaybe(s: string): Maybe<string> {
   if (s === "") return Nothing();
@@ -33,4 +34,17 @@ export function getBodyStyle(
       } 
     </style>
   `;
+}
+
+export function validatorToEither<E, T>(
+  validator: svt.Validator<T>,
+  onInvalid: (validationEither: svt.Invalid<T>) => E
+): (value: unknown) => Either<E, T> {
+  return function applyValidatorToEither(value: unknown): Either<E, T> {
+    const validationEither = validator(value);
+
+    return validationEither.valid
+      ? Right(validationEither.value)
+      : Left(onInvalid(validationEither));
+  };
 }

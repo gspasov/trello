@@ -29,14 +29,16 @@ export function Card(
   id: string,
   title: string,
   description: Maybe<string> = Nothing(),
+  labelIds: string[] = [],
+  completed: boolean = false,
   assignedTo: Maybe<string> = Nothing(),
   dueDate: Maybe<Date> = Nothing()
 ): Card {
   return {
     id,
     title,
-    labelIds: [],
-    completed: false,
+    labelIds,
+    completed,
     description,
     assignedTo,
     dueDate,

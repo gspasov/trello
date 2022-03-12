@@ -19,12 +19,17 @@ export type List = {
   isMenuOpened: boolean;
 };
 
-export function List(id: string, title: string, cards: Card[]): List {
+export function List(
+  id: string,
+  title: string,
+  cards: Card[],
+  isMenuOpened: boolean = false
+): List {
   return {
     id,
     title,
     cards,
-    isMenuOpened: false,
+    isMenuOpened,
   };
 }
 
