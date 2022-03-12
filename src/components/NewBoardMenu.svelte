@@ -14,12 +14,8 @@
   export let y: number;
 
   let boardTitle: string = "";
-  let inputRef: HTMLInputElement;
   let selectedColorType: BoardColorType = BoardColorType.Orange;
   let isBoardTitleInvalid: boolean = false;
-
-  // Focus the input when the menu loads
-  onMount(() => inputRef.focus());
 
   const dispatch = createEventDispatcher();
 
@@ -51,7 +47,6 @@
       title={Just("Board title")}
       bind:value={boardTitle}
       required={true}
-      bind:ref={inputRef}
     />
   </MenuItem>
   <MenuItem>

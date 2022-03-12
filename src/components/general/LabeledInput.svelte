@@ -1,11 +1,15 @@
 <script lang="ts">
   import { Maybe, Nothing } from "@quanterall/lich";
+  import { onMount } from "svelte";
 
-  export let ref: HTMLInputElement;
   export let title: Maybe<string> = Nothing();
   export let required: boolean = false;
   export let invalid: boolean = false;
   export let value: string;
+
+  let ref: HTMLInputElement;
+
+  onMount(() => ref.focus());
 </script>
 
 {#if title.isJust()}
