@@ -49,9 +49,12 @@ export function processCreateBoard(
     Board(boardId, title, [], defaultLabels(), BoardColor(uuidv4(), color)),
   ];
 
-  return processChangeSelectedBoard(updatedBoards.sort(sortByName), {
-    boardId,
-  });
+  return processChangeSelectedBoard(
+    updatedBoards.sort(sortByName).sort(sortByFavorite),
+    {
+      boardId,
+    }
+  );
 }
 
 export function processAddBoardToFavorites(
@@ -83,11 +86,14 @@ function toggleBoardFavorite(
   id: string,
   favorite: boolean
 ): Board[] {
-  return boards.map((board) => {
-    if (board.id !== id) return board;
+  return boards
+    .map((board) => {
+      if (board.id !== id) return board;
 
-    return { ...board, favorite };
-  });
+      return { ...board, favorite };
+    })
+    .sort(sortByName)
+    .sort(sortByFavorite);
 }
 
 export type BoardColor = {
@@ -170,4 +176,11 @@ export function boardColorTypeDarkMapping(
 
 function sortByName(a: Board, b: Board): number {
   return a.name.localeCompare(b.name);
+}
+
+function sortByFavorite(a: Board, b: Board): number {
+  if (a.favorite && b.favorite) return 0;
+  if (!a.favorite && !b.favorite) return 0;
+  if (a.favorite) return -1;
+  return 1;
 }
