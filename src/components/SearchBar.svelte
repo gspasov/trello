@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Just } from "@quanterall/lich";
   import { ChangeSelectedBoardEvent } from "../events";
   import type { Board } from "../models/board";
   import type { Card } from "../models/card";
@@ -13,9 +14,11 @@
   } from "../stores/searchStore";
   import { StateStore } from "../stores/stateStore";
   import Divider from "./general/Divider.svelte";
+  import Menu from "./general/Menu.svelte";
+  import MenuItem from "./general/MenuItem.svelte";
 
   let value = "";
-  let isResultsVisible = false;
+  let areResultsVisible = false;
 
   $: boards = findBoards(
     $StateStore.boards,
@@ -34,21 +37,21 @@
 
   function handleClear(): void {
     value = "";
-    isResultsVisible = false;
+    areResultsVisible = false;
   }
 
   function handleChange(): void {
     console.info(value);
     if (value.trim().length > 0) {
-      isResultsVisible = true;
+      areResultsVisible = true;
     } else {
-      isResultsVisible = false;
+      areResultsVisible = false;
     }
   }
 
   function handleBoardClick(board: Board): void {
     addWorkspaceEvent(ChangeSelectedBoardEvent({ boardId: board.id }));
-    isResultsVisible = false;
+    areResultsVisible = false;
     value = "";
   }
   function handleListClick(list: List): void {}
@@ -68,54 +71,51 @@
       <i class="fa fa-close close" />
     </button>
   {/if}
-  {#if isResultsVisible}
-    <div class="results">
-      {#if hasResults}
-        <ul>
+  {#if areResultsVisible}
+    <Menu top={Just(40)} right={Just(0)} width={"32ch"}>
+      <div slot="content">
+        {#if hasResults}
           {#if boards.length > 0}
-            <span class="heading"><b>Boards</b></span>
+            <span class="heading">Boards</span>
             {#each boards as board}
-              <li
-                class="result-elem-sizing"
+              <MenuItem
+                lineText={board.name}
+                hover={true}
                 on:click={() => handleBoardClick(board)}
-              >
-                <span>{board.name}</span>
-              </li>
+              />
             {/each}
           {/if}
           {#if boards.length > 0 && lists.length > 0}
             <Divider />
           {/if}
           {#if lists.length > 0}
-            <span class="heading"><b>Lists</b></span>
+            <span class="heading">Lists</span>
             {#each lists as list}
-              <li
-                class="result-elem-sizing"
+              <MenuItem
+                lineText={list.title}
+                hover={true}
                 on:click={() => handleListClick(list)}
-              >
-                <span>{list.title}</span>
-              </li>
+              />
             {/each}
           {/if}
           {#if cards.length > 0 && (lists.length > 0 || boards.length > 0)}
             <Divider />
           {/if}
           {#if cards.length > 0}
-            <span class="heading"><b>Cards</b></span>
+            <span class="heading">Cards</span>
             {#each cards as card}
-              <li
-                class="result-elem-sizing"
+              <MenuItem
+                lineText={card.title}
+                hover={true}
                 on:click={() => handleCardClick(card)}
-              >
-                <span>{card.title}</span>
-              </li>
+              />
             {/each}
           {/if}
-        </ul>
-      {:else}
-        <span class="result-elem-sizing">No results found..</span>
-      {/if}
-    </div>
+        {:else}
+          <span class="result-elem-sizing">No results found..</span>
+        {/if}
+      </div>
+    </Menu>
   {/if}
 </div>
 
@@ -126,36 +126,6 @@
     position: relative;
   }
 
-  ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  li {
-    cursor: pointer;
-  }
-
-  li:hover {
-    background-color: #aaaaaa55;
-  }
-
-  .results {
-    position: absolute;
-    top: 120%;
-    border-radius: 3px;
-    right: 0px;
-    z-index: 1;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-top: none;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    padding: 5px 0px;
-    max-height: 200px;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
   .result-elem-sizing {
     width: 32ch;
     padding: 4px 16px;
@@ -163,6 +133,7 @@
 
   .heading {
     padding: 0px 8px;
+    font-weight: bold;
   }
 
   input {
