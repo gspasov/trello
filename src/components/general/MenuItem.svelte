@@ -7,7 +7,9 @@
 
 <div on:click>
   {#if lineText}
-    <span class:hover class:selected>{lineText}</span>
+    <span class:hover class:selected style="--hoverColor: {hoverColor}"
+      >{lineText}</span
+    >
   {:else}
     <div
       class="slot"
