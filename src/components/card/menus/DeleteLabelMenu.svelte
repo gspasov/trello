@@ -4,6 +4,7 @@
   import type { Label } from "../../../models/label";
   import { addWorkspaceEvent } from "../../../stores/eventStore";
   import { DeleteLabelEvent } from "../../../events";
+  import { Just } from "@quanterall/lich";
 
   export let x: number;
   export let y: number;
@@ -18,8 +19,15 @@
   }
 </script>
 
-<Menu title={"Delete label?"} {x} {y} isSubMenu={true} on:close on:back>
-  <div class="container">
+<Menu
+  title={Just("Delete label?")}
+  left={Just(x)}
+  top={Just(y)}
+  isSubMenu={true}
+  on:close
+  on:back
+>
+  <div class="container" slot="content">
     There is no undo. This will remove this label from all cards and destroy its
     history.
     <button class="btn-danger" on:click={handleDelete}>Delete</button>

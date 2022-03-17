@@ -52,6 +52,7 @@
     <MenuItem
       hover={true}
       selected={board.selected}
+      hoverColor="#eeeeee44"
       on:click={() => handleBoardSelection(board.id)}
     >
       <div class="board-row-item">

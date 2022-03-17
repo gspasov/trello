@@ -36,41 +36,43 @@
   }
 </script>
 
-<Menu title={"Create board"} {x} {y} on:close>
-  <div class="preview-box">
-    <LabelBox color={boardColorTypeMapping(selectedColorType)}>
-      <img src="images/board-preview-skeleton.svg" alt="background preview" />
-    </LabelBox>
-  </div>
-  <MenuItem>
-    <LabeledInput
-      title={Just("Board title")}
-      bind:value={boardTitle}
-      required={true}
-    />
-  </MenuItem>
-  <MenuItem>
-    <span class="title">Background</span>
-    <div class="color-box-wrapper">
-      {#each $StateStore.boardColors as { id, color, type } (id)}
-        <LabelBox
-          {color}
-          selectable={true}
-          on:select={() => handleColorSelection(type)}
-        >
-          {#if selectedColorType === type}
-            &#10004;
-          {/if}
-        </LabelBox>
-      {/each}
+<Menu title={Just("Create board")} left={Just(x)} top={Just(y)} on:close>
+  <div slot="content">
+    <div class="preview-box">
+      <LabelBox color={boardColorTypeMapping(selectedColorType)}>
+        <img src="images/board-preview-skeleton.svg" alt="background preview" />
+      </LabelBox>
     </div>
-  </MenuItem>
+    <MenuItem>
+      <LabeledInput
+        title={Just("Board title")}
+        bind:value={boardTitle}
+        required={true}
+      />
+    </MenuItem>
+    <MenuItem>
+      <span class="title">Background</span>
+      <div class="color-box-wrapper">
+        {#each $StateStore.boardColors as { id, color, type } (id)}
+          <LabelBox
+            {color}
+            selectable={true}
+            on:select={() => handleColorSelection(type)}
+          >
+            {#if selectedColorType === type}
+              &#10004;
+            {/if}
+          </LabelBox>
+        {/each}
+      </div>
+    </MenuItem>
 
-  {#if isBoardTitleInvalid}
-    <button class="btn-invalid">Create</button>
-  {:else}
-    <button class="btn-primary" on:click={handleBoardCreate}>Create</button>
-  {/if}
+    {#if isBoardTitleInvalid}
+      <button class="btn-invalid">Create</button>
+    {:else}
+      <button class="btn-primary" on:click={handleBoardCreate}>Create</button>
+    {/if}
+  </div>
 </Menu>
 
 <style>

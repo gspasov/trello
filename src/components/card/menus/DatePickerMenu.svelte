@@ -3,6 +3,7 @@
   import { DatePicker } from "date-picker-svelte";
   import Menu from "../../general/Menu.svelte";
   import type { DispatchSelectDueDate } from "../../../supportTypes";
+  import { Just } from "@quanterall/lich";
 
   export let x: number;
   export let y: number;
@@ -13,8 +14,8 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<Menu title={"Due date"} {x} {y} on:close>
-  <div>
+<Menu title={Just("Due date")} left={Just(x)} top={Just(y)} on:close>
+  <div slot="content">
     <DatePicker bind:value={date} />
     <button class="btn-primary" on:click={() => dispatchDate("select", date)}
       >Save</button
