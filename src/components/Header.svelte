@@ -33,7 +33,7 @@
 
 <style>
   section {
-    position: fixed;
+    position: relative;
     top: 0;
     height: 45px;
     width: 100%;

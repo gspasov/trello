@@ -169,7 +169,6 @@
     margin-left: 250px;
   }
   main {
-    margin-top: 45px;
     display: flex;
     overflow: hidden;
     height: 100vh;
