@@ -22,7 +22,7 @@
     RenameListEvent,
   } from "../events";
   import type { DispatchCardOpen } from "../supportTypes";
-  import { nullableToMaybe } from "@quanterall/lich";
+  import { Just, nullableToMaybe } from "@quanterall/lich";
   import { hasOwnProperty } from "../utilities";
 
   export let list: List;
@@ -198,18 +198,29 @@
   {#if list.isMenuOpened}
     <div use:clickOutside={closeListMenu}>
       <Menu
-        title={"List actions"}
-        x={menuPosition.x}
-        y={menuPosition.y}
+        title={Just("List actions")}
+        top={Just(menuPosition.y)}
+        left={Just(menuPosition.x)}
         on:close={closeListMenu}
       >
-        <MenuItem lineText={"Rename"} on:click={startEditingListTitle} />
-        <MenuItem
-          lineText={"Delete All Cards from List"}
-          on:click={deleteAllCardsFromList}
-        />
-        <Divider />
-        <MenuItem lineText={"Delete"} on:click={handleDeleteList} />
+        <div slot="content">
+          <MenuItem
+            lineText={"Rename"}
+            hover={true}
+            on:click={startEditingListTitle}
+          />
+          <MenuItem
+            lineText={"Delete All Cards from List"}
+            hover={true}
+            on:click={deleteAllCardsFromList}
+          />
+          <Divider />
+          <MenuItem
+            lineText={"Delete"}
+            hover={true}
+            on:click={handleDeleteList}
+          />
+        </div>
       </Menu>
     </div>
   {/if}

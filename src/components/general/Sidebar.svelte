@@ -9,6 +9,7 @@
   import { addWorkspaceEvent } from "../../stores/eventStore";
   import type { Coordinates, DispatchOpenMenu } from "../../supportTypes";
   import MenuItem from "./MenuItem.svelte";
+  import { flip } from "svelte/animate";
 
   export let open = false;
   export let boards: Board[];
@@ -49,37 +50,40 @@
     />
   </div>
   {#each boards as board (board.id)}
-    <MenuItem
-      hover={true}
-      selected={board.selected}
-      on:click={() => handleBoardSelection(board.id)}
-    >
-      <div class="board-row-item">
-        <div>
-          <div
-            class="board-color-tile"
-            style="background-color: {board.color.color}"
-          />
-          <span class="board-title">{board.name}</span>
-        </div>
-        <div>
-          {#if board.favorite}
-            <i
-              class="fa fa-star board-star"
-              aria-hidden="true"
-              on:click|stopPropagation={() =>
-                handleRemoveFromFavorites(board.id)}
+    <div animate:flip={{ duration: 300 }}>
+      <MenuItem
+        hover={true}
+        selected={board.selected}
+        hoverColor="#eeeeee44"
+        on:click={() => handleBoardSelection(board.id)}
+      >
+        <div class="board-row-item">
+          <div>
+            <div
+              class="board-color-tile"
+              style="background-color: {board.color.color}"
             />
-          {:else}
-            <i
-              class="fa fa-star-o board-star "
-              aria-hidden="true"
-              on:click|stopPropagation={() => handleAddToFavorites(board.id)}
-            />
-          {/if}
+            <span class="board-title">{board.name}</span>
+          </div>
+          <div>
+            {#if board.favorite}
+              <i
+                class="fa fa-star board-star"
+                aria-hidden="true"
+                on:click|stopPropagation={() =>
+                  handleRemoveFromFavorites(board.id)}
+              />
+            {:else}
+              <i
+                class="fa fa-star-o board-star "
+                aria-hidden="true"
+                on:click|stopPropagation={() => handleAddToFavorites(board.id)}
+              />
+            {/if}
+          </div>
         </div>
-      </div>
-    </MenuItem>
+      </MenuItem>
+    </div>
   {/each}
 </nav>
 

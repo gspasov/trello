@@ -4,6 +4,7 @@
   import LabelButton from "../LabelButton.svelte";
   import { createEventDispatcher } from "svelte";
   import type { Label } from "../../../models/label";
+  import { Just } from "@quanterall/lich";
 
   export let x: number;
   export let y: number;
@@ -13,8 +14,8 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<Menu title={"Labels"} {x} {y} on:close>
-  <MenuItem>
+<Menu title={Just("Labels")} left={Just(x)} top={Just(y)} on:close>
+  <MenuItem slot="content">
     <h4>Labels</h4>
     <div class="labels-wrapper">
       {#each labels as label (label.id)}

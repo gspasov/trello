@@ -81,14 +81,14 @@
 </script>
 
 <Menu
-  title={isEditMode ? "Change label" : "Create label"}
-  {x}
-  {y}
+  title={Just(isEditMode ? "Change label" : "Create label")}
+  top={Just(y)}
+  left={Just(x)}
   isSubMenu={true}
   on:close
   on:back
 >
-  <div class="content">
+  <div class="content" slot="content">
     <LabeledInput title={Just("Name")} bind:value={labelName} />
     <span class="title">Select color</span>
     <div class="color-box-wrapper">

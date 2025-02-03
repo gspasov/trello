@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Just } from "@quanterall/lich";
   import { createEventDispatcher } from "svelte";
   import Menu from "../../general/Menu.svelte";
 
@@ -8,7 +9,7 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<Menu title={"Move card"} {x} {y} on:close />
+<Menu title={Just("Move card")} left={Just(x)} top={Just(y)} on:close />
 
 <style>
 </style>
